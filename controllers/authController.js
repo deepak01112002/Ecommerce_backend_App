@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const { validationResult } = require('express-validator');
+const { asyncHandler, validateRequest } = require('../middlewares/errorHandler');
 
 // Helper to generate JWT
 function generateToken(user) {
@@ -10,82 +10,124 @@ function generateToken(user) {
 }
 
 // Signup
-exports.signup = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+exports.signup = asyncHandler(async (req, res) => {
+    const { name, email, password, role = 'user' } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        return res.error('Email already exists', [], 409);
     }
-    const { name, email, password, role } = req.body;
-    try {
-        let user = await User.findOne({ email });
-        if (user) {
-            return res.status(400).json({ message: 'Email already exists' });
-        }
-        user = new User({ name, email, password, role });
-        await user.save();
-        const token = generateToken(user);
-        res.status(201).json({
-            message: 'User registered successfully',
-            user: { id: user._id, name: user.name, email: user.email, role: user.role },
-            token,
-        });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
-    }
-};
+
+    // Create new user
+    const user = new User({ name, email, password, role });
+    await user.save();
+
+    // Generate token
+    const token = generateToken(user);
+
+    // Return success response
+    res.success({
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            created_at: user.createdAt
+        },
+        token,
+        expires_in: '7d'
+    }, 'User registered successfully', 201);
+});
 
 // Login
-exports.login = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
+exports.login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-    try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid credentials' });
-        }
-        const isMatch = await user.comparePassword(password);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid credentials' });
-        }
-        const token = generateToken(user);
-        res.status(200).json({
-            message: 'Login successful',
-            user: { id: user._id, name: user.name, email: user.email, role: user.role },
-            token,
-        });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+
+    // Find user by email
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+        return res.error('Invalid credentials', [], 401);
     }
-};
+
+    // Check password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+        return res.error('Invalid credentials', [], 401);
+    }
+
+    // Update last login
+    user.lastLogin = new Date();
+    await user.save();
+
+    // Generate token
+    const token = generateToken(user);
+
+    // Return success response
+    res.success({
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            last_login: user.lastLogin
+        },
+        token,
+        expires_in: '7d'
+    }, 'Login successful');
+});
 
 // Get current user profile
-exports.profile = async (req, res) => {
-    res.status(200).json({ user: req.user });
-};
+exports.profile = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id).populate('addresses');
+
+    res.success({
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            role: user.role,
+            addresses: user.addresses,
+            created_at: user.createdAt,
+            updated_at: user.updatedAt,
+            last_login: user.lastLogin
+        }
+    }, 'Profile retrieved successfully');
+});
 
 // Update current user profile
-exports.updateProfile = async (req, res) => {
-    const { name, email, password } = req.body;
-    try {
-        if (email && email !== req.user.email) {
-            // Check if new email is already taken
-            const emailExists = await User.findOne({ email });
-            if (emailExists) {
-                return res.status(400).json({ message: 'Email already in use' });
-            }
+exports.updateProfile = asyncHandler(async (req, res) => {
+    const { name, email, phone } = req.body;
+
+    // Check if new email is already taken
+    if (email && email !== req.user.email) {
+        const emailExists = await User.findOne({ email });
+        if (emailExists) {
+            return res.error('Email already in use', [], 409);
         }
-        if (name) req.user.name = name;
-        if (email) req.user.email = email;
-        if (password) req.user.password = password;
-        await req.user.save();
-        res.status(200).json({
-            message: 'Profile updated successfully',
-            user: { id: req.user._id, name: req.user.name, email: req.user.email, role: req.user.role }
-        });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
     }
-}; 
+
+    // Update user fields
+    const updateFields = {};
+    if (name) updateFields.name = name;
+    if (email) updateFields.email = email;
+    if (phone) updateFields.phone = phone;
+
+    const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        updateFields,
+        { new: true, runValidators: true }
+    );
+
+    res.success({
+        user: {
+            id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            phone: updatedUser.phone,
+            role: updatedUser.role,
+            updated_at: updatedUser.updatedAt
+        }
+    }, 'Profile updated successfully');
+});

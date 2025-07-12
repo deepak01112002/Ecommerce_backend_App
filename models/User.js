@@ -18,10 +18,36 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    phone: {
+        type: String,
+        trim: true
+    },
+    addresses: [
+        {
+            street: String,
+            city: String,
+            state: String,
+            postalCode: String,
+            country: String,
+            isDefault: { type: Boolean, default: false }
+        }
+    ],
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+    isGuest: {
+        type: Boolean,
+        default: false
+    },
     role: {
         type: String,
-        enum: ['user', 'admin'],
+        enum: ['user', 'admin', 'guest'],
         default: 'user'
+    },
+    lastLogin: {
+        type: Date
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 }, { timestamps: true });
 
