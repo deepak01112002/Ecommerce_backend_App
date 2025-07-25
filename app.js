@@ -106,9 +106,9 @@ app.use(cors({
     maxAge: 86400 // Cache preflight response for 24 hours
 }));
 
-// Other middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Other middleware with increased limits for file uploads
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(helmet({
     crossOriginEmbedderPolicy: false,
     contentSecurityPolicy: false
