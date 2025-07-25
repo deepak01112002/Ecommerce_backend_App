@@ -2,37 +2,42 @@ const express = require('express');
 const { body, query } = require('express-validator');
 const router = express.Router();
 const categoryController = require('../controllers/categoryController');
+const authMiddleware = require('../middlewares/authMiddleware');
 const adminMiddleware = require('../middlewares/adminMiddleware');
 const { validateRequest } = require('../middlewares/errorHandler');
-const multer = require('multer');
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/categories/');
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
-    }
-});
-
-const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB limit
-    },
-    fileFilter: function (req, file, cb) {
-        if (file.mimetype.startsWith('image/')) {
-            cb(null, true);
-        } else {
-            cb(new Error('Only image files are allowed!'), false);
-        }
-    }
-});
+// Import Contabo upload middleware (replaces multer)
+const { uploadSingleImage } = require('../middlewares/contaboUpload');
 
 // Public endpoints - specific routes first
-router.get('/tree', categoryController.getCategoryTree);
+router.get('/tree',
+    [
+        query('featured').optional().isBoolean().withMessage('featured must be a boolean'),
+        query('includeProducts').optional().isBoolean().withMessage('includeProducts must be a boolean'),
+        query('maxDepth').optional().isInt({ min: 1, max: 5 }).withMessage('maxDepth must be between 1 and 5'),
+        query('minProductCount').optional().isInt({ min: 0 }).withMessage('minProductCount must be a non-negative integer')
+    ],
+    validateRequest,
+    categoryController.getCategoryTree
+);
+
+router.get('/featured',
+    [
+        query('limit').optional().isInt({ min: 1, max: 20 }).withMessage('limit must be between 1 and 20')
+    ],
+    validateRequest,
+    categoryController.getFeaturedCategories
+);
+
+router.get('/search',
+    [
+        query('q').notEmpty().withMessage('Search query is required'),
+        query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('limit must be between 1 and 50')
+    ],
+    validateRequest,
+    categoryController.searchCategories
+);
+
+router.get('/breadcrumb/:slug', categoryController.getCategoryBreadcrumb);
 
 router.get('/',
     [
@@ -47,8 +52,9 @@ router.get('/:id', categoryController.getCategoryById);
 
 // Admin endpoints
 router.post('/',
+    authMiddleware,
     adminMiddleware,
-    upload.single('image'),
+    uploadSingleImage('image', 'categories'),
     [
         body('name').notEmpty().trim().withMessage('Category name is required'),
         body('description').optional().isString().withMessage('Description must be a string'),
@@ -59,8 +65,9 @@ router.post('/',
 );
 
 router.put('/:id',
+    authMiddleware,
     adminMiddleware,
-    upload.single('image'),
+    uploadSingleImage('image', 'categories'),
     [
         body('name').optional().notEmpty().trim().withMessage('Category name cannot be empty'),
         body('description').optional().isString().withMessage('Description must be a string'),
@@ -70,6 +77,6 @@ router.put('/:id',
     categoryController.updateCategory
 );
 
-router.delete('/:id', adminMiddleware, categoryController.deleteCategory);
+router.delete('/:id', authMiddleware, adminMiddleware, categoryController.deleteCategory);
 
 module.exports = router;

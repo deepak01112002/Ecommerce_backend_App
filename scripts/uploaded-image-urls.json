@@ -1,0 +1,46 @@
+{
+  "uploadedAt": "2025-07-24T18:39:07.498Z",
+  "totalUploads": 8,
+  "uploads": [
+    {
+      "type": "category",
+      "url": "https://usc1.contabostorage.com/ecommerce/categories/1753382329006-a43e1519f6dd9b9b-sample-category-image.jpg",
+      "fileName": "categories/1753382329006-a43e1519f6dd9b9b-sample-category-image.jpg"
+    },
+    {
+      "type": "product",
+      "url": "https://usc1.contabostorage.com/ecommerce/products/1753382335012-2f0e93dbb470d2b2-sample-product-image.jpg",
+      "fileName": "products/1753382335012-2f0e93dbb470d2b2-sample-product-image.jpg"
+    },
+    {
+      "type": "product",
+      "url": "https://usc1.contabostorage.com/ecommerce/products/1753382338791-0e9ea2a130555120-sample-product-image-2.jpg",
+      "fileName": "products/1753382338791-0e9ea2a130555120-sample-product-image-2.jpg"
+    },
+    {
+      "type": "product",
+      "url": "https://usc1.contabostorage.com/ecommerce/products/1753382341136-6b652ab6f29da82b-sample-product-image-3.jpg",
+      "fileName": "products/1753382341136-6b652ab6f29da82b-sample-product-image-3.jpg"
+    },
+    {
+      "type": "product",
+      "url": "https://usc1.contabostorage.com/ecommerce/products/1753382343474-3e0a354e211debfe-sample-product-image-4.jpg",
+      "fileName": "products/1753382343474-3e0a354e211debfe-sample-product-image-4.jpg"
+    },
+    {
+      "type": "subcategory",
+      "url": "https://usc1.contabostorage.com/ecommerce/categories/1753382344586-615d76209e22810a-sample-subcategory-1.jpg",
+      "fileName": "categories/1753382344586-615d76209e22810a-sample-subcategory-1.jpg"
+    },
+    {
+      "type": "subcategory",
+      "url": "https://usc1.contabostorage.com/ecommerce/categories/1753382345753-230d18fddfae352d-sample-subcategory-2.jpg",
+      "fileName": "categories/1753382345753-230d18fddfae352d-sample-subcategory-2.jpg"
+    },
+    {
+      "type": "subcategory",
+      "url": "https://usc1.contabostorage.com/ecommerce/categories/1753382346519-704dbde6a9eb9f9f-sample-subcategory-3.jpg",
+      "fileName": "categories/1753382346519-704dbde6a9eb9f9f-sample-subcategory-3.jpg"
+    }
+  ]
+}

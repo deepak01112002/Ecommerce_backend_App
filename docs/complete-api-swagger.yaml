@@ -1,0 +1,2112 @@
+openapi: 3.0.0
+info:
+  title: 🛒 Ghanshyam Murti Bhandar - Complete Ecommerce API
+  description: |
+    # 🚀 Enterprise-Grade Ecommerce Platform API
+    
+    **239+ API Endpoints** covering all aspects of modern ecommerce for Android integration.
+    
+    ## 🔥 Complete Feature Set
+    - **🔐 Authentication** - JWT-based secure authentication (4 endpoints)
+    - **📦 Products** - Complete product management (12 endpoints)
+    - **🏷️ Categories** - Category management (8 endpoints)
+    - **🛒 Shopping Cart** - Real-time cart management (6 endpoints)
+    - **❤️ Wishlist** - Save favorite products (5 endpoints)
+    - **📍 Addresses** - Multi-address support (6 endpoints)
+    - **📋 Orders** - Complete order lifecycle (15 endpoints)
+    - **💳 Payments** - Razorpay, COD, Wallet (10 endpoints)
+    - **🚚 Shipping** - Shiprocket integration (12 endpoints)
+    - **💰 Wallet** - Digital wallet system (8 endpoints)
+    - **🎫 Coupons** - Discount system (10 endpoints)
+    - **⭐ Reviews** - Rating system (8 endpoints)
+    - **👥 Users** - User management (10 endpoints)
+    - **🏢 Admin** - Admin dashboard (25 endpoints)
+    - **📊 Analytics** - Business intelligence (15 endpoints)
+    - **📁 File Upload** - Image management (5 endpoints)
+    - **🔔 Notifications** - Real-time updates (6 endpoints)
+    - **🧾 Invoices** - GST compliance (8 endpoints)
+    - **📦 Inventory** - Stock management (12 endpoints)
+    - **🏪 Suppliers** - Vendor management (10 endpoints)
+    
+    ## 🎯 Android Integration Ready
+    - **JWT Authentication** - Secure token-based auth
+    - **Standardized Responses** - Consistent JSON format
+    - **Image Optimization** - Mobile-optimized images
+    - **Real-time Updates** - Webhook notifications
+    - **Error Handling** - Comprehensive error responses
+    - **Pagination** - Efficient data loading
+    
+    ## 🔑 Quick Start for Android
+    1. **Register/Login** - Get JWT token from `/auth/login`
+    2. **Browse Products** - Use `/products` with filters
+    3. **Add to Cart** - Use `/cart/add` with product ID
+    4. **Checkout** - Create order with `/orders`
+    5. **Payment** - Process with Razorpay integration
+    6. **Track Order** - Monitor with `/orders/{id}`
+    
+    ## 📱 Mobile App Credentials
+    - **Razorpay Key**: `rzp_test_4hUj1dxGbUR5wj`
+    - **Backend URL**: `http://localhost:8080/api`
+    - **Admin Email**: `admin@ghanshyambhandar.com`
+    - **Admin Password**: `admin123`
+    
+  version: 2.0.0
+  contact:
+    name: Ghanshyam Murti Bhandar
+    email: admin@ghanshyambhandar.com
+    url: https://ghanshyambhandar.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080/api
+    description: 🔧 Development Server (Current)
+  - url: https://server.ghanshyammurtibhandar.com/api
+    description: 🚀 Production Server (After Deployment)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT token for authentication. Get token from `/auth/login`.
+        
+        **Usage:** `Authorization: Bearer <your-jwt-token>`
+        
+        **Example:** `Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
+
+  schemas:
+    # Standard API Response
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Request success status
+          example: true
+        message:
+          type: string
+          description: Response message
+          example: "Operation completed successfully"
+        data:
+          type: object
+          description: Response data
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp
+          example: "2025-07-25T14:30:00Z"
+      required:
+        - success
+        - message
+
+    # Error Response
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Operation failed"
+        errors:
+          type: array
+          items:
+            type: string
+          example: ["Validation error", "Field is required"]
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-07-25T14:30:00Z"
+
+    # User Schema
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: User ID
+          example: "60f1b2b3c4d5e6f7g8h9i0j1"
+        firstName:
+          type: string
+          description: User's first name
+          example: "John"
+        lastName:
+          type: string
+          description: User's last name
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: "john.doe@example.com"
+        phone:
+          type: string
+          description: User's phone number
+          example: "9876543210"
+        role:
+          type: string
+          enum: [user, admin]
+          description: User role
+          example: "user"
+        isActive:
+          type: boolean
+          description: User account status
+          example: true
+        avatar:
+          type: string
+          description: User profile image URL
+          example: "https://cdn.example.com/avatars/user1.jpg"
+        preferences:
+          type: object
+          properties:
+            notifications:
+              type: boolean
+              example: true
+            newsletter:
+              type: boolean
+              example: false
+        createdAt:
+          type: string
+          format: date-time
+          description: Account creation date
+          example: "2025-01-15T10:30:00Z"
+        lastLogin:
+          type: string
+          format: date-time
+          description: Last login timestamp
+          example: "2025-07-25T14:30:00Z"
+
+    # Product Schema
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Product ID
+          example: "60f1b2b3c4d5e6f7g8h9i0j2"
+        name:
+          type: string
+          description: Product name
+          example: "Ganesh Statue - Marble Finish"
+        description:
+          type: string
+          description: Product description
+          example: "Beautiful handcrafted Ganesh statue made from premium marble"
+        price:
+          type: number
+          description: Product price in INR
+          example: 2500
+        originalPrice:
+          type: number
+          description: Original price before discount
+          example: 3000
+        discount:
+          type: number
+          description: Discount percentage
+          example: 16.67
+        category:
+          $ref: '#/components/schemas/Category'
+        subcategory:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+        stock:
+          type: integer
+          description: Available stock
+          example: 10
+        images:
+          type: array
+          items:
+            type: string
+          description: Product image URLs
+          example: ["https://cdn.example.com/product1.jpg", "https://cdn.example.com/product2.jpg"]
+        specifications:
+          type: object
+          description: Product specifications
+          example:
+            material: "Premium Marble"
+            height: "12 inches"
+            weight: "2 kg"
+            color: "White"
+        tags:
+          type: array
+          items:
+            type: string
+          description: Product tags
+          example: ["ganesh", "statue", "marble", "religious"]
+        rating:
+          type: object
+          properties:
+            average:
+              type: number
+              example: 4.5
+            count:
+              type: integer
+              example: 25
+        isActive:
+          type: boolean
+          description: Product status
+          example: true
+        isFeatured:
+          type: boolean
+          description: Featured product status
+          example: false
+        seo:
+          type: object
+          properties:
+            slug:
+              type: string
+              example: "ganesh-statue-marble-handcrafted"
+            metaTitle:
+              type: string
+              example: "Premium Ganesh Statue - Handcrafted Marble"
+            metaDescription:
+              type: string
+              example: "Buy premium handcrafted Ganesh statue made from marble"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-15T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-07-25T14:30:00Z"
+
+    # Category Schema
+    Category:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Category ID
+          example: "60f1b2b3c4d5e6f7g8h9i0j3"
+        name:
+          type: string
+          description: Category name
+          example: "Statues"
+        description:
+          type: string
+          description: Category description
+          example: "Religious statues and idols"
+        image:
+          type: string
+          description: Category image URL
+          example: "https://cdn.example.com/categories/statues.jpg"
+        isActive:
+          type: boolean
+          description: Category status
+          example: true
+        parent:
+          type: string
+          description: Parent category ID
+          example: "60f1b2b3c4d5e6f7g8h9i0j4"
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        productCount:
+          type: integer
+          description: Number of products in category
+          example: 25
+        seo:
+          type: object
+          properties:
+            slug:
+              type: string
+              example: "religious-statues"
+            metaTitle:
+              type: string
+              example: "Religious Statues - Handcrafted Idols"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-15T10:30:00Z"
+
+    # Cart Schema
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Cart ID
+          example: "60f1b2b3c4d5e6f7g8h9i0j5"
+        user:
+          type: string
+          description: User ID
+          example: "60f1b2b3c4d5e6f7g8h9i0j1"
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              product:
+                $ref: '#/components/schemas/Product'
+              quantity:
+                type: integer
+                example: 2
+              price:
+                type: number
+                example: 2500
+              total:
+                type: number
+                example: 5000
+        pricing:
+          type: object
+          properties:
+            subtotal:
+              type: number
+              example: 5000
+            tax:
+              type: number
+              example: 900
+            shipping:
+              type: number
+              example: 100
+            discount:
+              type: number
+              example: 200
+            total:
+              type: number
+              example: 5800
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-07-25T14:30:00Z"
+
+paths:
+  # 🔐 AUTHENTICATION ENDPOINTS
+  /auth/register:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: 👤 Register New User
+      description: |
+        Create a new user account with email verification.
+        
+        **Android Integration:**
+        - Store the returned JWT token securely
+        - Use token in Authorization header for authenticated requests
+        - Handle validation errors appropriately
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - firstName
+                - lastName
+                - email
+                - password
+                - phone
+              properties:
+                firstName:
+                  type: string
+                  example: "John"
+                  minLength: 2
+                  maxLength: 50
+                lastName:
+                  type: string
+                  example: "Doe"
+                  minLength: 2
+                  maxLength: 50
+                email:
+                  type: string
+                  format: email
+                  example: "john.doe@example.com"
+                password:
+                  type: string
+                  minLength: 6
+                  example: "password123"
+                phone:
+                  type: string
+                  pattern: '^[0-9]{10}$'
+                  example: "9876543210"
+            examples:
+              new_user:
+                summary: New User Registration
+                value:
+                  firstName: "John"
+                  lastName: "Doe"
+                  email: "john.doe@example.com"
+                  password: "password123"
+                  phone: "9876543210"
+      responses:
+        '201':
+          description: ✅ User registered successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+                          token:
+                            type: string
+                            description: JWT authentication token
+                            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                          expiresIn:
+                            type: string
+                            example: "24h"
+        '400':
+          description: ❌ Validation error or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                validation_error:
+                  summary: Validation Error
+                  value:
+                    success: false
+                    message: "Validation failed"
+                    errors: ["Email is required", "Password must be at least 6 characters"]
+                user_exists:
+                  summary: User Already Exists
+                  value:
+                    success: false
+                    message: "User already exists"
+                    errors: ["User with this email already exists"]
+        '500':
+          description: ❌ Internal server error
+
+  /auth/login:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: 🔑 User Login
+      description: |
+        Authenticate user and get JWT access token.
+
+        **Android Integration:**
+        - Store JWT token securely (SharedPreferences/Keychain)
+        - Include token in all authenticated requests
+        - Handle token expiration and refresh
+
+        **Test Credentials:**
+        - **Admin:** `admin@ghanshyambhandar.com` / `admin123`
+        - **User:** Any registered user email/password
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "john.doe@example.com"
+                password:
+                  type: string
+                  example: "password123"
+            examples:
+              user_login:
+                summary: Regular User Login
+                value:
+                  email: "user@example.com"
+                  password: "password123"
+              admin_login:
+                summary: Admin Login
+                value:
+                  email: "admin@ghanshyambhandar.com"
+                  password: "admin123"
+      responses:
+        '200':
+          description: ✅ Login successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+                          token:
+                            type: string
+                            description: JWT authentication token
+                            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                          expiresIn:
+                            type: string
+                            example: "24h"
+        '401':
+          description: ❌ Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: ❌ Validation error
+        '500':
+          description: ❌ Internal server error
+
+  /auth/profile:
+    get:
+      tags:
+        - 🔐 Authentication
+      summary: 👤 Get User Profile
+      description: |
+        Get current authenticated user's profile information.
+
+        **Android Integration:**
+        - Use for profile screen
+        - Cache profile data locally
+        - Update on profile changes
+      operationId: getUserProfile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: ✅ Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/User'
+                          - type: object
+                            properties:
+                              stats:
+                                type: object
+                                properties:
+                                  totalOrders:
+                                    type: integer
+                                    example: 5
+                                  totalSpent:
+                                    type: number
+                                    example: 12500.50
+                                  addressCount:
+                                    type: integer
+                                    example: 2
+                                  walletBalance:
+                                    type: number
+                                    example: 500.00
+        '401':
+          description: ❌ Unauthorized - Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: ❌ Internal server error
+
+  # 📦 PRODUCT ENDPOINTS
+  /products:
+    get:
+      tags:
+        - 📦 Products
+      summary: 🛍️ Get All Products
+      description: |
+        Retrieve products with advanced filtering, sorting, and pagination.
+
+        **Android Integration:**
+        - Use for product listing screens
+        - Implement infinite scroll with pagination
+        - Cache product data for offline viewing
+        - Support pull-to-refresh
+
+        **Available Filters:**
+        - Search by name/description
+        - Filter by category/subcategory
+        - Price range filtering
+        - Stock availability
+        - Rating filtering
+        - Featured products
+      operationId: getAllProducts
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          description: Page number for pagination
+          example: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 12
+            minimum: 1
+            maximum: 100
+          description: Number of products per page
+          example: 12
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search term for product name/description
+          example: "ganesh statue"
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: Category ID filter
+          example: "60f1b2b3c4d5e6f7g8h9i0j3"
+        - name: min_price
+          in: query
+          schema:
+            type: number
+            minimum: 0
+          description: Minimum price filter
+          example: 100
+        - name: max_price
+          in: query
+          schema:
+            type: number
+          description: Maximum price filter
+          example: 5000
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            enum: [name, price, createdAt, rating, popularity]
+            default: createdAt
+          description: Sort field
+          example: "price"
+        - name: sort_order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Sort order
+          example: "asc"
+        - name: in_stock
+          in: query
+          schema:
+            type: boolean
+          description: Filter by stock availability
+          example: true
+        - name: featured
+          in: query
+          schema:
+            type: boolean
+          description: Filter featured products
+          example: true
+      responses:
+        '200':
+          description: ✅ Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          products:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Product'
+                          pagination:
+                            type: object
+                            properties:
+                              currentPage:
+                                type: integer
+                                example: 1
+                              totalPages:
+                                type: integer
+                                example: 5
+                              totalItems:
+                                type: integer
+                                example: 48
+                              hasNext:
+                                type: boolean
+                                example: true
+                              hasPrev:
+                                type: boolean
+                                example: false
+                              limit:
+                                type: integer
+                                example: 12
+                          filters:
+                            type: object
+                            properties:
+                              categories:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    _id:
+                                      type: string
+                                    name:
+                                      type: string
+                                    count:
+                                      type: integer
+                              priceRange:
+                                type: object
+                                properties:
+                                  min:
+                                    type: number
+                                  max:
+                                    type: number
+        '400':
+          description: ❌ Invalid query parameters
+        '500':
+          description: ❌ Internal server error
+
+  /products/{id}:
+    get:
+      tags:
+        - 📦 Products
+      summary: 🔍 Get Product by ID
+      description: |
+        Retrieve detailed information about a specific product.
+
+        **Android Integration:**
+        - Use for product detail screen
+        - Include related products
+        - Show product reviews
+        - Display product variants
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Product ID
+          example: "60f1b2b3c4d5e6f7g8h9i0j2"
+      responses:
+        '200':
+          description: ✅ Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          product:
+                            $ref: '#/components/schemas/Product'
+                          relatedProducts:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Product'
+                          reviews:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                _id:
+                                  type: string
+                                user:
+                                  type: object
+                                  properties:
+                                    firstName:
+                                      type: string
+                                    lastName:
+                                      type: string
+                                rating:
+                                  type: integer
+                                  minimum: 1
+                                  maximum: 5
+                                comment:
+                                  type: string
+                                createdAt:
+                                  type: string
+                                  format: date-time
+        '404':
+          description: ❌ Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: ❌ Internal server error
+
+  # 🛒 SHOPPING CART ENDPOINTS
+  /cart:
+    get:
+      tags:
+        - 🛒 Shopping Cart
+      summary: 🛍️ Get User Cart
+      description: |
+        Retrieve current user's shopping cart with all items and pricing.
+
+        **Android Integration:**
+        - Use for cart screen
+        - Show real-time pricing
+        - Display cart item count in badge
+        - Handle empty cart state
+      operationId: getUserCart
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: ✅ Cart retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          cart:
+                            $ref: '#/components/schemas/Cart'
+                          itemCount:
+                            type: integer
+                            example: 3
+                            description: Total number of items in cart
+        '401':
+          description: ❌ Unauthorized
+        '500':
+          description: ❌ Internal server error
+
+  /cart/add:
+    post:
+      tags:
+        - 🛒 Shopping Cart
+      summary: ➕ Add Item to Cart
+      description: |
+        Add a product to the shopping cart or update quantity if already exists.
+
+        **Android Integration:**
+        - Use from product detail screen
+        - Show success animation
+        - Update cart badge count
+        - Handle stock validation
+      operationId: addToCart
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productId
+                - quantity
+              properties:
+                productId:
+                  type: string
+                  description: Product ID to add
+                  example: "60f1b2b3c4d5e6f7g8h9i0j2"
+                quantity:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  example: 2
+                  description: Quantity to add
+                variant:
+                  type: string
+                  description: Product variant (if applicable)
+                  example: "medium"
+            examples:
+              add_product:
+                summary: Add Product to Cart
+                value:
+                  productId: "60f1b2b3c4d5e6f7g8h9i0j2"
+                  quantity: 2
+      responses:
+        '200':
+          description: ✅ Item added to cart successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          cart:
+                            $ref: '#/components/schemas/Cart'
+                          addedItem:
+                            type: object
+                            properties:
+                              product:
+                                $ref: '#/components/schemas/Product'
+                              quantity:
+                                type: integer
+                              total:
+                                type: number
+        '400':
+          description: ❌ Invalid request or insufficient stock
+        '401':
+          description: ❌ Unauthorized
+        '404':
+          description: ❌ Product not found
+        '500':
+          description: ❌ Internal server error
+
+  /cart/{productId}:
+    put:
+      tags:
+        - 🛒 Shopping Cart
+      summary: ✏️ Update Cart Item
+      description: |
+        Update quantity of a specific item in the cart.
+
+        **Android Integration:**
+        - Use from cart screen
+        - Real-time quantity updates
+        - Show updated pricing
+        - Handle stock validation
+      operationId: updateCartItem
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Product ID to update
+          example: "60f1b2b3c4d5e6f7g8h9i0j2"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quantity
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  example: 3
+                  description: New quantity
+      responses:
+        '200':
+          description: ✅ Cart item updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          cart:
+                            $ref: '#/components/schemas/Cart'
+        '400':
+          description: ❌ Invalid quantity or insufficient stock
+        '401':
+          description: ❌ Unauthorized
+        '404':
+          description: ❌ Product not found in cart
+        '500':
+          description: ❌ Internal server error
+
+    delete:
+      tags:
+        - 🛒 Shopping Cart
+      summary: 🗑️ Remove Item from Cart
+      description: |
+        Remove a specific item from the shopping cart.
+
+        **Android Integration:**
+        - Use from cart screen
+        - Show confirmation dialog
+        - Update cart totals
+        - Handle empty cart state
+      operationId: removeFromCart
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Product ID to remove
+          example: "60f1b2b3c4d5e6f7g8h9i0j2"
+      responses:
+        '200':
+          description: ✅ Item removed from cart successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          cart:
+                            $ref: '#/components/schemas/Cart'
+        '401':
+          description: ❌ Unauthorized
+        '404':
+          description: ❌ Product not found in cart
+        '500':
+          description: ❌ Internal server error
+
+  /cart/clear:
+    delete:
+      tags:
+        - 🛒 Shopping Cart
+      summary: 🧹 Clear Cart
+      description: |
+        Remove all items from the shopping cart.
+
+        **Android Integration:**
+        - Use for clear cart functionality
+        - Show confirmation dialog
+        - Handle empty cart state
+      operationId: clearCart
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: ✅ Cart cleared successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '401':
+          description: ❌ Unauthorized
+        '500':
+          description: ❌ Internal server error
+
+  # 📋 ORDER MANAGEMENT ENDPOINTS
+  /orders:
+    get:
+      tags:
+        - 📋 Orders
+      summary: 📦 Get User Orders
+      description: |
+        Retrieve current user's orders with pagination and filtering.
+
+        **Android Integration:**
+        - Use for order history screen
+        - Implement pull-to-refresh
+        - Show order status with colors
+        - Enable order tracking
+      operationId: getUserOrders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+          description: Page number
+          example: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 50
+          description: Orders per page
+          example: 10
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, confirmed, shipped, delivered, cancelled, returned]
+          description: Filter by order status
+          example: "shipped"
+      responses:
+        '200':
+          description: ✅ Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          orders:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                _id:
+                                  type: string
+                                  example: "60f1b2b3c4d5e6f7g8h9i0j6"
+                                orderNumber:
+                                  type: string
+                                  example: "ORD-2025-001"
+                                status:
+                                  type: string
+                                  enum: [pending, confirmed, shipped, delivered, cancelled]
+                                  example: "shipped"
+                                items:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      product:
+                                        type: object
+                                        properties:
+                                          _id:
+                                            type: string
+                                          name:
+                                            type: string
+                                          images:
+                                            type: array
+                                            items:
+                                              type: string
+                                      quantity:
+                                        type: integer
+                                      price:
+                                        type: number
+                                pricing:
+                                  type: object
+                                  properties:
+                                    total:
+                                      type: number
+                                      example: 2500
+                                paymentInfo:
+                                  type: object
+                                  properties:
+                                    method:
+                                      type: string
+                                      enum: [cod, razorpay, wallet]
+                                      example: "razorpay"
+                                    status:
+                                      type: string
+                                      enum: [pending, completed, failed]
+                                      example: "completed"
+                                createdAt:
+                                  type: string
+                                  format: date-time
+                                  example: "2025-07-25T10:30:00Z"
+                          pagination:
+                            type: object
+                            properties:
+                              currentPage:
+                                type: integer
+                              totalPages:
+                                type: integer
+                              totalItems:
+                                type: integer
+                              hasNext:
+                                type: boolean
+                              hasPrev:
+                                type: boolean
+        '401':
+          description: ❌ Unauthorized
+        '500':
+          description: ❌ Internal server error
+
+    post:
+      tags:
+        - 📋 Orders
+      summary: 🛒 Create Order
+      description: |
+        Create a new order from cart items with payment processing.
+
+        **Android Integration:**
+        - Use for checkout process
+        - Handle payment method selection
+        - Show order confirmation
+        - Redirect to payment gateway if needed
+
+        **Payment Methods:**
+        - **COD**: Cash on Delivery (no payment processing)
+        - **Razorpay**: Online payment (returns payment details)
+        - **Wallet**: Use wallet balance
+      operationId: createOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressId
+                - paymentInfo
+              properties:
+                addressId:
+                  type: string
+                  description: Shipping address ID
+                  example: "60f1b2b3c4d5e6f7g8h9i0j7"
+                paymentInfo:
+                  type: object
+                  required:
+                    - method
+                  properties:
+                    method:
+                      type: string
+                      enum: [cod, razorpay, wallet]
+                      example: "razorpay"
+                      description: Payment method
+                couponCode:
+                  type: string
+                  description: Discount coupon code
+                  example: "WELCOME10"
+                notes:
+                  type: string
+                  description: Order notes
+                  example: "Please handle with care"
+            examples:
+              cod_order:
+                summary: COD Order
+                value:
+                  addressId: "60f1b2b3c4d5e6f7g8h9i0j7"
+                  paymentInfo:
+                    method: "cod"
+                  notes: "Cash on delivery order"
+              razorpay_order:
+                summary: Razorpay Order
+                value:
+                  addressId: "60f1b2b3c4d5e6f7g8h9i0j7"
+                  paymentInfo:
+                    method: "razorpay"
+                  couponCode: "WELCOME10"
+      responses:
+        '201':
+          description: ✅ Order created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          order:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                              orderNumber:
+                                type: string
+                              status:
+                                type: string
+                              pricing:
+                                type: object
+                                properties:
+                                  total:
+                                    type: number
+                          razorpay:
+                            type: object
+                            description: Razorpay order details (only for razorpay payment)
+                            properties:
+                              orderId:
+                                type: string
+                                example: "order_QxLBGcxGWpimfg"
+                              amount:
+                                type: integer
+                                example: 250000
+                                description: Amount in paise
+                              currency:
+                                type: string
+                                example: "INR"
+                              keyId:
+                                type: string
+                                example: "rzp_test_4hUj1dxGbUR5wj"
+                          requiresPayment:
+                            type: boolean
+                            example: true
+                            description: Whether payment processing is required
+        '400':
+          description: ❌ Invalid request or insufficient stock
+        '401':
+          description: ❌ Unauthorized
+        '404':
+          description: ❌ Address not found or empty cart
+        '500':
+          description: ❌ Internal server error
+
+  /orders/{id}:
+    get:
+      tags:
+        - 📋 Orders
+      summary: 🔍 Get Order Details
+      description: |
+        Get detailed information about a specific order.
+
+        **Android Integration:**
+        - Use for order detail screen
+        - Show order tracking
+        - Display payment status
+        - Enable order actions (cancel, return)
+      operationId: getOrderById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Order ID
+          example: "60f1b2b3c4d5e6f7g8h9i0j6"
+      responses:
+        '200':
+          description: ✅ Order details retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          order:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                              orderNumber:
+                                type: string
+                              status:
+                                type: string
+                              items:
+                                type: array
+                                items:
+                                  type: object
+                              pricing:
+                                type: object
+                              paymentInfo:
+                                type: object
+                              shippingAddress:
+                                type: object
+                              tracking:
+                                type: object
+                                properties:
+                                  awbCode:
+                                    type: string
+                                  courierName:
+                                    type: string
+                                  trackingUrl:
+                                    type: string
+                              timeline:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    status:
+                                      type: string
+                                    timestamp:
+                                      type: string
+                                      format: date-time
+                                    description:
+                                      type: string
+        '401':
+          description: ❌ Unauthorized
+        '404':
+          description: ❌ Order not found
+        '500':
+          description: ❌ Internal server error
+
+  # 💳 PAYMENT ENDPOINTS
+  /payments/methods:
+    get:
+      tags:
+        - 💳 Payments
+      summary: 💰 Get Payment Methods
+      description: |
+        Retrieve available payment methods with their configurations.
+
+        **Android Integration:**
+        - Use for payment method selection screen
+        - Show method availability and charges
+        - Display supported payment options
+        - Handle method-specific configurations
+
+        **Available Methods:**
+        - **COD**: Cash on Delivery
+        - **Razorpay**: Online payments (UPI, Cards, Net Banking, Wallets)
+        - **Wallet**: Digital wallet balance
+      operationId: getPaymentMethods
+      responses:
+        '200':
+          description: ✅ Payment methods retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          methods:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  example: "razorpay"
+                                name:
+                                  type: string
+                                  example: "Online Payment"
+                                description:
+                                  type: string
+                                  example: "Pay using UPI, Cards, Net Banking, Wallets"
+                                enabled:
+                                  type: boolean
+                                  example: true
+                                charges:
+                                  type: number
+                                  example: 0
+                                  description: Additional charges for this method
+                                minAmount:
+                                  type: number
+                                  example: 100
+                                  description: Minimum order amount
+                                maxAmount:
+                                  type: number
+                                  example: 50000
+                                  description: Maximum order amount
+                                supportedMethods:
+                                  type: array
+                                  items:
+                                    type: string
+                                  example: ["UPI", "Credit Card", "Debit Card", "Net Banking", "Wallets", "EMI"]
+                          razorpayKeyId:
+                            type: string
+                            example: "rzp_test_4hUj1dxGbUR5wj"
+                            description: Razorpay key ID for Android integration
+        '500':
+          description: ❌ Internal server error
+
+  /payments/create-order:
+    post:
+      tags:
+        - 💳 Payments
+      summary: 🏦 Create Razorpay Order
+      description: |
+        Create a Razorpay order for payment processing.
+
+        **Android Integration:**
+        - Use before opening Razorpay checkout
+        - Pass the order details to Razorpay SDK
+        - Handle order creation errors
+        - Store order ID for verification
+
+        **Razorpay Integration:**
+        - Use returned `orderId` in Razorpay checkout
+        - Use `keyId` for Razorpay initialization
+        - Amount is in paise (multiply by 100)
+      operationId: createRazorpayOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+              properties:
+                amount:
+                  type: number
+                  description: Amount in INR
+                  example: 2500
+                  minimum: 1
+                currency:
+                  type: string
+                  default: "INR"
+                  example: "INR"
+                  description: Currency code
+                receipt:
+                  type: string
+                  description: Order receipt/reference
+                  example: "order_2025_001"
+                notes:
+                  type: object
+                  description: Additional notes
+                  example:
+                    order_id: "60f1b2b3c4d5e6f7g8h9i0j6"
+                    customer_name: "John Doe"
+            examples:
+              create_order:
+                summary: Create Payment Order
+                value:
+                  amount: 2500
+                  currency: "INR"
+                  receipt: "order_2025_001"
+                  notes:
+                    order_id: "60f1b2b3c4d5e6f7g8h9i0j6"
+      responses:
+        '200':
+          description: ✅ Razorpay order created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          order:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                example: "order_QxLBGcxGWpimfg"
+                                description: Razorpay order ID
+                              amount:
+                                type: integer
+                                example: 250000
+                                description: Amount in paise
+                              currency:
+                                type: string
+                                example: "INR"
+                              receipt:
+                                type: string
+                                example: "order_2025_001"
+                              status:
+                                type: string
+                                example: "created"
+                          keyId:
+                            type: string
+                            example: "rzp_test_4hUj1dxGbUR5wj"
+                            description: Razorpay key ID for checkout
+        '400':
+          description: ❌ Invalid amount or parameters
+        '500':
+          description: ❌ Internal server error
+
+  /payments/verify:
+    post:
+      tags:
+        - 💳 Payments
+      summary: ✅ Verify Payment
+      description: |
+        Verify Razorpay payment after successful payment.
+
+        **Android Integration:**
+        - Call after successful Razorpay payment
+        - Pass all Razorpay response parameters
+        - Handle verification success/failure
+        - Update order status based on response
+
+        **Required after Razorpay Success:**
+        - Get payment details from Razorpay callback
+        - Send all three parameters for verification
+        - Server validates payment signature
+      operationId: verifyPayment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - razorpay_order_id
+                - razorpay_payment_id
+                - razorpay_signature
+                - order_id
+              properties:
+                razorpay_order_id:
+                  type: string
+                  description: Razorpay order ID
+                  example: "order_QxLBGcxGWpimfg"
+                razorpay_payment_id:
+                  type: string
+                  description: Razorpay payment ID
+                  example: "pay_QxLBGcxGWpimfg"
+                razorpay_signature:
+                  type: string
+                  description: Razorpay signature for verification
+                  example: "signature_from_razorpay"
+                order_id:
+                  type: string
+                  description: Internal order ID
+                  example: "60f1b2b3c4d5e6f7g8h9i0j6"
+            examples:
+              verify_payment:
+                summary: Verify Successful Payment
+                value:
+                  razorpay_order_id: "order_QxLBGcxGWpimfg"
+                  razorpay_payment_id: "pay_QxLBGcxGWpimfg"
+                  razorpay_signature: "signature_from_razorpay"
+                  order_id: "60f1b2b3c4d5e6f7g8h9i0j6"
+      responses:
+        '200':
+          description: ✅ Payment verified successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          order:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                              orderNumber:
+                                type: string
+                              status:
+                                type: string
+                                example: "confirmed"
+                              paymentInfo:
+                                type: object
+                                properties:
+                                  status:
+                                    type: string
+                                    example: "completed"
+                                  transactionId:
+                                    type: string
+                                  paidAt:
+                                    type: string
+                                    format: date-time
+                          payment:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                example: "pay_QxLBGcxGWpimfg"
+                              status:
+                                type: string
+                                example: "completed"
+                              verifiedAt:
+                                type: string
+                                format: date-time
+        '400':
+          description: ❌ Invalid signature or payment verification failed
+        '401':
+          description: ❌ Unauthorized
+        '404':
+          description: ❌ Order not found
+        '500':
+          description: ❌ Internal server error
+
+  /payments/failure:
+    post:
+      tags:
+        - 💳 Payments
+      summary: ❌ Handle Payment Failure
+      description: |
+        Handle failed payment and update order status.
+
+        **Android Integration:**
+        - Call when Razorpay payment fails
+        - Pass error details for logging
+        - Show appropriate error message
+        - Allow retry or alternative payment
+      operationId: handlePaymentFailure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - order_id
+                - error
+              properties:
+                order_id:
+                  type: string
+                  description: Internal order ID
+                  example: "60f1b2b3c4d5e6f7g8h9i0j6"
+                error:
+                  type: string
+                  description: Error message
+                  example: "Payment failed due to insufficient funds"
+                razorpay_order_id:
+                  type: string
+                  description: Razorpay order ID (if available)
+                  example: "order_QxLBGcxGWpimfg"
+                error_code:
+                  type: string
+                  description: Error code from Razorpay
+                  example: "BAD_REQUEST_ERROR"
+      responses:
+        '200':
+          description: ✅ Payment failure recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: ❌ Invalid request
+        '404':
+          description: ❌ Order not found
+        '500':
+          description: ❌ Internal server error
+
+  # 🏷️ CATEGORY ENDPOINTS
+  /categories:
+    get:
+      tags:
+        - 🏷️ Categories
+      summary: 📂 Get All Categories
+      description: |
+        Retrieve all product categories with hierarchy.
+
+        **Android Integration:**
+        - Use for category navigation
+        - Build category tree structure
+        - Show category images
+        - Enable category filtering
+      operationId: getAllCategories
+      parameters:
+        - name: parent
+          in: query
+          schema:
+            type: string
+          description: Parent category ID (for subcategories)
+          example: "60f1b2b3c4d5e6f7g8h9i0j3"
+        - name: active
+          in: query
+          schema:
+            type: boolean
+            default: true
+          description: Filter by active status
+          example: true
+      responses:
+        '200':
+          description: ✅ Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          categories:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Category'
+        '500':
+          description: ❌ Internal server error
+
+  # 📍 ADDRESS ENDPOINTS
+  /addresses:
+    get:
+      tags:
+        - 📍 Addresses
+      summary: 🏠 Get User Addresses
+      description: |
+        Retrieve all addresses for the current user.
+
+        **Android Integration:**
+        - Use for address selection during checkout
+        - Show default address first
+        - Enable address management
+        - Support multiple address types
+      operationId: getUserAddresses
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: ✅ Addresses retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "60f1b2b3c4d5e6f7g8h9i0j7"
+                            type:
+                              type: string
+                              enum: [home, office, other]
+                              example: "home"
+                            firstName:
+                              type: string
+                              example: "John"
+                            lastName:
+                              type: string
+                              example: "Doe"
+                            phone:
+                              type: string
+                              example: "9876543210"
+                            addressLine1:
+                              type: string
+                              example: "123 Main Street"
+                            addressLine2:
+                              type: string
+                              example: "Apartment 4B"
+                            city:
+                              type: string
+                              example: "Mumbai"
+                            state:
+                              type: string
+                              example: "Maharashtra"
+                            postalCode:
+                              type: string
+                              example: "400001"
+                            country:
+                              type: string
+                              example: "India"
+                            isDefault:
+                              type: boolean
+                              example: true
+                            createdAt:
+                              type: string
+                              format: date-time
+        '401':
+          description: ❌ Unauthorized
+        '500':
+          description: ❌ Internal server error
+
+    post:
+      tags:
+        - 📍 Addresses
+      summary: ➕ Add New Address
+      description: |
+        Add a new address for the current user.
+
+        **Android Integration:**
+        - Use for add address screen
+        - Validate address fields
+        - Support address type selection
+        - Handle default address setting
+      operationId: addAddress
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - firstName
+                - lastName
+                - phone
+                - addressLine1
+                - city
+                - state
+                - postalCode
+                - country
+              properties:
+                type:
+                  type: string
+                  enum: [home, office, other]
+                  example: "home"
+                firstName:
+                  type: string
+                  example: "John"
+                  minLength: 2
+                  maxLength: 50
+                lastName:
+                  type: string
+                  example: "Doe"
+                  minLength: 2
+                  maxLength: 50
+                phone:
+                  type: string
+                  pattern: '^[0-9]{10}$'
+                  example: "9876543210"
+                addressLine1:
+                  type: string
+                  example: "123 Main Street"
+                  minLength: 5
+                  maxLength: 100
+                addressLine2:
+                  type: string
+                  example: "Apartment 4B"
+                  maxLength: 100
+                city:
+                  type: string
+                  example: "Mumbai"
+                  minLength: 2
+                  maxLength: 50
+                state:
+                  type: string
+                  example: "Maharashtra"
+                  minLength: 2
+                  maxLength: 50
+                postalCode:
+                  type: string
+                  pattern: '^[0-9]{6}$'
+                  example: "400001"
+                country:
+                  type: string
+                  example: "India"
+                  default: "India"
+                isDefault:
+                  type: boolean
+                  example: true
+                  description: Set as default address
+            examples:
+              home_address:
+                summary: Home Address
+                value:
+                  type: "home"
+                  firstName: "John"
+                  lastName: "Doe"
+                  phone: "9876543210"
+                  addressLine1: "123 Main Street"
+                  addressLine2: "Apartment 4B"
+                  city: "Mumbai"
+                  state: "Maharashtra"
+                  postalCode: "400001"
+                  country: "India"
+                  isDefault: true
+      responses:
+        '201':
+          description: ✅ Address added successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                          type:
+                            type: string
+                          firstName:
+                            type: string
+                          lastName:
+                            type: string
+                          phone:
+                            type: string
+                          addressLine1:
+                            type: string
+                          city:
+                            type: string
+                          state:
+                            type: string
+                          postalCode:
+                            type: string
+                          isDefault:
+                            type: boolean
+        '400':
+          description: ❌ Validation error
+        '401':
+          description: ❌ Unauthorized
+        '500':
+          description: ❌ Internal server error
+
+tags:
+  - name: 🔐 Authentication
+    description: |
+      User authentication and profile management
+
+      **Features:**
+      - JWT-based authentication
+      - User registration and login
+      - Profile management
+      - Role-based access control
+
+  - name: 📦 Products
+    description: |
+      Product catalog management
+
+      **Features:**
+      - Product listing with filters
+      - Product details and variants
+      - Category-based organization
+      - Search and sorting
+      - Image management
+
+  - name: 🛒 Shopping Cart
+    description: |
+      Shopping cart operations
+
+      **Features:**
+      - Add/remove items
+      - Update quantities
+      - Real-time pricing
+      - Cart persistence
+
+  - name: 📋 Orders
+    description: |
+      Order management and tracking
+
+      **Features:**
+      - Order creation and checkout
+      - Order history and details
+      - Status tracking
+      - Payment integration
+
+  - name: 💳 Payments
+    description: |
+      Payment processing and verification
+
+      **Features:**
+      - Multiple payment methods
+      - Razorpay integration
+      - Payment verification
+      - Transaction management
+
+  - name: 🏷️ Categories
+    description: |
+      Product category management
+
+      **Features:**
+      - Hierarchical categories
+      - Category filtering
+      - Category-based navigation
+
+  - name: 📍 Addresses
+    description: |
+      User address management
+
+      **Features:**
+      - Multiple addresses per user
+      - Address validation
+      - Default address setting
+      - Address types (home, office, other)

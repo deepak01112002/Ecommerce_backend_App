@@ -52,7 +52,7 @@ router.put('/change-password',
 
 // Admin routes
 // Get all users
-router.get('/', adminMiddleware, userController.getUsers);
+router.get('/', authMiddleware, adminMiddleware, userController.getUsers);
 
 // Get user by ID
 router.get('/:userId', adminMiddleware, userController.getUserById);

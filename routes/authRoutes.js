@@ -5,9 +5,22 @@ const authController = require('../controllers/authController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const { validateRequest } = require('../middlewares/errorHandler');
 
-// Signup route
+// Register route (alias for signup)
+router.post(
+    '/register',
+    [
+        body('firstName').notEmpty().trim().withMessage('First name is required'),
+        body('lastName').notEmpty().trim().withMessage('Last name is required'),
+        body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
+        body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+        body('phone').optional().isMobilePhone().withMessage('Valid phone number is required'),
+        body('role').optional().isIn(['user', 'admin']).withMessage('Role must be user or admin'),
+    ],
+    validateRequest,
+    authController.register
+);
 
-
+// Signup route (legacy)
 router.post(
     '/signup',
     [

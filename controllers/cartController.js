@@ -1,65 +1,102 @@
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const { validationResult } = require('express-validator');
+const { asyncHandler } = require('../middlewares/errorHandler');
 
 // Get user's cart
-exports.getCart = async (req, res) => {
-    try {
-        const userId = req.user ? req.user._id : null;
-        const guestId = req.headers['guest-id'];
-
-        if (!userId && !guestId) {
-            return res.status(400).json({ message: 'User ID or Guest ID required' });
-        }
-
-        const query = userId ? { user: userId } : { guestId: guestId };
-        const cart = await Cart.findOne(query).populate('items.product');
-
-        if (!cart) {
-            return res.json({ items: [], total: 0 });
-        }
-
-        // Calculate total
-        const total = cart.items.reduce((sum, item) => {
-            return sum + (item.product.price * item.quantity);
-        }, 0);
-
-        res.json({
-            items: cart.items,
-            total: total,
-            itemCount: cart.items.reduce((sum, item) => sum + item.quantity, 0)
-        });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+exports.getCart = asyncHandler(async (req, res) => {
+    if (!req.user) {
+        // Return empty cart for guest users
+        return res.success({
+            cart: {
+                _id: null,
+                items: [],
+                summary: {
+                    totalItems: 0,
+                    subtotal: 0,
+                    tax: 0,
+                    shipping: 0,
+                    total: 0
+                }
+            }
+        }, 'Guest cart retrieved');
     }
-};
+
+    const userId = req.user._id;
+
+    let cart = await Cart.findOne({ user: userId }).populate('items.product');
+
+    if (!cart) {
+        cart = await Cart.create({ user: userId, items: [] });
+    }
+
+    // Calculate totals
+    let subtotal = 0;
+    let totalItems = 0;
+
+    const formattedItems = cart.items.map(item => {
+        const itemTotal = item.product.price * item.quantity;
+        subtotal += itemTotal;
+        totalItems += item.quantity;
+
+        return {
+            _id: item._id,
+            product: {
+                _id: item.product._id,
+                name: item.product.name,
+                price: item.product.price,
+                image: item.product.images?.[0] || null
+            },
+            quantity: item.quantity,
+            variant: item.variant,
+            totalPrice: itemTotal
+        };
+    });
+
+    const shipping = subtotal >= 1999 ? 0 : 99;
+    const tax = Math.round((subtotal * 0.18) * 100) / 100;
+    const total = subtotal + shipping + tax;
+
+    res.success({
+        cart: {
+            _id: cart._id,
+            items: formattedItems,
+            summary: {
+                totalItems,
+                subtotal,
+                tax,
+                shipping,
+                total
+            }
+        }
+    }, 'Cart retrieved successfully');
+});
 
 // Add item to cart
-exports.addToCart = async (req, res) => {
+exports.addToCart = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.error('Validation failed', errors.array(), 400);
     }
 
-    try {
-        const { productId, quantity = 1, variant } = req.body;
-        const userId = req.user ? req.user._id : null;
-        const guestId = req.headers['guest-id'];
+    const { productId, quantity = 1, variant } = req.body;
+    const userId = req.user ? req.user._id : null;
+    const guestId = req.headers['guest-id'];
 
-        if (!userId && !guestId) {
-            return res.status(400).json({ message: 'User ID or Guest ID required' });
-        }
+    if (!userId && !guestId) {
+        return res.error('User ID or Guest ID required', [], 400);
+    }
 
-        // Check if product exists and is active
-        const product = await Product.findById(productId);
-        if (!product || !product.isActive) {
-            return res.status(404).json({ message: 'Product not found or inactive' });
-        }
+    // Check if product exists and is active
+    const product = await Product.findById(productId);
+    if (!product || !product.isActive) {
+        return res.error('Product not found or inactive', [], 404);
+    }
 
-        // Check stock availability
-        if (product.stock < quantity) {
-            return res.status(400).json({ message: 'Insufficient stock' });
-        }
+    // Check stock availability
+    if (product.stock < quantity) {
+        return res.error('Insufficient stock', [], 400);
+    }
 
         const query = userId ? { user: userId } : { guestId: guestId };
         let cart = await Cart.findOne(query);
@@ -81,18 +118,14 @@ exports.addToCart = async (req, res) => {
             cart.items.push({ product: productId, quantity, variant });
         }
 
-        cart.updatedAt = new Date();
-        await cart.save();
-        await cart.populate('items.product');
+    cart.updatedAt = new Date();
+    await cart.save();
+    await cart.populate('items.product');
 
-        res.json({
-            message: 'Item added to cart',
-            cart: cart
-        });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
-    }
-};
+    res.success({
+        cart: cart
+    }, 'Item added to cart successfully');
+});
 
 // Update cart item quantity
 exports.updateCartItem = async (req, res) => {
@@ -243,3 +276,80 @@ exports.mergeCart = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
+
+// Update cart item by product ID
+exports.updateCartByProductId = asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.error('Validation failed', errors.array(), 400);
+    }
+
+    const userId = req.user._id;
+    const { productId, quantity } = req.body;
+
+    let cart = await Cart.findOne({ user: userId });
+    if (!cart) {
+        return res.error('Cart not found', [], 404);
+    }
+
+    // Find the cart item with the specified product
+    const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
+
+    if (itemIndex === -1) {
+        return res.error('Product not found in cart', [], 404);
+    }
+
+    if (quantity === 0) {
+        // Remove item if quantity is 0
+        cart.items.splice(itemIndex, 1);
+    } else {
+        // Update quantity
+        cart.items[itemIndex].quantity = quantity;
+    }
+
+    await cart.save();
+
+    // Populate and return updated cart
+    cart = await Cart.findOne({ user: userId }).populate('items.product');
+
+    // Calculate totals
+    let subtotal = 0;
+    let totalItems = 0;
+
+    const formattedItems = cart.items.map(item => {
+        const itemTotal = item.product.price * item.quantity;
+        subtotal += itemTotal;
+        totalItems += item.quantity;
+
+        return {
+            _id: item._id,
+            product: {
+                _id: item.product._id,
+                name: item.product.name,
+                price: item.product.price,
+                image: item.product.images?.[0] || null
+            },
+            quantity: item.quantity,
+            variant: item.variant,
+            totalPrice: itemTotal
+        };
+    });
+
+    const shipping = subtotal >= 1999 ? 0 : 99;
+    const tax = Math.round((subtotal * 0.18) * 100) / 100;
+    const total = subtotal + shipping + tax;
+
+    res.success({
+        cart: {
+            _id: cart._id,
+            items: formattedItems,
+            summary: {
+                totalItems,
+                subtotal,
+                tax,
+                shipping,
+                total
+            }
+        }
+    }, 'Cart updated successfully');
+});

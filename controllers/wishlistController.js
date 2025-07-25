@@ -1,26 +1,38 @@
 const Wishlist = require('../models/Wishlist');
 const Product = require('../models/Product');
 const { validationResult } = require('express-validator');
+const { asyncHandler } = require('../middlewares/errorHandler');
 
 // Get user's wishlist
-exports.getWishlist = async (req, res) => {
-    try {
-        const userId = req.user._id;
-        
-        let wishlist = await Wishlist.findOne({ user: userId }).populate('items.product');
-        
-        if (!wishlist) {
-            wishlist = { items: [] };
-        }
+exports.getWishlist = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
 
-        res.json({
-            items: wishlist.items || [],
-            count: wishlist.items ? wishlist.items.length : 0
-        });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+    let wishlist = await Wishlist.findOne({ user: userId }).populate('items.product');
+
+    if (!wishlist) {
+        wishlist = await Wishlist.create({ user: userId, items: [] });
     }
-};
+
+    const formattedItems = (wishlist.items || []).map(item => ({
+        _id: item._id,
+        product: {
+            _id: item.product._id,
+            name: item.product.name,
+            price: item.product.price,
+            images: item.product.images,
+            rating: item.product.rating,
+            isActive: item.product.isActive
+        },
+        addedAt: item.addedAt
+    }));
+
+    res.success({
+        data: {
+            items: formattedItems,
+            count: formattedItems.length
+        }
+    }, 'Wishlist retrieved successfully');
+});
 
 // Add item to wishlist
 exports.addToWishlist = async (req, res) => {

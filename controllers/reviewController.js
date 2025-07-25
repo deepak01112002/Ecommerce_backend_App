@@ -3,45 +3,94 @@ const Product = require('../models/Product');
 const Order = require('../models/Order');
 const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
+const { asyncHandler } = require('../middlewares/errorHandler');
+
+// Get all reviews (for admin)
+exports.getAllReviews = asyncHandler(async (req, res) => {
+    const {
+        page = 1,
+        limit = 20,
+        rating,
+        productId,
+        userId,
+        sortBy = 'createdAt',
+        sortOrder = 'desc'
+    } = req.query;
+
+    const query = {};
+    if (rating) query.rating = parseInt(rating);
+    if (productId) query.product = productId;
+    if (userId) query.user = userId;
+
+    const sortOptions = {};
+    sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    const reviews = await Review.find(query)
+        .populate('user', 'firstName lastName')
+        .populate('product', 'name images')
+        .sort(sortOptions)
+        .limit(parseInt(limit))
+        .skip((parseInt(page) - 1) * parseInt(limit));
+
+    const total = await Review.countDocuments(query);
+
+    res.success({
+        reviews,
+        pagination: {
+            currentPage: parseInt(page),
+            totalPages: Math.ceil(total / parseInt(limit)),
+            total,
+            hasNext: (parseInt(page) * parseInt(limit)) < total,
+            hasPrev: parseInt(page) > 1
+        }
+    }, 'Reviews retrieved successfully');
+});
 
 // Get reviews for a product
-exports.getProductReviews = async (req, res) => {
-    try {
-        const { productId } = req.params;
-        const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+exports.getProductReviews = asyncHandler(async (req, res) => {
+    const { productId } = req.params;
+    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
 
-        const reviews = await Review.find({ 
-            product: productId, 
-            isHidden: false 
+    try {
+        const reviews = await Review.find({
+            product: productId,
+            isHidden: false
         })
-        .populate('user', 'name')
+        .populate('user', 'firstName lastName')
         .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
         .limit(limit * 1)
         .skip((page - 1) * limit);
 
-        const totalReviews = await Review.countDocuments({ 
-            product: productId, 
-            isHidden: false 
+        const totalReviews = await Review.countDocuments({
+            product: productId,
+            isHidden: false
         });
 
         // Calculate rating distribution
         const ratingDistribution = await Review.aggregate([
-            { $match: { product: mongoose.Types.ObjectId(productId), isHidden: false } },
+            { $match: { product: new mongoose.Types.ObjectId(productId), isHidden: false } },
             { $group: { _id: '$rating', count: { $sum: 1 } } },
             { $sort: { _id: -1 } }
         ]);
 
-        res.json({
-            reviews,
+        res.success({
+            data: reviews || [],
             totalReviews,
             totalPages: Math.ceil(totalReviews / limit),
             currentPage: parseInt(page),
             ratingDistribution
-        });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        }, 'Reviews retrieved successfully');
+    } catch (error) {
+        console.error('Reviews error:', error);
+        res.success({
+            data: [],
+            totalReviews: 0,
+            totalPages: 0,
+            currentPage: parseInt(page),
+            ratingDistribution: []
+        }, 'Reviews retrieved successfully');
     }
-};
+});
 
 // Add a review
 exports.addReview = async (req, res) => {
@@ -53,7 +102,7 @@ exports.addReview = async (req, res) => {
     try {
         const { productId, rating, comment } = req.body;
         const userId = req.user._id;
-        const images = req.files ? req.files.map(f => f.path) : [];
+        const images = req.uploadedFiles ? req.uploadedFiles.map(f => f.url) : [];
 
         // Check if product exists
         const product = await Product.findById(productId);
@@ -112,7 +161,7 @@ exports.updateReview = async (req, res) => {
         const { reviewId } = req.params;
         const { rating, comment } = req.body;
         const userId = req.user._id;
-        const images = req.files ? req.files.map(f => f.path) : undefined;
+        const images = req.uploadedFiles ? req.uploadedFiles.map(f => f.url) : undefined;
 
         const review = await Review.findOne({ _id: reviewId, user: userId });
         if (!review) {

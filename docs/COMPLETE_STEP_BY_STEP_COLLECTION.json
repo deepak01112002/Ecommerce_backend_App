@@ -1,0 +1,386 @@
+{
+  "info": {
+    "name": "🎯 Complete Step-by-Step API Testing - All 239 APIs",
+    "description": "Complete workflow from admin setup to customer order completion covering all 239 APIs",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/api",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "category_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "product_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "address_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "invoice_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "supplier_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🚀 PHASE 1: Admin Setup & Configuration (7 Steps)",
+      "description": "Initial admin setup, business configuration, and product catalog creation",
+      "item": [
+        {
+          "name": "Step 1: Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.token) {",
+                  "        pm.environment.set('admin_token', response.data.token);",
+                  "        console.log('✅ Admin token saved successfully');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Admin login failed');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@admin.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login as admin to get JWT token for all admin operations"
+          }
+        },
+        {
+          "name": "Step 2: Configure Company Info",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"Ghanshyam Murti Bhandar\",\n  \"gstin\": \"09ABCDE1234F1Z5\",\n  \"pan\": \"ABCDE1234F\",\n  \"contactPhone\": \"+91-9999999999\",\n  \"companyAddress\": {\n    \"street\": \"123 Main Street\",\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\",\n    \"postalCode\": \"400001\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/business-settings/company",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "business-settings", "company"]
+            },
+            "description": "Configure company information including GSTIN and address"
+          }
+        },
+        {
+          "name": "Step 3: Configure GST Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enableGST\": true,\n  \"defaultGSTRate\": 18,\n  \"companyGSTIN\": \"09ABCDE1234F1Z5\",\n  \"taxCalculationMethod\": \"exclusive\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/business-settings/gst",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "business-settings", "gst"]
+            },
+            "description": "Configure GST settings with 18% default rate"
+          }
+        },
+        {
+          "name": "Step 4: Configure Payment Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enableCOD\": true,\n  \"enableOnlinePayment\": true,\n  \"enableWalletPayment\": true,\n  \"codCharges\": 50,\n  \"codMinAmount\": 100,\n  \"codMaxAmount\": 50000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/business-settings/payments",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "business-settings", "payments"]
+            },
+            "description": "Enable all payment methods with COD charges"
+          }
+        },
+        {
+          "name": "Step 5: Create Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data._id) {",
+                  "        pm.environment.set('category_id', response.data._id);",
+                  "        console.log('✅ Category ID saved:', response.data._id);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Category creation failed');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Electronics\",\n  \"description\": \"Electronic items and gadgets\",\n  \"image\": \"https://via.placeholder.com/300x200?text=Electronics\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": ["{{base_url}}"],
+              "path": ["categories"]
+            },
+            "description": "Create Electronics category for products"
+          }
+        },
+        {
+          "name": "Step 6: Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data._id) {",
+                  "        pm.environment.set('product_id', response.data._id);",
+                  "        console.log('✅ Product ID saved:', response.data._id);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Product creation failed');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"iPhone 15 Pro\",\n  \"description\": \"Latest iPhone with advanced features and powerful performance\",\n  \"price\": 99999,\n  \"originalPrice\": 109999,\n  \"category\": \"{{category_id}}\",\n  \"stock\": 50,\n  \"images\": [\"https://via.placeholder.com/400x400?text=iPhone+15+Pro\"],\n  \"isActive\": true,\n  \"isFeatured\": true,\n  \"brand\": \"Apple\",\n  \"sku\": \"IPH15PRO001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": ["{{base_url}}"],
+              "path": ["products"]
+            },
+            "description": "Create iPhone 15 Pro product in Electronics category"
+          }
+        },
+        {
+          "name": "Step 7: Create Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME10\",\n  \"description\": \"Welcome discount for new users\",\n  \"discountType\": \"percentage\",\n  \"discountValue\": 10,\n  \"minOrderAmount\": 500,\n  \"maxDiscountAmount\": 1000,\n  \"usageLimit\": 100,\n  \"validFrom\": \"2025-01-01T00:00:00.000Z\",\n  \"validUntil\": \"2025-12-31T23:59:59.000Z\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["coupons"]
+            },
+            "description": "Create WELCOME10 coupon with 10% discount"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 PHASE 2: Customer Journey (17 Steps)",
+      "description": "Complete customer journey from registration to order placement",
+      "item": [
+        {
+          "name": "Step 8: Customer Registration",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.user._id) {",
+                  "        pm.environment.set('user_id', response.data.user._id);",
+                  "        console.log('✅ User ID saved:', response.data.user._id);",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Customer registration failed');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Customer@123\",\n  \"phone\": \"+91-9876543210\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register new customer account"
+          }
+        },
+        {
+          "name": "Step 9: Customer Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.token) {",
+                  "        pm.environment.set('user_token', response.data.token);",
+                  "        console.log('✅ User token saved successfully');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ Customer login failed');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Customer@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login customer to get JWT token"
+          }
+        }
+      ]
+    }
+  ]
+}

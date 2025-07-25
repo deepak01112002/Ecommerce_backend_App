@@ -41,6 +41,16 @@ router.put('/item/:itemId',
     cartController.updateCartItem
 );
 
+// Update cart item by product ID (alternative endpoint)
+router.put('/update',
+    optionalAuth,
+    [
+        body('productId').isMongoId().withMessage('Valid product ID is required'),
+        body('quantity').isInt({ min: 0 }).withMessage('Quantity must be a non-negative integer')
+    ],
+    cartController.updateCartByProductId
+);
+
 // Remove item from cart
 router.delete('/item/:itemId', optionalAuth, cartController.removeFromCart);
 

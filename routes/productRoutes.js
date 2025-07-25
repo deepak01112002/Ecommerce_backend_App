@@ -5,33 +5,8 @@ const productController = require('../controllers/productController');
 const adminMiddleware = require('../middlewares/adminMiddleware');
 const authMiddleware = require('../middlewares/authMiddleware');
 const { validateRequest } = require('../middlewares/errorHandler');
-const multer = require('multer');
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/products/');
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
-    }
-});
-
-const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB limit
-        files: 10 // Maximum 10 files
-    },
-    fileFilter: function (req, file, cb) {
-        if (file.mimetype.startsWith('image/')) {
-            cb(null, true);
-        } else {
-            cb(new Error('Only image files are allowed!'), false);
-        }
-    }
-});
+// Import Contabo upload middleware (replaces multer)
+const { uploadMultipleImages } = require('../middlewares/contaboUpload');
 
 // Optional auth middleware
 const optionalAuth = (req, res, next) => {
@@ -79,8 +54,9 @@ router.get('/:id', optionalAuth, productController.getProductById);
 
 // Admin endpoints
 router.post('/',
+    authMiddleware,
     adminMiddleware,
-    upload.array('images', 10),
+    uploadMultipleImages('images', 10, 'products'),
     [
         body('name').notEmpty().trim().withMessage('Product name is required'),
         body('description').notEmpty().trim().withMessage('Product description is required'),
@@ -96,8 +72,9 @@ router.post('/',
 );
 
 router.put('/:id',
+    authMiddleware,
     adminMiddleware,
-    upload.array('images', 10),
+    uploadMultipleImages('images', 10, 'products'),
     [
         body('name').optional().notEmpty().trim().withMessage('Product name cannot be empty'),
         body('description').optional().notEmpty().trim().withMessage('Product description cannot be empty'),
@@ -112,11 +89,12 @@ router.put('/:id',
     productController.updateProduct
 );
 
-router.delete('/:id', adminMiddleware, productController.deleteProduct);
+router.delete('/:id', authMiddleware, adminMiddleware, productController.deleteProduct);
 
-router.delete('/:id/permanent', adminMiddleware, productController.permanentDeleteProduct);
+router.delete('/:id/permanent', authMiddleware, adminMiddleware, productController.permanentDeleteProduct);
 
 router.patch('/:id/inventory',
+    authMiddleware,
     adminMiddleware,
     [
         body('stock').isInt({ min: 0 }).withMessage('Stock must be a non-negative integer'),

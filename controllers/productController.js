@@ -1,66 +1,179 @@
+const mongoose = require('mongoose');
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Wishlist = require('../models/Wishlist');
 const { asyncHandler, validateRequest } = require('../middlewares/errorHandler');
+const contaboStorage = require('../services/contaboStorage');
 
 // Get all products with advanced filtering and pagination
 exports.getProducts = asyncHandler(async (req, res) => {
     const {
         page = 1,
-        limit = 10,
+        limit = 12,
         category,
+        subcategory,
         search,
         min_price,
         max_price,
-        sort_by = 'created_at',
+        rating,
+        brand,
+        tags,
+        sort_by = 'createdAt',
         sort_order = 'desc',
         is_featured,
+        is_bestseller,
+        is_new_arrival,
         is_on_sale,
-        in_stock = true
+        in_stock = true,
+        availability,
+        include_variants = false
     } = req.query;
 
-    // Build filter object
+    // Build advanced filter object
     const filter = { isActive: true };
 
+    // Category filtering (including subcategories)
     if (category) {
-        filter.category = category;
+        if (subcategory) {
+            // Handle subcategory by ID or slug
+            if (mongoose.Types.ObjectId.isValid(subcategory)) {
+                filter.category = subcategory;
+            } else {
+                const subCategoryDoc = await Category.findOne({ slug: subcategory });
+                if (subCategoryDoc) {
+                    filter.category = subCategoryDoc._id;
+                }
+            }
+        } else {
+            // Handle category by ID or slug
+            let categoryDoc;
+            if (mongoose.Types.ObjectId.isValid(category)) {
+                categoryDoc = await Category.findById(category);
+            } else {
+                categoryDoc = await Category.findOne({ slug: category });
+            }
+
+            if (categoryDoc) {
+                if (categoryDoc.level === 0) {
+                    // Main category - include all subcategories
+                    const subcategories = await Category.find({ parent: categoryDoc._id });
+                    const categoryIds = [categoryDoc._id, ...subcategories.map(sub => sub._id)];
+                    filter.category = { $in: categoryIds };
+                } else {
+                    // Subcategory - filter by this category only
+                    filter.category = categoryDoc._id;
+                }
+            }
+        }
     }
 
+    // Advanced text search with scoring
     if (search) {
-        filter.$or = [
-            { name: { $regex: search, $options: 'i' } },
-            { description: { $regex: search, $options: 'i' } },
-            { tags: { $in: [new RegExp(search, 'i')] } }
-        ];
+        filter.$text = { $search: search };
     }
 
+    // Price range filtering
     if (min_price || max_price) {
         filter.price = {};
         if (min_price) filter.price.$gte = parseFloat(min_price);
         if (max_price) filter.price.$lte = parseFloat(max_price);
     }
 
+    // Rating filtering
+    if (rating) {
+        filter.rating = { $gte: parseFloat(rating) };
+    }
+
+    // Brand filtering
+    if (brand) {
+        filter.brand = { $regex: brand, $options: 'i' };
+    }
+
+    // Tags filtering
+    if (tags) {
+        const tagArray = Array.isArray(tags) ? tags : tags.split(',');
+        filter.tags = { $in: tagArray };
+    }
+
+    // Feature flags
     if (is_featured === 'true') {
         filter.isFeatured = true;
+    }
+
+    if (is_bestseller === 'true') {
+        filter.isBestseller = true;
+    }
+
+    if (is_new_arrival === 'true') {
+        filter.isNewArrival = true;
     }
 
     if (is_on_sale === 'true') {
         filter.$expr = { $lt: ['$price', '$originalPrice'] };
     }
 
+    // Stock and availability filtering
     if (in_stock === 'true') {
         filter.stock = { $gt: 0 };
     }
 
-    // Build sort object
+    if (availability) {
+        filter.availability = availability;
+    }
+
+    // Advanced sorting options
     const sortObj = {};
-    const sortField = sort_by === 'created_at' ? 'createdAt' : sort_by;
-    sortObj[sortField] = sort_order === 'desc' ? -1 : 1;
+    let sortField = sort_by;
+
+    // Map sort fields to actual database fields
+    const sortFieldMap = {
+        'created_at': 'createdAt',
+        'updated_at': 'updatedAt',
+        'name': 'name',
+        'price': 'price',
+        'rating': 'rating',
+        'popularity': 'salesCount',
+        'views': 'viewCount',
+        'newest': 'createdAt',
+        'oldest': 'createdAt',
+        'price_low_high': 'price',
+        'price_high_low': 'price',
+        'rating_high_low': 'rating',
+        'best_selling': 'salesCount'
+    };
+
+    if (sortFieldMap[sort_by]) {
+        sortField = sortFieldMap[sort_by];
+    }
+
+    // Handle special sorting cases
+    if (sort_by === 'price_low_high') {
+        sortObj[sortField] = 1;
+    } else if (sort_by === 'price_high_low' || sort_by === 'rating_high_low' || sort_by === 'best_selling') {
+        sortObj[sortField] = -1;
+    } else if (sort_by === 'oldest') {
+        sortObj[sortField] = 1;
+    } else {
+        sortObj[sortField] = sort_order === 'desc' ? -1 : 1;
+    }
+
+    // Add text search score sorting if search is present
+    if (search) {
+        sortObj.score = { $meta: 'textScore' };
+    }
 
     // Execute query with pagination
     const skip = (page - 1) * limit;
-    const products = await Product.find(filter)
-        .populate('category', 'name slug')
+    let query = Product.find(filter)
+        .populate('category', 'name slug path')
+        .populate('subcategory', 'name slug');
+
+    // Add text search projection if searching
+    if (search) {
+        query = query.select({ score: { $meta: 'textScore' } });
+    }
+
+    const products = await query
         .sort(sortObj)
         .skip(skip)
         .limit(parseInt(limit));
@@ -75,44 +188,105 @@ exports.getProducts = asyncHandler(async (req, res) => {
         userWishlist = wishlist ? wishlist.items.map(item => item.product.toString()) : [];
     }
 
-    // Format products
-    const formattedProducts = products.map(product => ({
-        id: product._id,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        original_price: product.originalPrice,
-        discount_percentage: product.originalPrice ?
-            Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0,
-        images: product.images || [],
-        category: product.category ? {
-            id: product.category._id,
-            name: product.category.name,
-            slug: product.category.slug
-        } : null,
-        rating: product.rating || 0,
-        review_count: product.reviewCount || 0,
-        stock: product.stock,
-        is_in_stock: product.stock > 0,
-        is_featured: product.isFeatured || false,
-        is_favorite: userWishlist.includes(product._id.toString()),
-        variants: product.variants || [],
-        tags: product.tags || [],
-        created_at: product.createdAt,
-        updated_at: product.updatedAt
-    }));
+    // Format products with enhanced data
+    const formattedProducts = products.map(product => {
+        const discountPercentage = product.originalPrice && product.originalPrice > product.price ?
+            Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
 
-    // Pagination info
+        const baseProduct = {
+            _id: product._id,
+            id: product._id,
+            name: product.name,
+            description: product.description,
+            short_description: product.shortDescription,
+            slug: product.slug,
+            sku: product.sku,
+            price: product.price,
+            original_price: product.originalPrice,
+            discount_percentage: discountPercentage,
+            discount_amount: product.originalPrice ? product.originalPrice - product.price : 0,
+            images: product.images || [],
+            category: product.category ? {
+                _id: product.category._id,
+                id: product.category._id,
+                name: product.category.name,
+                slug: product.category.slug,
+                path: product.category.path
+            } : null,
+            brand: product.brand,
+            rating: product.rating || 0,
+            review_count: product.reviewCount || 0,
+            stock: product.stock,
+            min_order_quantity: product.minOrderQuantity,
+            max_order_quantity: product.maxOrderQuantity,
+            availability: product.availability,
+            stock_status: product.stockStatus,
+            is_in_stock: product.stock > 0,
+            is_active: product.isActive,
+            is_featured: product.isFeatured || false,
+            is_bestseller: product.isBestseller || false,
+            is_new_arrival: product.isNewArrival || false,
+            is_favorite: userWishlist.includes(product._id.toString()),
+            view_count: product.viewCount || 0,
+            sales_count: product.salesCount || 0,
+            tags: product.tags || [],
+            created_at: product.createdAt,
+            updated_at: product.updatedAt
+        };
+
+        // Include variants if requested
+        if (include_variants === 'true') {
+            baseProduct.variants = product.variants || [];
+        }
+
+        // Include search score if available
+        if (product.score) {
+            baseProduct.search_score = product.score;
+        }
+
+        return baseProduct;
+    });
+
+    // Enhanced pagination info with filters summary
     const pagination = {
-        currentPage: parseInt(page),
-        perPage: parseInt(limit),
+        current_page: parseInt(page),
+        per_page: parseInt(limit),
         total,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1
+        total_pages: totalPages,
+        has_next_page: page < totalPages,
+        has_prev_page: page > 1
     };
 
-    res.paginated(formattedProducts, pagination, 'Products retrieved successfully');
+    // Add filter summary
+    const appliedFilters = {
+        category: category || null,
+        subcategory: subcategory || null,
+        search: search || null,
+        price_range: (min_price || max_price) ? { min: min_price, max: max_price } : null,
+        rating: rating || null,
+        brand: brand || null,
+        tags: tags ? (Array.isArray(tags) ? tags : tags.split(',')) : null,
+        sort_by,
+        sort_order,
+        features: {
+            featured: is_featured === 'true',
+            bestseller: is_bestseller === 'true',
+            new_arrival: is_new_arrival === 'true',
+            on_sale: is_on_sale === 'true',
+            in_stock: in_stock === 'true'
+        }
+    };
+
+    res.success({
+        products: formattedProducts,
+        pagination,
+        filters: appliedFilters,
+        meta: {
+            total_found: total,
+            showing: formattedProducts.length,
+            search_query: search || null
+        }
+    }, 'Products retrieved successfully');
 });
 
 // Get product by ID with detailed information
@@ -120,15 +294,7 @@ exports.getProductById = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
     const product = await Product.findById(id)
-        .populate('category', 'name slug description')
-        .populate({
-            path: 'reviews',
-            populate: {
-                path: 'user',
-                select: 'name'
-            },
-            options: { limit: 5, sort: { createdAt: -1 } }
-        });
+        .populate('category', 'name slug description');
 
     if (!product) {
         return res.error('Product not found', [], 404);
@@ -155,6 +321,7 @@ exports.getProductById = asyncHandler(async (req, res) => {
     }).limit(4).select('name price originalPrice images rating reviewCount');
 
     const formattedProduct = {
+        _id: product._id,
         id: product._id,
         name: product.name,
         description: product.description,
@@ -164,6 +331,7 @@ exports.getProductById = asyncHandler(async (req, res) => {
             Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0,
         images: product.images || [],
         category: {
+            _id: product.category._id,
             id: product.category._id,
             name: product.category.name,
             slug: product.category.slug,
@@ -173,6 +341,7 @@ exports.getProductById = asyncHandler(async (req, res) => {
         review_count: product.reviewCount || 0,
         stock: product.stock,
         is_in_stock: product.stock > 0,
+        is_active: product.isActive,
         is_featured: product.isFeatured || false,
         is_favorite: isInWishlist,
         variants: product.variants || [],
@@ -184,6 +353,7 @@ exports.getProductById = asyncHandler(async (req, res) => {
         created_at: product.createdAt,
         updated_at: product.updatedAt,
         related_products: relatedProducts.map(p => ({
+            _id: p._id,
             id: p._id,
             name: p.name,
             price: p.price,
@@ -194,7 +364,9 @@ exports.getProductById = asyncHandler(async (req, res) => {
         }))
     };
 
-    res.success(formattedProduct, 'Product details retrieved successfully');
+    res.success({
+        product: formattedProduct
+    }, 'Product details retrieved successfully');
 });
 
 // Create product (admin)
@@ -222,8 +394,8 @@ exports.createProduct = asyncHandler(async (req, res) => {
         return res.error('Category not found', [], 404);
     }
 
-    // Handle image uploads
-    const images = req.files ? req.files.map(f => f.path) : [];
+    // Handle image uploads from Contabo storage
+    const images = req.uploadedFiles ? req.uploadedFiles.map(f => f.url) : [];
 
     // Parse variants if provided as string
     let parsedVariants = [];
@@ -279,12 +451,14 @@ exports.createProduct = asyncHandler(async (req, res) => {
     await product.populate('category', 'name slug');
 
     const formattedProduct = {
+        _id: product._id,
         id: product._id,
         name: product.name,
         description: product.description,
         price: product.price,
         original_price: product.originalPrice,
         category: {
+            _id: product.category._id,
             id: product.category._id,
             name: product.category.name,
             slug: product.category.slug
@@ -354,10 +528,49 @@ exports.updateProduct = asyncHandler(async (req, res) => {
     if (returnPolicy) updateData.returnPolicy = returnPolicy;
     if (warranty) updateData.warranty = warranty;
 
-    // Handle file uploads
-    if (req.files && req.files.length > 0) {
-        updateData.images = req.files.map(f => f.path);
+    // Handle image updates and deletions
+    let updatedImages = [...existingProduct.images]; // Start with existing images
+
+    // Handle image deletions
+    if (req.body.imagesToDelete) {
+        try {
+            const imagesToDelete = typeof req.body.imagesToDelete === 'string'
+                ? JSON.parse(req.body.imagesToDelete)
+                : req.body.imagesToDelete;
+
+            if (Array.isArray(imagesToDelete)) {
+                // Remove deleted images from the array
+                updatedImages = updatedImages.filter(img => !imagesToDelete.includes(img));
+
+                // Delete images from S3 storage
+                for (const imageUrl of imagesToDelete) {
+                    try {
+                        // Extract S3 key from URL for deletion
+                        const s3Key = contaboStorage.extractS3KeyFromUrl(imageUrl);
+                        if (s3Key) {
+                            await contaboStorage.deleteFile(s3Key);
+                            console.log(`Deleted image from S3: ${s3Key}`);
+                        }
+                    } catch (deleteError) {
+                        console.error(`Failed to delete image from S3: ${imageUrl}`, deleteError);
+                        // Continue with other deletions even if one fails
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error processing imagesToDelete:', error);
+            return res.error('Invalid imagesToDelete format', [], 400);
+        }
     }
+
+    // Handle new file uploads from Contabo storage
+    if (req.uploadedFiles && req.uploadedFiles.length > 0) {
+        const newImageUrls = req.uploadedFiles.map(f => f.url);
+        updatedImages = [...updatedImages, ...newImageUrls]; // Add new images to existing ones
+    }
+
+    // Update images array
+    updateData.images = updatedImages;
 
     // Parse JSON fields
     try {
@@ -387,12 +600,14 @@ exports.updateProduct = asyncHandler(async (req, res) => {
     ).populate('category', 'name slug');
 
     const formattedProduct = {
+        _id: product._id,
         id: product._id,
         name: product.name,
         description: product.description,
         price: product.price,
         original_price: product.originalPrice,
         category: {
+            _id: product.category._id,
             id: product.category._id,
             name: product.category.name,
             slug: product.category.slug
@@ -565,4 +780,102 @@ exports.searchProducts = asyncHandler(async (req, res) => {
     };
 
     res.paginated(formattedProducts, pagination, `Search results for "${q}"`);
+});
+
+// Get product recommendations
+exports.getProductRecommendations = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { limit = 6, type = 'related' } = req.query;
+
+    const product = await Product.findById(id).populate('category');
+    if (!product) {
+        return res.error('Product not found', [], 404);
+    }
+
+    let recommendations = [];
+
+    switch (type) {
+        case 'related':
+            // Products from same category with similar price range
+            recommendations = await Product.find({
+                _id: { $ne: id },
+                category: product.category._id,
+                price: {
+                    $gte: product.price * 0.7,
+                    $lte: product.price * 1.3
+                },
+                isActive: true
+            })
+            .limit(parseInt(limit))
+            .sort({ rating: -1, salesCount: -1 });
+            break;
+
+        case 'similar':
+            // Products with similar tags
+            recommendations = await Product.find({
+                _id: { $ne: id },
+                tags: { $in: product.tags },
+                isActive: true
+            })
+            .limit(parseInt(limit))
+            .sort({ rating: -1 });
+            break;
+
+        case 'frequently_bought':
+            // Most popular products from same category
+            recommendations = await Product.find({
+                _id: { $ne: id },
+                category: product.category._id,
+                isActive: true
+            })
+            .limit(parseInt(limit))
+            .sort({ salesCount: -1, rating: -1 });
+            break;
+
+        case 'trending':
+            // Trending products (high view count, recent)
+            const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+            recommendations = await Product.find({
+                _id: { $ne: id },
+                createdAt: { $gte: thirtyDaysAgo },
+                isActive: true
+            })
+            .limit(parseInt(limit))
+            .sort({ viewCount: -1, salesCount: -1 });
+            break;
+
+        default:
+            recommendations = await Product.find({
+                _id: { $ne: id },
+                category: product.category._id,
+                isActive: true
+            })
+            .limit(parseInt(limit))
+            .sort({ rating: -1 });
+    }
+
+    const formattedRecommendations = recommendations.map(rec => ({
+        _id: rec._id,
+        id: rec._id,
+        name: rec.name,
+        slug: rec.slug,
+        price: rec.price,
+        original_price: rec.originalPrice,
+        discount_percentage: rec.calculatedDiscountPercentage,
+        image: rec.images && rec.images.length > 0 ? rec.images[0] : null,
+        rating: rec.rating || 0,
+        review_count: rec.reviewCount || 0,
+        is_featured: rec.isFeatured,
+        is_bestseller: rec.isBestseller
+    }));
+
+    res.success({
+        recommendations: formattedRecommendations,
+        type,
+        based_on: {
+            product_id: product._id,
+            product_name: product.name,
+            category: product.category.name
+        }
+    }, `${type} recommendations retrieved successfully`);
 });

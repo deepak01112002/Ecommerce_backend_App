@@ -1,0 +1,610 @@
+{
+	"info": {
+		"_postman_id": "contabo-storage-apis",
+		"name": "🚀 Contabo Storage APIs - Complete Collection",
+		"description": "Complete API collection for testing Contabo Object Storage integration with ecommerce backend. All APIs are tested and working with pure Contabo implementation (no multer).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{admin_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4N2JkOTdkMzU0ODQ3NDk0NmRkOWY2YyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzEyNDExNywiZXhwIjoxNzUzNzI4OTE3fQ.6RiSm_fw_XV9VmTZoQam4IDVPhBJCBFDvNlFi35ok8o",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "Admin Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@ghanshyambhandar.com\",\n    \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📤 Upload Management APIs",
+			"item": [
+				{
+					"name": "Get Storage Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/upload/storage-info",
+							"host": ["{{base_url}}"],
+							"path": ["api", "upload", "storage-info"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test Contabo Connection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/upload/test-connection",
+							"host": ["{{base_url}}"],
+							"path": ["api", "upload", "test-connection"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Single Image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": [],
+									"description": "Select an image file to upload"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/upload/single",
+							"host": ["{{base_url}}"],
+							"path": ["api", "upload", "single"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Multiple Images",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"description": "Select multiple image files"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"description": "Select another image file"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/upload/multiple",
+							"host": ["{{base_url}}"],
+							"path": ["api", "upload", "multiple"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Product Images",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"description": "Main product image"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"description": "Gallery image 1"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"description": "Gallery image 2"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/upload/product-images",
+							"host": ["{{base_url}}"],
+							"path": ["api", "upload", "product-images"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Category Image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": [],
+									"description": "Category image file"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/upload/category-image",
+							"host": ["{{base_url}}"],
+							"path": ["api", "upload", "category-image"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Single Image",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"imageUrl\": \"https://eu-central-1.contabostorage.com/ecommerce-images/uploads/1703123456789-a1b2c3d4-test-image.jpg\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/upload/delete",
+							"host": ["{{base_url}}"],
+							"path": ["api", "upload", "delete"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Multiple Images",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"imageUrls\": [\n        \"https://eu-central-1.contabostorage.com/ecommerce-images/uploads/image1.jpg\",\n        \"https://eu-central-1.contabostorage.com/ecommerce-images/uploads/image2.jpg\",\n        \"https://eu-central-1.contabostorage.com/ecommerce-images/uploads/image3.jpg\"\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/upload/delete-multiple",
+							"host": ["{{base_url}}"],
+							"path": ["api", "upload", "delete-multiple"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📦 Product APIs (with Contabo Images)",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products?page=1&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product with Images",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Test Product with Contabo Images",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "This is a test product created with Contabo image storage",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "999",
+									"type": "text"
+								},
+								{
+									"key": "originalPrice",
+									"value": "1299",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "687bd97d35484749466dd96d",
+									"type": "text",
+									"description": "Replace with valid category ID"
+								},
+								{
+									"key": "stock",
+									"value": "50",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"description": "Main product image"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"description": "Gallery image 1"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"description": "Gallery image 2"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product with Images",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Updated Product Name",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Updated product description with new Contabo images",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "1199",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"description": "New product image"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/{{product_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "{{product_id}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📂 Category APIs (with Contabo Images)",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category with Image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Test Category with Contabo Image",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "This is a test category created with Contabo image storage",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": [],
+									"description": "Category image file"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categories",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category with Image",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Updated Category Name",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Updated category description with new Contabo image",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": [],
+									"description": "New category image"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categories/{{category_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categories", "{{category_id}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "⭐ Review APIs (with Contabo Images)",
+			"item": [
+				{
+					"name": "Get All Reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reviews",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reviews"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Review with Images",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "productId",
+									"value": "687bd97d35484749466dd96d",
+									"type": "text",
+									"description": "Replace with valid product ID"
+								},
+								{
+									"key": "rating",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "comment",
+									"value": "Excellent product! Very satisfied with the quality. These images show the actual product.",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"description": "Review image 1"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"description": "Review image 2"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/reviews",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reviews"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Review with Images",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "rating",
+									"value": "4",
+									"type": "text"
+								},
+								{
+									"key": "comment",
+									"value": "Updated review comment with new images from Contabo storage",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [],
+									"description": "Updated review image"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/reviews/{{review_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reviews", "{{review_id}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🔍 Testing & Verification",
+			"item": [
+				{
+					"name": "Check Server Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Admin Dashboard Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/admin/dashboard/stats",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "dashboard", "stats"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Product Images",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/{{product_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "products", "{{product_id}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -19,7 +19,7 @@ const optionalAuth = (req, res, next) => {
 
 // Create order from cart
 router.post('/',
-    optionalAuth,
+    authMiddleware,
     [
         body('address.street').notEmpty().withMessage('Street address is required'),
         body('address.city').notEmpty().withMessage('City is required'),
@@ -32,23 +32,21 @@ router.post('/',
 );
 
 // Get user's orders (authenticated users only)
+router.get('/', authMiddleware, orderController.getUserOrders);
 router.get('/my-orders', authMiddleware, orderController.getUserOrders);
 
 // Get single order details
 router.get('/:orderId', optionalAuth, orderController.getOrderById);
 
+// Track order
+router.get('/:orderId/track', optionalAuth, orderController.trackOrder);
+
 // Cancel order (authenticated users only)
 router.patch('/:orderId/cancel', authMiddleware, orderController.cancelOrder);
 
-// Admin endpoints
-router.get('/', adminMiddleware, orderController.getOrders);
-router.put('/:id',
-    adminMiddleware,
-    [
-        body('status').isIn(['pending', 'paid', 'shipped', 'delivered', 'cancelled'])
-            .withMessage('Invalid order status')
-    ],
-    orderController.updateOrder
-);
+// Admin routes (protected)
+router.get('/admin/all', authMiddleware, adminMiddleware, orderController.getOrders);
+router.put('/admin/:id', authMiddleware, adminMiddleware, orderController.updateOrder);
+router.patch('/admin/:id/status', authMiddleware, adminMiddleware, orderController.updateOrderStatus);
 
 module.exports = router;

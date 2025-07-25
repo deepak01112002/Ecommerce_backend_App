@@ -23,9 +23,12 @@ router.post('/apply',
     couponController.applyCoupon
 );
 
+// Get active coupons (public)
+router.get('/', couponController.getActiveCoupons);
+
 // Admin routes
 // Get all coupons (admin only)
-router.get('/', adminMiddleware, couponController.getCoupons);
+router.get('/admin', adminMiddleware, couponController.getCoupons);
 
 // Create coupon (admin only)
 router.post('/',

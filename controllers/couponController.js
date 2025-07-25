@@ -1,6 +1,19 @@
 const Coupon = require('../models/Coupon');
 const { asyncHandler, validateRequest } = require('../middlewares/errorHandler');
 
+// Get active coupons (public)
+exports.getActiveCoupons = asyncHandler(async (req, res) => {
+    const coupons = await Coupon.find({
+        isActive: true,
+        validFrom: { $lte: new Date() },
+        validUntil: { $gte: new Date() }
+    }).select('code description discountType discountValue minOrderAmount maxDiscountAmount validUntil');
+
+    res.success({
+        data: coupons
+    }, 'Active coupons retrieved successfully');
+});
+
 // Get all coupons (admin)
 exports.getCoupons = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, isActive } = req.query;
@@ -60,33 +73,43 @@ exports.getCoupons = asyncHandler(async (req, res) => {
 });
 
 // Create coupon (admin)
-exports.createCoupon = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
+exports.createCoupon = asyncHandler(async (req, res) => {
+    const couponData = {
+        ...req.body,
+        createdBy: req.user._id
+    };
 
-    try {
-        const couponData = {
-            ...req.body,
-            createdBy: req.user._id
-        };
+    const coupon = new Coupon(couponData);
+    await coupon.save();
+    await coupon.populate('createdBy', 'name email');
 
-        const coupon = new Coupon(couponData);
-        await coupon.save();
-        await coupon.populate('createdBy', 'name email');
+    const formattedCoupon = {
+        id: coupon._id,
+        code: coupon.code,
+        description: coupon.description,
+        discountType: coupon.discountType,
+        discountValue: coupon.discountValue,
+        minimumOrderAmount: coupon.minimumOrderAmount,
+        maximumDiscountAmount: coupon.maximumDiscountAmount,
+        validFrom: coupon.validFrom,
+        validUntil: coupon.validUntil,
+        usageLimit: coupon.usageLimit,
+        usedCount: coupon.usedCount,
+        userUsageLimit: coupon.userUsageLimit,
+        isActive: coupon.isActive,
+        createdBy: coupon.createdBy ? {
+            id: coupon.createdBy._id,
+            name: coupon.createdBy.name,
+            email: coupon.createdBy.email
+        } : null,
+        applicableCategories: coupon.applicableCategories || [],
+        applicableProducts: coupon.applicableProducts || [],
+        createdAt: coupon.createdAt,
+        updatedAt: coupon.updatedAt
+    };
 
-        res.status(201).json({
-            message: 'Coupon created successfully',
-            coupon
-        });
-    } catch (err) {
-        if (err.code === 11000) {
-            return res.status(400).json({ message: 'Coupon code already exists' });
-        }
-        res.status(500).json({ message: 'Server error', error: err.message });
-    }
-};
+    res.success(formattedCoupon, 'Coupon created successfully', 201);
+});
 
 // Update coupon (admin)
 exports.updateCoupon = async (req, res) => {
@@ -199,17 +222,19 @@ exports.validateCoupon = async (req, res) => {
         // Ensure discount doesn't exceed order amount
         discountAmount = Math.min(discountAmount, orderAmount);
 
-        res.json({
-            valid: true,
-            coupon: {
-                code: coupon.code,
-                description: coupon.description,
-                discountType: coupon.discountType,
-                discountValue: coupon.discountValue
-            },
-            discountAmount,
-            finalAmount: orderAmount - discountAmount
-        });
+        res.success({
+            data: {
+                isValid: true,
+                coupon: {
+                    code: coupon.code,
+                    description: coupon.description,
+                    discountType: coupon.discountType,
+                    discountValue: coupon.discountValue
+                },
+                discountAmount,
+                finalAmount: orderAmount - discountAmount
+            }
+        }, 'Coupon validated successfully');
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
     }

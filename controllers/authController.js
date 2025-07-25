@@ -9,7 +9,50 @@ function generateToken(user) {
     });
 }
 
-// Signup
+// Register (modern format)
+exports.register = asyncHandler(async (req, res) => {
+    const { firstName, lastName, email, password, phone, role = 'user' } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        return res.error('Email already exists', [], 409);
+    }
+
+    // Create new user
+    const user = new User({
+        firstName,
+        lastName,
+        email,
+        password,
+        phone,
+        role
+    });
+    await user.save();
+
+    // Generate token
+    const token = generateToken(user);
+
+    // Return success response
+    res.success({
+        user: {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            fullName: user.fullName,
+            email: user.email,
+            phone: user.phone,
+            role: user.role,
+            isActive: user.isActive,
+            emailVerified: user.emailVerified,
+            createdAt: user.createdAt
+        },
+        token,
+        expires_in: '7d'
+    }, 'User registered successfully', 201);
+});
+
+// Signup (legacy format)
 exports.signup = asyncHandler(async (req, res) => {
     const { name, email, password, role = 'user' } = req.body;
 
@@ -19,8 +62,13 @@ exports.signup = asyncHandler(async (req, res) => {
         return res.error('Email already exists', [], 409);
     }
 
+    // Split name into firstName and lastName
+    const nameParts = name.trim().split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(' ') || '';
+
     // Create new user
-    const user = new User({ name, email, password, role });
+    const user = new User({ firstName, lastName, email, password, role });
     await user.save();
 
     // Generate token
@@ -30,7 +78,7 @@ exports.signup = asyncHandler(async (req, res) => {
     res.success({
         user: {
             id: user._id,
-            name: user.name,
+            name: user.fullName,
             email: user.email,
             role: user.role,
             created_at: user.createdAt
@@ -66,11 +114,21 @@ exports.login = asyncHandler(async (req, res) => {
     // Return success response
     res.success({
         user: {
-            id: user._id,
-            name: user.name,
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            fullName: user.fullName,
             email: user.email,
+            phone: user.phone,
             role: user.role,
-            last_login: user.lastLogin
+            isActive: user.isActive,
+            emailVerified: user.emailVerified,
+            loyaltyPoints: user.loyaltyPoints,
+            totalSpent: user.totalSpent,
+            orderCount: user.orderCount,
+            customerTier: user.customerTier,
+            lastLogin: user.lastLogin,
+            createdAt: user.createdAt
         },
         token,
         expires_in: '7d'
@@ -79,16 +137,26 @@ exports.login = asyncHandler(async (req, res) => {
 
 // Get current user profile
 exports.profile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id).populate('addresses');
+    const user = await User.findById(req.user._id);
+
+    // Get user addresses from separate Address model
+    const Address = require('../models/Address');
+    const addresses = await Address.find({ user: req.user._id, isActive: true });
 
     res.success({
         user: {
             id: user._id,
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
             name: user.name,
+            fullName: user.fullName,
             email: user.email,
             phone: user.phone,
             role: user.role,
-            addresses: user.addresses,
+            isActive: user.isActive,
+            emailVerified: user.emailVerified,
+            addresses: addresses,
             created_at: user.createdAt,
             updated_at: user.updatedAt,
             last_login: user.lastLogin

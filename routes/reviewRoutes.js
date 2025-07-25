@@ -4,9 +4,11 @@ const router = express.Router();
 const reviewController = require('../controllers/reviewController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const adminMiddleware = require('../middlewares/adminMiddleware');
-const multer = require('multer');
+// Import Contabo upload middleware (replaces multer)
+const { uploadMultipleImages } = require('../middlewares/contaboUpload');
 
-const upload = multer({ dest: 'uploads/reviews/' });
+// Get all reviews (for admin)
+router.get('/', authMiddleware, reviewController.getAllReviews);
 
 // Get reviews for a product (public)
 router.get('/product/:productId', reviewController.getProductReviews);
@@ -14,7 +16,7 @@ router.get('/product/:productId', reviewController.getProductReviews);
 // Add a review (authenticated users only)
 router.post('/',
     authMiddleware,
-    upload.array('images', 5), // Allow up to 5 images
+    uploadMultipleImages('images', 5, 'reviews'), // Allow up to 5 images
     [
         body('productId').isMongoId().withMessage('Valid product ID is required'),
         body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
@@ -26,7 +28,7 @@ router.post('/',
 // Update a review (authenticated users only)
 router.put('/:reviewId',
     authMiddleware,
-    upload.array('images', 5),
+    uploadMultipleImages('images', 5, 'reviews'),
     [
         body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
         body('comment').optional().isLength({ max: 1000 }).withMessage('Comment must be less than 1000 characters')
