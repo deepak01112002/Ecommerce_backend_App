@@ -455,30 +455,52 @@ exports.getOrders = asyncHandler(async (req, res) => {
     const totalOrders = await Order.countDocuments(filter);
     const totalPages = Math.ceil(totalOrders / limit);
 
-    // Format orders for response
+    // Format orders for response with null safety
     const formattedOrders = orders.map(order => ({
+        _id: order._id,
         id: order._id,
         orderNumber: order.orderNumber || order._id.toString().slice(-8).toUpperCase(),
         user: order.user ? {
+            _id: order.user._id,
             id: order.user._id,
-            name: order.user.name,
-            email: order.user.email
-        } : null,
-        items: order.items.map(item => ({
-            product: {
+            name: order.user.name || 'Unknown User',
+            email: order.user.email || 'No email',
+            firstName: order.user.firstName || 'Unknown',
+            lastName: order.user.lastName || 'User'
+        } : {
+            _id: null,
+            id: null,
+            name: 'Guest User',
+            email: 'No email',
+            firstName: 'Guest',
+            lastName: 'User'
+        },
+        items: order.items ? order.items.map(item => ({
+            product: item.product ? {
+                _id: item.product._id,
                 id: item.product._id,
-                name: item.product.name
+                name: item.product.name || 'Unknown Product'
+            } : {
+                _id: null,
+                id: null,
+                name: 'Deleted Product'
             },
-            quantity: item.quantity,
-            price: item.price,
-            subtotal: item.quantity * item.price
-        })),
-        total: order.total,
-        status: order.status,
-        paymentStatus: order.paymentStatus,
-        paymentMethod: order.paymentInfo?.method,
-        shippingAddress: order.shippingAddress,
+            quantity: item.quantity || 0,
+            price: item.price || 0,
+            subtotal: (item.quantity || 0) * (item.price || 0)
+        })) : [],
+        total: order.total || 0,
+        pricing: {
+            total: order.total || 0,
+            subtotal: order.subtotal || order.total || 0
+        },
+        status: order.status || 'pending',
+        paymentStatus: order.paymentStatus || 'pending',
+        paymentMethod: order.paymentInfo?.method || 'unknown',
+        shippingAddress: order.shippingAddress || {},
         createdAt: order.createdAt,
+        orderDate: order.createdAt,
+        created_at: order.createdAt,
         updatedAt: order.updatedAt
     }));
 
