@@ -121,9 +121,10 @@ app.use(responseMiddleware);
 // Serve static files (uploaded images)
 app.use('/uploads', express.static('uploads'));
 
-const limiter = rateLimit({
+// Different rate limits for different types of requests
+const generalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: process.env.NODE_ENV === 'production' ? 100 : 1000, // Higher limit for development
+    max: process.env.NODE_ENV === 'production' ? 500 : 2000, // Much higher limit for general requests
     standardHeaders: true,
     legacyHeaders: false,
     message: {
@@ -137,7 +138,75 @@ const limiter = rateLimit({
         }
     }
 });
-app.use(limiter);
+
+// Stricter rate limit for authentication endpoints with admin bypass
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: process.env.NODE_ENV === 'production' ? 200 : 500, // Increased limits
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => {
+        // Skip rate limiting for admin panel domains
+        const origin = req.get('origin') || req.get('referer') || '';
+        const adminDomains = [
+            'admin.ghanshyammurtibhandar.com',
+            'localhost:3001',
+            'localhost:3000',
+            '127.0.0.1'
+        ];
+
+        return adminDomains.some(domain => origin.includes(domain));
+    },
+    message: {
+        success: false,
+        message: 'Too many authentication attempts from this IP, please try again later.',
+        data: null,
+        errors: [],
+        meta: {
+            timestamp: new Date().toISOString(),
+            request_id: 'auth-rate-limit-exceeded'
+        }
+    }
+});
+
+// Very lenient rate limit for admin panel with IP whitelisting
+const adminLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: process.env.NODE_ENV === 'production' ? 1000 : 5000, // Very high limit for admin operations
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => {
+        // Skip rate limiting for admin panel domains and localhost
+        const origin = req.get('origin') || req.get('referer') || '';
+        const adminDomains = [
+            'admin.ghanshyammurtibhandar.com',
+            'localhost:3001',
+            'localhost:3000',
+            '127.0.0.1'
+        ];
+
+        return adminDomains.some(domain => origin.includes(domain));
+    },
+    message: {
+        success: false,
+        message: 'Too many admin requests from this IP, please try again later.',
+        data: null,
+        errors: [],
+        meta: {
+            timestamp: new Date().toISOString(),
+            request_id: 'admin-rate-limit-exceeded'
+        }
+    }
+});
+
+// Apply general rate limiting to all routes
+app.use(generalLimiter);
+
+// Apply stricter rate limiting to auth routes
+app.use('/api/auth', authLimiter);
+
+// Apply lenient rate limiting to admin routes
+app.use('/api/admin', adminLimiter);
 
 // Import all routes
 const authRoutes = require('./routes/authRoutes');
