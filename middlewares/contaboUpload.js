@@ -11,14 +11,14 @@ const validateImageFile = (mimetype, size) => {
         'image/webp'
     ];
 
-    const maxSize = 5 * 1024 * 1024; // 5MB limit
+    const maxSize = 25 * 1024 * 1024; // 25MB limit (increased for admin uploads)
 
     if (!allowedMimeTypes.includes(mimetype)) {
         throw new Error('Only image files are allowed (JPEG, PNG, GIF, WebP)');
     }
 
     if (size > maxSize) {
-        throw new Error('File size must be less than 5MB');
+        throw new Error('File size must be less than 25MB');
     }
 
     return true;
@@ -32,7 +32,15 @@ const parseMultipartData = (req, res) => {
         const files = [];
         const fields = {};
 
-        const bb = busboy({ headers: req.headers });
+        const bb = busboy({
+            headers: req.headers,
+            limits: {
+                fileSize: 25 * 1024 * 1024, // 25MB file size limit
+                files: 10, // Maximum 10 files
+                fieldSize: 1024 * 1024, // 1MB field size limit
+                fields: 50 // Maximum 50 fields
+            }
+        });
 
         bb.on('file', (fieldname, file, info) => {
             // Handle different busboy versions

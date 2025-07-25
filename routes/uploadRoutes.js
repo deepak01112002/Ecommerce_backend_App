@@ -236,7 +236,7 @@ router.get('/storage-info',
             bucket: process.env.CONTABO_BUCKET_NAME,
             region: process.env.CONTABO_REGION,
             baseUrl: process.env.CONTABO_BASE_URL,
-            maxFileSize: '5MB',
+            maxFileSize: '25MB',
             allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
             folders: {
                 products: 'products/',
