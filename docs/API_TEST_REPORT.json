@@ -1,0 +1,179 @@
+{
+  "timestamp": "2025-07-26T14:33:13.775Z",
+  "servers": {
+    "localhost": {
+      "url": "http://localhost:8080/api",
+      "results": {
+        "passed": 14,
+        "failed": 1,
+        "total": 15,
+        "details": [
+          {
+            "name": "Admin Login",
+            "status": "PASS",
+            "category": "🔐 Authentication"
+          },
+          {
+            "name": "User Registration",
+            "status": "PASS",
+            "category": "🔐 Authentication"
+          },
+          {
+            "name": "User Login",
+            "status": "PASS",
+            "category": "🔐 Authentication"
+          },
+          {
+            "name": "Get All Categories",
+            "status": "PASS",
+            "category": "📂 Categories"
+          },
+          {
+            "name": "Get Category Tree",
+            "status": "PASS",
+            "category": "📂 Categories"
+          },
+          {
+            "name": "Get All Products",
+            "status": "PASS",
+            "category": "🛍️ Products"
+          },
+          {
+            "name": "Get Single Product",
+            "status": "PASS",
+            "category": "🛍️ Products"
+          },
+          {
+            "name": "Search Products",
+            "status": "PASS",
+            "category": "🛍️ Products"
+          },
+          {
+            "name": "Get Cart",
+            "status": "PASS",
+            "category": "🛒 Cart & Orders"
+          },
+          {
+            "name": "Get User Orders",
+            "status": "PASS",
+            "category": "🛒 Cart & Orders"
+          },
+          {
+            "name": "Get Wishlist",
+            "status": "PASS",
+            "category": "💝 Wishlist & Reviews"
+          },
+          {
+            "name": "Get Product Reviews",
+            "status": "PASS",
+            "category": "💝 Wishlist & Reviews"
+          },
+          {
+            "name": "Get Available Coupons",
+            "status": "PASS",
+            "category": "🎟️ Coupons & Payments"
+          },
+          {
+            "name": "Validate Coupon",
+            "status": "PASS",
+            "category": "🎟️ Coupons & Payments"
+          },
+          {
+            "name": "Get Dashboard Stats",
+            "status": "FAIL",
+            "category": "📊 Admin Dashboard"
+          }
+        ]
+      }
+    },
+    "production": {
+      "url": "https://server.ghanshyammurtibhandar.com/api",
+      "results": {
+        "passed": 14,
+        "failed": 1,
+        "total": 15,
+        "details": [
+          {
+            "name": "Admin Login",
+            "status": "PASS",
+            "category": "🔐 Authentication"
+          },
+          {
+            "name": "User Registration",
+            "status": "PASS",
+            "category": "🔐 Authentication"
+          },
+          {
+            "name": "User Login",
+            "status": "PASS",
+            "category": "🔐 Authentication"
+          },
+          {
+            "name": "Get All Categories",
+            "status": "PASS",
+            "category": "📂 Categories"
+          },
+          {
+            "name": "Get Category Tree",
+            "status": "PASS",
+            "category": "📂 Categories"
+          },
+          {
+            "name": "Get All Products",
+            "status": "PASS",
+            "category": "🛍️ Products"
+          },
+          {
+            "name": "Get Single Product",
+            "status": "PASS",
+            "category": "🛍️ Products"
+          },
+          {
+            "name": "Search Products",
+            "status": "PASS",
+            "category": "🛍️ Products"
+          },
+          {
+            "name": "Get Cart",
+            "status": "PASS",
+            "category": "🛒 Cart & Orders"
+          },
+          {
+            "name": "Get User Orders",
+            "status": "PASS",
+            "category": "🛒 Cart & Orders"
+          },
+          {
+            "name": "Get Wishlist",
+            "status": "PASS",
+            "category": "💝 Wishlist & Reviews"
+          },
+          {
+            "name": "Get Product Reviews",
+            "status": "PASS",
+            "category": "💝 Wishlist & Reviews"
+          },
+          {
+            "name": "Get Available Coupons",
+            "status": "PASS",
+            "category": "🎟️ Coupons & Payments"
+          },
+          {
+            "name": "Validate Coupon",
+            "status": "PASS",
+            "category": "🎟️ Coupons & Payments"
+          },
+          {
+            "name": "Get Dashboard Stats",
+            "status": "FAIL",
+            "category": "📊 Admin Dashboard"
+          }
+        ]
+      }
+    }
+  },
+  "summary": {
+    "localhost_success_rate": "93.3",
+    "production_success_rate": "93.3"
+  }
+}

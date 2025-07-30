@@ -230,6 +230,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
             view_count: product.viewCount || 0,
             sales_count: product.salesCount || 0,
             tags: product.tags || [],
+            specifications: product.specifications || {},
             created_at: product.createdAt,
             updated_at: product.updatedAt
         };
@@ -385,7 +386,18 @@ exports.createProduct = asyncHandler(async (req, res) => {
         specifications,
         shippingInfo,
         returnPolicy,
-        warranty
+        warranty,
+        // Individual specification fields
+        material,
+        height,
+        width,
+        weight,
+        finish,
+        origin,
+        color,
+        style,
+        occasion,
+        careInstructions
     } = req.body;
 
     // Validate category exists
@@ -416,7 +428,22 @@ exports.createProduct = asyncHandler(async (req, res) => {
         if (specifications) {
             parsedSpecifications = typeof specifications === 'string' ?
                 JSON.parse(specifications) : specifications;
+        } else {
+            // Build specifications from individual fields
+            parsedSpecifications = {
+                material: material || '',
+                height: height || '',
+                width: width || '',
+                weight: weight || '',
+                finish: finish || '',
+                origin: origin || '',
+                color: color || '',
+                style: style || '',
+                occasion: occasion || '',
+                careInstructions: careInstructions || ''
+            };
         }
+
         if (shippingInfo) {
             parsedShippingInfo = typeof shippingInfo === 'string' ?
                 JSON.parse(shippingInfo) : shippingInfo;
@@ -497,7 +524,18 @@ exports.updateProduct = asyncHandler(async (req, res) => {
         specifications,
         shippingInfo,
         returnPolicy,
-        warranty
+        warranty,
+        // Individual specification fields
+        material,
+        height,
+        width,
+        weight,
+        finish,
+        origin,
+        color,
+        style,
+        occasion,
+        careInstructions
     } = req.body;
 
     // Check if product exists
@@ -583,6 +621,20 @@ exports.updateProduct = asyncHandler(async (req, res) => {
         if (specifications) {
             updateData.specifications = typeof specifications === 'string' ?
                 JSON.parse(specifications) : specifications;
+        } else if (material || height || width || weight || finish || origin || color || style || occasion || careInstructions) {
+            // Build specifications from individual fields
+            updateData.specifications = {
+                material: material || '',
+                height: height || '',
+                width: width || '',
+                weight: weight || '',
+                finish: finish || '',
+                origin: origin || '',
+                color: color || '',
+                style: style || '',
+                occasion: occasion || '',
+                careInstructions: careInstructions || ''
+            };
         }
         if (shippingInfo) {
             updateData.shippingInfo = typeof shippingInfo === 'string' ?
@@ -721,7 +773,8 @@ exports.getFeaturedProducts = asyncHandler(async (req, res) => {
         category: product.category ? {
             id: product.category._id,
             name: product.category.name
-        } : null
+        } : null,
+        specifications: product.specifications || {}
     }));
 
     res.success(formattedProducts, 'Featured products retrieved successfully');
@@ -767,7 +820,8 @@ exports.searchProducts = asyncHandler(async (req, res) => {
         category: product.category ? {
             id: product.category._id,
             name: product.category.name
-        } : null
+        } : null,
+        specifications: product.specifications || {}
     }));
 
     const pagination = {

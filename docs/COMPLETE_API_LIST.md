@@ -194,7 +194,7 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 ---
 
 
-## 🛒 Shopping Cart (6 endpoints)
+## 🛒 Shopping Cart (7 endpoints)
 **Base Path:** `/api/cart`
 
 ### 1. GET /api/cart/
@@ -212,17 +212,22 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 - **Endpoint:** `/api/cart/item/:itemId`
 - **Description:** Update cart data
 
-### 4. DELETE /api/cart/item/:itemId
+### 4. PUT /api/cart/update
+- **Method:** PUT
+- **Endpoint:** `/api/cart/update`
+- **Description:** Update cart data
+
+### 5. DELETE /api/cart/item/:itemId
 - **Method:** DELETE
 - **Endpoint:** `/api/cart/item/:itemId`
 - **Description:** Remove cart data
 
-### 5. DELETE /api/cart/clear
+### 6. DELETE /api/cart/clear
 - **Method:** DELETE
 - **Endpoint:** `/api/cart/clear`
 - **Description:** Remove cart data
 
-### 6. POST /api/cart/merge
+### 7. POST /api/cart/merge
 - **Method:** POST
 - **Endpoint:** `/api/cart/merge`
 - **Description:** Create cart data
@@ -307,7 +312,7 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 ---
 
 
-## 📋 Order Management (8 endpoints)
+## 📋 Order Management (9 endpoints)
 **Base Path:** `/api/orders`
 
 ### 1. POST /api/orders/
@@ -330,22 +335,27 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 - **Endpoint:** `/api/orders/:orderId`
 - **Description:** Retrieve orders data
 
-### 5. PATCH /api/orders/:orderId/cancel
+### 5. GET /api/orders/:orderId/track
+- **Method:** GET
+- **Endpoint:** `/api/orders/:orderId/track`
+- **Description:** Retrieve orders data
+
+### 6. PATCH /api/orders/:orderId/cancel
 - **Method:** PATCH
 - **Endpoint:** `/api/orders/:orderId/cancel`
 - **Description:** Modify orders data
 
-### 6. GET /api/orders/admin/all
+### 7. GET /api/orders/admin/all
 - **Method:** GET
 - **Endpoint:** `/api/orders/admin/all`
 - **Description:** Retrieve orders data
 
-### 7. PUT /api/orders/admin/:id
+### 8. PUT /api/orders/admin/:id
 - **Method:** PUT
 - **Endpoint:** `/api/orders/admin/:id`
 - **Description:** Update orders data
 
-### 8. PATCH /api/orders/admin/:id/status
+### 9. PATCH /api/orders/admin/:id/status
 - **Method:** PATCH
 - **Endpoint:** `/api/orders/admin/:id/status`
 - **Description:** Modify orders data
@@ -394,35 +404,55 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 ---
 
 
-## 💳 Payment Processing (6 endpoints)
+## 💳 Payment Processing (10 endpoints)
 **Base Path:** `/api/payments`
 
-### 1. POST /api/payments/create-order
+### 1. GET /api/payments/methods
+- **Method:** GET
+- **Endpoint:** `/api/payments/methods`
+- **Description:** Retrieve payments data
+
+### 2. POST /api/payments/create
+- **Method:** POST
+- **Endpoint:** `/api/payments/create`
+- **Description:** Create new item
+
+### 3. POST /api/payments/create-order
 - **Method:** POST
 - **Endpoint:** `/api/payments/create-order`
 - **Description:** Create payments data
 
-### 2. POST /api/payments/verify
+### 4. POST /api/payments/verify
 - **Method:** POST
 - **Endpoint:** `/api/payments/verify`
 - **Description:** Create payments data
 
-### 3. POST /api/payments/failure
+### 5. POST /api/payments/failure
 - **Method:** POST
 - **Endpoint:** `/api/payments/failure`
 - **Description:** Create payments data
 
-### 4. GET /api/payments/details/:paymentId
+### 6. POST /api/payments/confirm-cod
+- **Method:** POST
+- **Endpoint:** `/api/payments/confirm-cod`
+- **Description:** Create payments data
+
+### 7. GET /api/payments/details/:paymentId
 - **Method:** GET
 - **Endpoint:** `/api/payments/details/:paymentId`
 - **Description:** Retrieve payments data
 
-### 5. POST /api/payments/refund
+### 8. GET /api/payments/:paymentId
+- **Method:** GET
+- **Endpoint:** `/api/payments/:paymentId`
+- **Description:** Retrieve payments data
+
+### 9. POST /api/payments/refund
 - **Method:** POST
 - **Endpoint:** `/api/payments/refund`
 - **Description:** Create payments data
 
-### 6. POST /api/payments/webhook
+### 10. POST /api/payments/webhook
 - **Method:** POST
 - **Endpoint:** `/api/payments/webhook`
 - **Description:** Create payments data
@@ -1381,7 +1411,7 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 
 ## 📊 SUMMARY
 
-- **Total API Endpoints:** 239
+- **Total API Endpoints:** 245
 - **Base Paths:** 29
 - **Categories:** 29
 
@@ -1410,4 +1440,4 @@ Get token from: `POST /api/auth/login`
 ---
 
 *Generated automatically from route files*
-*Last updated: 2025-07-21T16:28:07.446Z*
+*Last updated: 2025-07-26T14:30:14.515Z*
