@@ -1,0 +1,271 @@
+{
+  "timestamp": "2025-07-26T14:35:38.662Z",
+  "summary": {
+    "localhost": {
+      "passed": 15,
+      "failed": 0,
+      "total": 15,
+      "successRate": "100.0"
+    },
+    "production": {
+      "passed": 15,
+      "failed": 0,
+      "total": 15,
+      "successRate": "100.0"
+    }
+  },
+  "details": {
+    "localhost": [
+      {
+        "endpoint": "Admin Login",
+        "method": "POST",
+        "path": "/auth/login",
+        "status": "PASS",
+        "responseTime": 433,
+        "error": null
+      },
+      {
+        "endpoint": "User Login",
+        "method": "POST",
+        "path": "/auth/login",
+        "status": "PASS",
+        "responseTime": 396,
+        "error": null
+      },
+      {
+        "endpoint": "Get Profile",
+        "method": "GET",
+        "path": "/auth/profile",
+        "status": "PASS",
+        "responseTime": 138,
+        "error": null
+      },
+      {
+        "endpoint": "Get All Categories",
+        "method": "GET",
+        "path": "/categories",
+        "status": "PASS",
+        "responseTime": 158,
+        "error": null
+      },
+      {
+        "endpoint": "Get Category Tree",
+        "method": "GET",
+        "path": "/categories/tree",
+        "status": "PASS",
+        "responseTime": 288,
+        "error": null
+      },
+      {
+        "endpoint": "Get Products",
+        "method": "GET",
+        "path": "/products?limit=5",
+        "status": "PASS",
+        "responseTime": 141,
+        "error": null
+      },
+      {
+        "endpoint": "Get Featured Products",
+        "method": "GET",
+        "path": "/products/featured",
+        "status": "PASS",
+        "responseTime": 46,
+        "error": null
+      },
+      {
+        "endpoint": "Search Products",
+        "method": "GET",
+        "path": "/products?search=ganesha",
+        "status": "PASS",
+        "responseTime": 125,
+        "error": null
+      },
+      {
+        "endpoint": "Get Cart",
+        "method": "GET",
+        "path": "/cart",
+        "status": "PASS",
+        "responseTime": 113,
+        "error": null
+      },
+      {
+        "endpoint": "Get Orders",
+        "method": "GET",
+        "path": "/orders",
+        "status": "PASS",
+        "responseTime": 137,
+        "error": null
+      },
+      {
+        "endpoint": "Get Wishlist",
+        "method": "GET",
+        "path": "/wishlist",
+        "status": "PASS",
+        "responseTime": 82,
+        "error": null
+      },
+      {
+        "endpoint": "Get Coupons",
+        "method": "GET",
+        "path": "/coupons",
+        "status": "PASS",
+        "responseTime": 61,
+        "error": null
+      },
+      {
+        "endpoint": "Validate Coupon",
+        "method": "POST",
+        "path": "/coupons/validate",
+        "status": "PASS",
+        "responseTime": 108,
+        "error": null
+      },
+      {
+        "endpoint": "Health Check",
+        "method": "GET",
+        "path": "/../health",
+        "status": "PASS",
+        "responseTime": 3,
+        "error": null
+      },
+      {
+        "endpoint": "API Documentation",
+        "method": "GET",
+        "path": "/documentation",
+        "status": "PASS",
+        "responseTime": 6,
+        "error": null
+      }
+    ],
+    "production": [
+      {
+        "endpoint": "Admin Login",
+        "method": "POST",
+        "path": "/auth/login",
+        "status": "PASS",
+        "responseTime": 657,
+        "error": null
+      },
+      {
+        "endpoint": "User Login",
+        "method": "POST",
+        "path": "/auth/login",
+        "status": "PASS",
+        "responseTime": 480,
+        "error": null
+      },
+      {
+        "endpoint": "Get Profile",
+        "method": "GET",
+        "path": "/auth/profile",
+        "status": "PASS",
+        "responseTime": 62,
+        "error": null
+      },
+      {
+        "endpoint": "Get All Categories",
+        "method": "GET",
+        "path": "/categories",
+        "status": "PASS",
+        "responseTime": 63,
+        "error": null
+      },
+      {
+        "endpoint": "Get Category Tree",
+        "method": "GET",
+        "path": "/categories/tree",
+        "status": "PASS",
+        "responseTime": 72,
+        "error": null
+      },
+      {
+        "endpoint": "Get Products",
+        "method": "GET",
+        "path": "/products?limit=5",
+        "status": "PASS",
+        "responseTime": 69,
+        "error": null
+      },
+      {
+        "endpoint": "Get Featured Products",
+        "method": "GET",
+        "path": "/products/featured",
+        "status": "PASS",
+        "responseTime": 49,
+        "error": null
+      },
+      {
+        "endpoint": "Search Products",
+        "method": "GET",
+        "path": "/products?search=ganesha",
+        "status": "PASS",
+        "responseTime": 64,
+        "error": null
+      },
+      {
+        "endpoint": "Get Cart",
+        "method": "GET",
+        "path": "/cart",
+        "status": "PASS",
+        "responseTime": 55,
+        "error": null
+      },
+      {
+        "endpoint": "Get Orders",
+        "method": "GET",
+        "path": "/orders",
+        "status": "PASS",
+        "responseTime": 66,
+        "error": null
+      },
+      {
+        "endpoint": "Get Wishlist",
+        "method": "GET",
+        "path": "/wishlist",
+        "status": "PASS",
+        "responseTime": 58,
+        "error": null
+      },
+      {
+        "endpoint": "Get Coupons",
+        "method": "GET",
+        "path": "/coupons",
+        "status": "PASS",
+        "responseTime": 54,
+        "error": null
+      },
+      {
+        "endpoint": "Validate Coupon",
+        "method": "POST",
+        "path": "/coupons/validate",
+        "status": "PASS",
+        "responseTime": 50,
+        "error": null
+      },
+      {
+        "endpoint": "Health Check",
+        "method": "GET",
+        "path": "/../health",
+        "status": "PASS",
+        "responseTime": 46,
+        "error": null
+      },
+      {
+        "endpoint": "API Documentation",
+        "method": "GET",
+        "path": "/documentation",
+        "status": "PASS",
+        "responseTime": 47,
+        "error": null
+      }
+    ]
+  },
+  "recommendations": [
+    "✅ Both servers are operational and responding correctly",
+    "✅ Authentication system is working properly",
+    "✅ Core ecommerce functionality is available",
+    "✅ API documentation is accessible",
+    "🔧 Consider implementing additional monitoring for production",
+    "📊 Set up automated health checks for critical endpoints"
+  ]
+}
