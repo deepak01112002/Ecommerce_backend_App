@@ -767,7 +767,7 @@ exports.getFeaturedProducts = asyncHandler(async (req, res) => {
         original_price: product.originalPrice,
         discount_percentage: product.originalPrice ?
             Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0,
-        image: product.images && product.images.length > 0 ? product.images[0] : null,
+        image: product.images && product.images.length > 0 ? product.images : null,
         rating: product.rating || 0,
         review_count: product.reviewCount || 0,
         category: product.category ? {
