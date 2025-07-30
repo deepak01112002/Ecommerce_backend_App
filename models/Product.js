@@ -152,8 +152,17 @@ const productSchema = new mongoose.Schema({
         default: 'taxable'
     },
     specifications: {
-        type: mongoose.Schema.Types.Mixed,
-        default: {}
+        material: { type: String, trim: true },
+        height: { type: String, trim: true },
+        width: { type: String, trim: true },
+        weight: { type: String, trim: true },
+        finish: { type: String, trim: true },
+        origin: { type: String, trim: true },
+        color: { type: String, trim: true },
+        style: { type: String, trim: true },
+        occasion: { type: String, trim: true },
+        careInstructions: { type: String, trim: true },
+        additionalInfo: { type: mongoose.Schema.Types.Mixed, default: {} }
     },
     shippingInfo: {
         weight: { type: Number, min: 0 },
