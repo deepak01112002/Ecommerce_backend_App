@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test QR Codes - Ghanshyam Murti Bhandar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .qr-container {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .qr-code {
+            max-width: 300px;
+            height: auto;
+            margin: 20px 0;
+        }
+        .qr-data {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        h1 { color: #333; text-align: center; }
+        h2 { color: #666; }
+        .scanner-link {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        .scanner-link:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Test QR Codes for Scanning</h1>
+    
+    <div class="instructions">
+        <h3>📱 How to Test:</h3>
+        <ol>
+            <li>Open your phone's camera app</li>
+            <li>Point camera at QR code below</li>
+            <li>Copy the JSON data that appears</li>
+            <li>Go to the QR scanner page</li>
+            <li>Paste the data and click "Scan QR Code"</li>
+        </ol>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <a href="http://localhost:8080/api/qr-codes/scanner" class="scanner-link" target="_blank">
+                🔍 Open QR Scanner (Public)
+            </a>
+            <a href="http://localhost:3000" class="scanner-link" target="_blank">
+                🔧 Open Admin Panel
+            </a>
+        </div>
+    </div>
+
+    <div class="qr-container">
+        <h2>📦 Product QR Code</h2>
+        <p><strong>Product:</strong> Ganesh Murti (ID: 688bbdec362503685d9225b2)</p>
+        <img src="data:image/png;base64,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" alt="Product QR Code" class="qr-code">
+        <div class="qr-data">
+            <strong>QR Data:</strong><br>
+            {"type":"product","id":"688bbdec362503685d9225b2"}
+        </div>
+        <p><em>Scan this with your phone camera to get product details</em></p>
+    </div>
+
+    <div class="qr-container">
+        <h2>📁 Category QR Code</h2>
+        <p><strong>Category:</strong> Metal (ID: 68845d5a10cebc7513135c10)</p>
+        <img src="data:image/png;base64,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" alt="Category QR Code" class="qr-code">
+        <div class="qr-data">
+            <strong>QR Data:</strong><br>
+            {"type":"category","id":"68845d5a10cebc7513135c10"}
+        </div>
+        <p><em>Scan this with your phone camera to get category details</em></p>
+    </div>
+
+    <div class="instructions">
+        <h3>🎯 Expected Results:</h3>
+        <ul>
+            <li><strong>Public Scanner:</strong> Customer-friendly product/category information</li>
+            <li><strong>Admin Panel:</strong> Comprehensive analytics and management data</li>
+        </ul>
+    </div>
+</body>
+</html>

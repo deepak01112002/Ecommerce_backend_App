@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Scanner - Ghanshyam Murti Bhandar</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-qrcode text-3xl"></i>
+                    <div>
+                        <h1 class="text-2xl font-bold">QR Scanner</h1>
+                        <p class="text-blue-100">Ghanshyam Murti Bhandar</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-blue-100">Scan QR codes to view</p>
+                    <p class="text-sm text-blue-100">product details</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Scanner Section -->
+        <div class="max-w-md mx-auto mb-8">
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <div class="text-center mb-6">
+                    <i class="fas fa-camera text-4xl text-blue-600 mb-3"></i>
+                    <h2 class="text-xl font-semibold text-gray-800">Scan QR Code</h2>
+                    <p class="text-gray-600 text-sm mt-2">Paste the QR code data below to view product details</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">QR Code Data</label>
+                        <textarea 
+                            id="qrInput" 
+                            placeholder='Paste QR code data here (e.g., {"type":"product","id":"123"})'
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                            rows="3"
+                        ></textarea>
+                    </div>
+                    
+                    <button 
+                        id="scanBtn" 
+                        class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 font-medium"
+                    >
+                        <i class="fas fa-search mr-2"></i>
+                        Scan QR Code
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden">
+            <div id="productResult" class="hidden">
+                <!-- Product details will be inserted here -->
+            </div>
+            
+            <div id="categoryResult" class="hidden">
+                <!-- Category details will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="hidden text-center py-8">
+            <i class="fas fa-spinner fa-spin text-3xl text-blue-600"></i>
+            <p class="text-gray-600 mt-2">Scanning QR code...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <span id="errorText"></span>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 Ghanshyam Murti Bhandar. All rights reserved.</p>
+            <p class="text-gray-400 text-sm mt-1">Scan QR codes to explore our products</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = window.location.origin;
+        
+        document.getElementById('scanBtn').addEventListener('click', async () => {
+            const qrData = document.getElementById('qrInput').value.trim();
+            
+            if (!qrData) {
+                showError('Please enter QR code data');
+                return;
+            }
+            
+            showLoading(true);
+            hideError();
+            hideResults();
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/qr-codes/scan`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        qrData: qrData,
+                        viewType: 'public' 
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (result.type === 'product') {
+                        displayProduct(result.data);
+                    } else if (result.type === 'category') {
+                        displayCategory(result.data);
+                    }
+                } else {
+                    showError(result.message || 'Failed to scan QR code');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Network error. Please try again.');
+            } finally {
+                showLoading(false);
+            }
+        });
+        
+        function displayProduct(product) {
+            const productHtml = `
+                <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                    <div class="md:flex">
+                        <div class="md:w-1/2">
+                            <div class="relative">
+                                <img src="${product.images[0] || '/placeholder.jpg'}" 
+                                     alt="${product.name}" 
+                                     class="w-full h-64 md:h-full object-cover">
+                                ${product.discountPercentage ? `
+                                    <div class="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 rounded-full text-sm font-bold">
+                                        ${product.discountPercentage}% OFF
+                                    </div>
+                                ` : ''}
+                                ${product.isFeatured ? `
+                                    <div class="absolute top-4 right-4 bg-yellow-500 text-white px-2 py-1 rounded-full text-sm">
+                                        <i class="fas fa-star"></i> Featured
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div class="md:w-1/2 p-6">
+                            <div class="mb-4">
+                                <h2 class="text-2xl font-bold text-gray-800 mb-2">${product.name}</h2>
+                                <p class="text-gray-600">${product.description}</p>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    ${product.discountPrice ? `
+                                        <span class="text-2xl font-bold text-green-600">₹${product.discountPrice}</span>
+                                        <span class="text-lg text-gray-500 line-through">₹${product.price}</span>
+                                    ` : `
+                                        <span class="text-2xl font-bold text-gray-800">₹${product.price}</span>
+                                    `}
+                                </div>
+                                ${product.customerInfo.savings ? `
+                                    <p class="text-green-600 font-medium">${product.customerInfo.savings}</p>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center space-x-4 text-sm text-gray-600">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                        ${product.rating} (${product.reviewCount} reviews)
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="fas fa-box mr-1"></i>
+                                        ${product.availability}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h3 class="font-semibold text-gray-800 mb-2">Category</h3>
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                    ${product.category.name}
+                                </span>
+                            </div>
+                            
+                            <div class="space-y-2 text-sm text-gray-600">
+                                <p><i class="fas fa-truck mr-2 text-green-600"></i>${product.customerInfo.deliveryInfo}</p>
+                                <p><i class="fas fa-undo mr-2 text-blue-600"></i>${product.customerInfo.returnPolicy}</p>
+                                <p><i class="fas fa-shield-alt mr-2 text-purple-600"></i>${product.customerInfo.warranty}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${product.specifications && Object.keys(product.specifications).length > 0 ? `
+                        <div class="border-t p-6">
+                            <h3 class="font-semibold text-gray-800 mb-3">Specifications</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                ${Object.entries(product.specifications).map(([key, value]) => 
+                                    value ? `<div class="text-sm"><span class="font-medium text-gray-700">${key}:</span> <span class="text-gray-600">${value}</span></div>` : ''
+                                ).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            document.getElementById('productResult').innerHTML = productHtml;
+            document.getElementById('productResult').classList.remove('hidden');
+            document.getElementById('resultsSection').classList.remove('hidden');
+        }
+        
+        function displayCategory(category) {
+            const categoryHtml = `
+                <div class="bg-white rounded-lg card-shadow overflow-hidden mb-6">
+                    <div class="relative">
+                        <img src="${category.image || '/placeholder.jpg'}" 
+                             alt="${category.name}" 
+                             class="w-full h-48 object-cover">
+                        <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                            <div class="text-center text-white">
+                                <h2 class="text-3xl font-bold mb-2">${category.name}</h2>
+                                <p class="text-lg">${category.description}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-blue-600">${category.productsCount}</div>
+                                <div class="text-gray-600">Total Products</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-yellow-600">${category.featuredProductsCount}</div>
+                                <div class="text-gray-600">Featured Items</div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center space-y-2 text-sm text-gray-600">
+                            <p><i class="fas fa-tags mr-2 text-green-600"></i>${category.customerInfo.offers}</p>
+                            <p><i class="fas fa-shopping-bag mr-2 text-blue-600"></i>${category.customerInfo.shopNow}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                ${category.sampleProducts.length > 0 ? `
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Featured Products</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${category.sampleProducts.map(product => `
+                                <div class="bg-white rounded-lg card-shadow overflow-hidden product-card">
+                                    <div class="relative">
+                                        <img src="${product.images[0] || '/placeholder.jpg'}" 
+                                             alt="${product.name}" 
+                                             class="w-full h-48 object-cover">
+                                        ${product.savings ? `
+                                            <div class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs">
+                                                ${product.savings}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                    <div class="p-4">
+                                        <h4 class="font-semibold text-gray-800 mb-2">${product.name}</h4>
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                ${product.discountPrice ? `
+                                                    <span class="text-lg font-bold text-green-600">₹${product.discountPrice}</span>
+                                                    <span class="text-sm text-gray-500 line-through ml-1">₹${product.price}</span>
+                                                ` : `
+                                                    <span class="text-lg font-bold text-gray-800">₹${product.price}</span>
+                                                `}
+                                            </div>
+                                            <div class="flex items-center text-sm text-gray-600">
+                                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                                ${product.rating}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('categoryResult').innerHTML = categoryHtml;
+            document.getElementById('categoryResult').classList.remove('hidden');
+            document.getElementById('resultsSection').classList.remove('hidden');
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('hidden', !show);
+        }
+        
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.remove('hidden');
+        }
+        
+        function hideError() {
+            document.getElementById('errorMessage').classList.add('hidden');
+        }
+        
+        function hideResults() {
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('productResult').classList.add('hidden');
+            document.getElementById('categoryResult').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

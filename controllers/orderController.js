@@ -422,6 +422,8 @@ exports.trackOrder = asyncHandler(async (req, res) => {
 
 // List all orders (admin)
 exports.getOrders = asyncHandler(async (req, res) => {
+    console.log('�🚨🚨 ADMIN ORDERS ENDPOINT HIT 🚨🚨🚨');
+    console.log('�🔍 getOrders called with params:', req.query);
     const { page = 1, limit = 10, status, search } = req.query;
 
     const filter = {};
@@ -431,8 +433,8 @@ exports.getOrders = asyncHandler(async (req, res) => {
     if (search) {
         // Search by order ID or user email/name
         orders = await Order.find(filter)
-            .populate('user', 'name email')
-            .populate('items.product', 'name')
+            .populate('user', 'name email firstName lastName')
+            .populate('items.product', 'name price')
             .sort({ createdAt: -1 });
 
         // Filter by search term
@@ -445,8 +447,8 @@ exports.getOrders = asyncHandler(async (req, res) => {
         );
     } else {
         orders = await Order.find(filter)
-            .populate('user', 'name email')
-            .populate('items.product', 'name')
+            .populate('user', 'name email firstName lastName')
+            .populate('items.product', 'name price')
             .sort({ createdAt: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit);
@@ -475,24 +477,103 @@ exports.getOrders = asyncHandler(async (req, res) => {
             firstName: 'Guest',
             lastName: 'User'
         },
-        items: order.items ? order.items.map(item => ({
-            product: item.product ? {
-                _id: item.product._id,
-                id: item.product._id,
-                name: item.product.name || 'Unknown Product'
-            } : {
-                _id: null,
-                id: null,
-                name: 'Deleted Product'
-            },
-            quantity: item.quantity || 0,
-            price: item.price || 0,
-            subtotal: (item.quantity || 0) * (item.price || 0)
-        })) : [],
-        total: order.total || 0,
+        items: order.items ? order.items.map(item => {
+            // Handle undefined/null values for pricing
+            const unitPrice = (item.unitPrice !== undefined && item.unitPrice !== null) ? item.unitPrice :
+                             (item.price !== undefined && item.price !== null) ? item.price :
+                             (item.product && item.product.price !== undefined && item.product.price !== null) ? item.product.price : 0;
+            const quantity = (item.quantity !== undefined && item.quantity !== null) ? item.quantity : 0;
+            const totalPrice = (item.totalPrice !== undefined && item.totalPrice !== null) ? item.totalPrice :
+                              (quantity * unitPrice);
+
+            console.log('🔍 Processing item:', {
+                productId: item.product?._id,
+                productPrice: item.product?.price,
+                itemUnitPrice: item.unitPrice,
+                itemTotalPrice: item.totalPrice,
+                calculatedUnitPrice: unitPrice,
+                calculatedTotalPrice: totalPrice
+            });
+
+            return {
+                product: item.product ? {
+                    _id: item.product._id,
+                    id: item.product._id,
+                    name: item.product.name || 'Unknown Product'
+                } : {
+                    _id: null,
+                    id: null,
+                    name: 'Deleted Product'
+                },
+                quantity: quantity,
+                price: unitPrice,
+                subtotal: totalPrice
+            };
+        }) : [],
+        total: (() => {
+            // Try order pricing first
+            if (order.pricing?.total !== undefined && order.pricing?.total !== null) return order.pricing.total;
+            if (order.total !== undefined && order.total !== null) return order.total;
+
+            // Calculate from items if pricing is missing
+            let calculatedTotal = 0;
+            if (order.items && order.items.length > 0) {
+                calculatedTotal = order.items.reduce((sum, item) => {
+                    const unitPrice = (item.unitPrice !== undefined && item.unitPrice !== null) ? item.unitPrice :
+                                     (item.price !== undefined && item.price !== null) ? item.price :
+                                     (item.product && item.product.price !== undefined && item.product.price !== null) ? item.product.price : 0;
+                    const quantity = (item.quantity !== undefined && item.quantity !== null) ? item.quantity : 0;
+                    const itemTotal = (item.totalPrice !== undefined && item.totalPrice !== null) ? item.totalPrice : (quantity * unitPrice);
+                    return sum + itemTotal;
+                }, 0);
+            }
+            return calculatedTotal;
+        })(),
         pricing: {
-            total: order.total || 0,
-            subtotal: order.subtotal || order.total || 0
+            total: (() => {
+                // Try order pricing first
+                if (order.pricing?.total !== undefined && order.pricing?.total !== null) return order.pricing.total;
+                if (order.total !== undefined && order.total !== null) return order.total;
+
+                // Calculate from items if pricing is missing
+                let calculatedTotal = 0;
+                if (order.items && order.items.length > 0) {
+                    calculatedTotal = order.items.reduce((sum, item) => {
+                        const unitPrice = (item.unitPrice !== undefined && item.unitPrice !== null) ? item.unitPrice :
+                                         (item.price !== undefined && item.price !== null) ? item.price :
+                                         (item.product && item.product.price !== undefined && item.product.price !== null) ? item.product.price : 0;
+                        const quantity = (item.quantity !== undefined && item.quantity !== null) ? item.quantity : 0;
+                        const itemTotal = (item.totalPrice !== undefined && item.totalPrice !== null) ? item.totalPrice : (quantity * unitPrice);
+                        return sum + itemTotal;
+                    }, 0);
+                }
+                return calculatedTotal;
+            })(),
+            subtotal: (() => {
+                // Try order pricing first
+                if (order.pricing?.subtotal !== undefined && order.pricing?.subtotal !== null) return order.pricing.subtotal;
+                if (order.subtotal !== undefined && order.subtotal !== null) return order.subtotal;
+                if (order.pricing?.total !== undefined && order.pricing?.total !== null) return order.pricing.total;
+                if (order.total !== undefined && order.total !== null) return order.total;
+
+                // Calculate from items if pricing is missing
+                let calculatedSubtotal = 0;
+                if (order.items && order.items.length > 0) {
+                    calculatedSubtotal = order.items.reduce((sum, item) => {
+                        const unitPrice = (item.unitPrice !== undefined && item.unitPrice !== null) ? item.unitPrice :
+                                         (item.price !== undefined && item.price !== null) ? item.price :
+                                         (item.product && item.product.price !== undefined && item.product.price !== null) ? item.product.price : 0;
+                        const quantity = (item.quantity !== undefined && item.quantity !== null) ? item.quantity : 0;
+                        const itemTotal = (item.totalPrice !== undefined && item.totalPrice !== null) ? item.totalPrice : (quantity * unitPrice);
+                        return sum + itemTotal;
+                    }, 0);
+                }
+                return calculatedSubtotal;
+            })(),
+            tax: order.pricing?.tax || 0,
+            taxRate: order.pricing?.taxRate || 0,
+            shipping: order.pricing?.shipping || 0,
+            discount: order.pricing?.discount || 0
         },
         status: order.status || 'pending',
         paymentStatus: order.paymentStatus || 'pending',
@@ -521,6 +602,11 @@ exports.getOrders = asyncHandler(async (req, res) => {
             total: totalOrders,
             hasNext: page < totalPages,
             hasPrev: page > 1
+        },
+        debug: {
+            controller: 'orderController.getOrders',
+            timestamp: new Date().toISOString(),
+            fixApplied: true
         }
     }, 'Orders retrieved successfully');
 });
