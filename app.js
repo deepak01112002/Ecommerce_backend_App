@@ -115,6 +115,32 @@ app.use(helmet({
 }));
 app.use(morgan('combined'));
 
+// Global debug middleware
+app.use((req, res, next) => {
+    if (req.url.includes('/orders/admin/all')) {
+        console.log('🚨🚨🚨 GLOBAL: REQUEST TO', req.method, req.url);
+    }
+    next();
+});
+
+// Order total fix middleware
+app.use('/api/orders/admin/all', (req, res, next) => {
+    const originalJson = res.json;
+    res.json = function(data) {
+        // Fix order totals if they are 0 but pricing.total has a value
+        if (data && data.data && data.data.orders && Array.isArray(data.data.orders)) {
+            data.data.orders = data.data.orders.map(order => {
+                if (order.total === 0 && order.pricing && order.pricing.total > 0) {
+                    order.total = order.pricing.total;
+                }
+                return order;
+            });
+        }
+        return originalJson.call(this, data);
+    };
+    next();
+});
+
 // Custom middleware
 app.use(responseMiddleware);
 
@@ -238,6 +264,7 @@ const adminDashboardRoutes = require('./routes/adminDashboardRoutes');
 const adminManagementRoutes = require('./routes/adminManagementRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const businessSettingsRoutes = require('./routes/businessSettingsRoutes');
+const qrCodeRoutes = require('./routes/qrCodeRoutes');
 
 // Production Routes (Enhanced & Comprehensive)
 const productionRoutes = require('./routes/productionRoutes');
@@ -250,6 +277,11 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/reviews', reviewRoutes);
+// Debug middleware for orders
+app.use('/api/orders', (req, res, next) => {
+    console.log('🚨🚨🚨 REQUEST TO /api/orders:', req.method, req.url);
+    next();
+});
 app.use('/api/orders', orderRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/payments', paymentRoutes);
@@ -272,6 +304,7 @@ app.use('/api/admin/dashboard', adminDashboardRoutes);
 app.use('/api/admin/management', adminManagementRoutes);
 app.use('/api/admin/business-settings', businessSettingsRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/qr-codes', qrCodeRoutes);
 
 // Contabo Storage Routes
 const contaboRoutes = require('./routes/contaboRoutes');

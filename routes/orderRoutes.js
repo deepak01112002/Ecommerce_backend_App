@@ -5,6 +5,8 @@ const orderController = require('../controllers/orderController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const adminMiddleware = require('../middlewares/adminMiddleware');
 
+console.log('🚨🚨🚨 ORDER ROUTES FILE LOADED 🚨🚨🚨');
+
 // Optional auth middleware for guest orders
 const optionalAuth = (req, res, next) => {
     const authHeader = req.headers['authorization'];
@@ -35,7 +37,23 @@ router.post('/',
 router.get('/', authMiddleware, orderController.getUserOrders);
 router.get('/my-orders', authMiddleware, orderController.getUserOrders);
 
-// Get single order details
+// Test route (must be before /:orderId)
+router.get('/test', (req, res) => {
+    console.log('🚨🚨🚨 TEST ROUTE HIT 🚨🚨🚨');
+    res.json({ message: 'Test route working' });
+});
+
+// Admin routes (protected) - must be before /:orderId
+router.get('/admin/all', (req, res, next) => {
+    console.log('🚨🚨🚨 ROUTE /admin/all HIT 🚨🚨🚨');
+    console.log('Request URL:', req.url);
+    console.log('Request method:', req.method);
+    console.log('Request params:', req.params);
+    console.log('Request query:', req.query);
+    next();
+}, authMiddleware, adminMiddleware, orderController.getOrders);
+
+// Get single order details (must be after specific routes)
 router.get('/:orderId', optionalAuth, orderController.getOrderById);
 
 // Track order
@@ -43,9 +61,6 @@ router.get('/:orderId/track', optionalAuth, orderController.trackOrder);
 
 // Cancel order (authenticated users only)
 router.patch('/:orderId/cancel', authMiddleware, orderController.cancelOrder);
-
-// Admin routes (protected)
-router.get('/admin/all', authMiddleware, adminMiddleware, orderController.getOrders);
 router.put('/admin/:id', authMiddleware, adminMiddleware, orderController.updateOrder);
 router.patch('/admin/:id/status', authMiddleware, adminMiddleware, orderController.updateOrderStatus);
 
