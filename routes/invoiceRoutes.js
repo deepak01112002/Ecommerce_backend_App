@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body, param, query } = require('express-validator');
 const invoiceController = require('../controllers/invoiceController');
+const invoiceManagementController = require('../controllers/invoiceManagementController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const adminMiddleware = require('../middlewares/adminMiddleware');
 const { validateRequest } = require('../middlewares/errorHandler');
@@ -111,6 +112,40 @@ router.get('/:id/pdf',
     ],
     validateRequest,
     invoiceController.generatePDF
+);
+
+// Enhanced invoice generation from order (with thermal support)
+router.post('/enhanced/generate/:orderId',
+    adminMiddleware,
+    [
+        param('orderId').isMongoId().withMessage('Invalid order ID'),
+        body('generatePDF').optional().isBoolean().withMessage('generatePDF must be boolean'),
+        body('thermalFormat').optional().isBoolean().withMessage('thermalFormat must be boolean')
+    ],
+    validateRequest,
+    invoiceManagementController.generateInvoiceFromOrder
+);
+
+// Enhanced get all invoices (with better filtering)
+router.get('/enhanced/all',
+    adminMiddleware,
+    [
+        query('page').optional().isInt({ min: 1 }).withMessage('Page must be positive integer'),
+        query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+        query('status').optional().isString().withMessage('Status must be string'),
+        query('search').optional().isString().withMessage('Search must be string')
+    ],
+    validateRequest,
+    invoiceManagementController.getAllInvoices
+);
+
+// Enhanced get single invoice (with order details)
+router.get('/enhanced/:id',
+    [
+        param('id').isMongoId().withMessage('Invalid invoice ID')
+    ],
+    validateRequest,
+    invoiceManagementController.getInvoice
 );
 
 module.exports = router;
