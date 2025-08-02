@@ -61,6 +61,19 @@ router.delete('/:id',
     notificationController.deleteNotification
 );
 
+// FCM Token Management Routes
+router.post('/fcm-token',
+    [
+        body('fcmToken').notEmpty().withMessage('FCM token is required')
+    ],
+    validateRequest,
+    notificationController.saveFCMToken
+);
+
+router.delete('/fcm-token',
+    notificationController.removeFCMToken
+);
+
 // Admin notification routes
 router.use(adminMiddleware);
 
@@ -95,6 +108,31 @@ router.get('/admin/analytics',
     ],
     validateRequest,
     notificationController.getNotificationAnalytics
+);
+
+// Admin FCM Token Management
+router.post('/admin/fcm-token',
+    [
+        body('fcmToken').notEmpty().withMessage('FCM token is required')
+    ],
+    validateRequest,
+    notificationController.saveAdminFCMToken
+);
+
+router.delete('/admin/fcm-token',
+    notificationController.removeAdminFCMToken
+);
+
+// Send push notification to all admins
+router.post('/admin/broadcast',
+    [
+        body('title').notEmpty().withMessage('Title is required'),
+        body('body').notEmpty().withMessage('Body is required'),
+        body('type').optional().isString().withMessage('Type must be string'),
+        body('data').optional().isObject().withMessage('Data must be object')
+    ],
+    validateRequest,
+    notificationController.broadcastToAdmins
 );
 
 module.exports = router;

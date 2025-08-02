@@ -139,6 +139,26 @@ const userSchema = new mongoose.Schema({
         }
     },
 
+    // FCM Token for push notifications
+    fcmToken: {
+        type: String,
+        default: null
+    },
+    fcmTokenUpdatedAt: {
+        type: Date,
+        default: null
+    },
+
+    // Admin FCM Token (for admin users)
+    adminFcmToken: {
+        type: String,
+        default: null
+    },
+    adminFcmTokenUpdatedAt: {
+        type: Date,
+        default: null
+    },
+
     // Device Tokens for Push Notifications
     deviceTokens: [String],
 
