@@ -8,34 +8,62 @@ const admin = require('firebase-admin');
 let firebaseInitialized = false;
 
 try {
+  console.log('🔥 Initializing Firebase Admin SDK...');
+  console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID);
+  console.log('FIREBASE_SERVICE_ACCOUNT available:', !!process.env.FIREBASE_SERVICE_ACCOUNT);
+
   // Try to initialize with service account if available
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    console.log('📋 Parsing Firebase service account JSON...');
     const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    console.log('✅ Service account parsed successfully');
+    console.log('Service account project_id:', serviceAccount.project_id);
+    console.log('Service account client_email:', serviceAccount.client_email);
+
+    // Fix the private key format by replacing escaped newlines with actual newlines
+    if (serviceAccount.private_key) {
+      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+      console.log('🔧 Fixed private key format');
+    }
+
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       projectId: process.env.FIREBASE_PROJECT_ID || "ghanshyammurtibhandar-f5ced"
     });
     firebaseInitialized = true;
-    console.log('Firebase Admin initialized with service account');
+    console.log('🎉 Firebase Admin initialized with service account');
   } else {
+    console.log('⚠️ No service account found, initializing with project ID only');
     // Initialize with project ID only for testing
     admin.initializeApp({
       projectId: process.env.FIREBASE_PROJECT_ID || "ghanshyammurtibhandar-f5ced"
     });
     firebaseInitialized = true;
-    console.log('Firebase Admin initialized with project ID only (limited functionality)');
+    console.log('🔧 Firebase Admin initialized with project ID only (limited functionality)');
   }
 } catch (error) {
-  console.error('Failed to initialize Firebase Admin:', error.message);
-  console.log('Firebase notifications will be disabled');
+  console.error('❌ Failed to initialize Firebase Admin:', error.message);
+  console.error('Full error:', error);
+  console.log('🚫 Firebase notifications will be disabled');
 }
 
 class FirebaseService {
   constructor() {
+    // Initialize messaging after Firebase is initialized
+    this.messaging = null;
+    this.initializeMessaging();
+  }
+
+  initializeMessaging() {
     try {
-      this.messaging = firebaseInitialized ? admin.messaging() : null;
+      if (firebaseInitialized && admin.apps.length > 0) {
+        this.messaging = admin.messaging();
+        console.log('✅ Firebase messaging initialized successfully');
+      } else {
+        console.log('⚠️ Firebase not initialized, messaging unavailable');
+      }
     } catch (error) {
-      console.error('Failed to initialize Firebase messaging:', error.message);
+      console.error('❌ Failed to initialize Firebase messaging:', error.message);
       this.messaging = null;
     }
   }
@@ -134,7 +162,8 @@ class FirebaseService {
         }
       };
 
-      const response = await this.messaging.sendMulticast(message);
+      // Use sendEachForMulticast instead of sendMulticast for better compatibility
+      const response = await this.messaging.sendEachForMulticast(message);
       console.log('Successfully sent messages:', response);
       
       // Handle failed tokens
@@ -217,9 +246,20 @@ class FirebaseService {
 
   // Send order notification to admins
   async sendOrderNotificationToAdmins(orderData, adminTokens) {
+    console.log('🔔 Sending order notification to admins:', {
+      orderNumber: orderData.orderNumber,
+      total: orderData.pricing?.total || orderData.total,
+      adminTokensCount: adminTokens.length
+    });
+
+    const totalAmount = orderData.pricing?.total || orderData.total || 0;
+    const customerName = orderData.shippingAddress?.fullName ||
+                        orderData.shippingAddress?.firstName + ' ' + orderData.shippingAddress?.lastName ||
+                        'Unknown Customer';
+
     const notification = {
       title: '🛒 New Order Received!',
-      body: `Order #${orderData.orderNumber} - ₹${orderData.totalAmount}`,
+      body: `Order #${orderData.orderNumber} - ₹${totalAmount} from ${customerName}`,
       icon: '/favicon.ico'
     };
 
@@ -227,17 +267,24 @@ class FirebaseService {
       type: 'new_order',
       orderId: orderData._id.toString(),
       orderNumber: orderData.orderNumber,
-      amount: orderData.totalAmount.toString(),
-      customerName: orderData.shippingAddress?.name || 'Unknown',
+      amount: totalAmount.toString(),
+      customerName: customerName,
       timestamp: new Date().toISOString()
     };
 
+    console.log('📱 Notification payload:', { notification, data });
+
     if (adminTokens.length === 1) {
-      return await this.sendToDevice(adminTokens[0], notification, data);
+      const result = await this.sendToDevice(adminTokens[0], notification, data);
+      console.log('📤 Single device notification result:', result);
+      return result;
     } else if (adminTokens.length > 1) {
-      return await this.sendToMultipleDevices(adminTokens, notification, data);
+      const result = await this.sendToMultipleDevices(adminTokens, notification, data);
+      console.log('📤 Multiple devices notification result:', result);
+      return result;
     }
 
+    console.log('❌ No admin tokens available for notification');
     return { success: false, error: 'No admin tokens available' };
   }
 
