@@ -7,6 +7,7 @@ const Address = require('../models/Address');
 const Wallet = require('../models/Wallet');
 const WalletTransaction = require('../models/WalletTransaction');
 const { asyncHandler, validateRequest } = require('../middlewares/errorHandler');
+const firebaseService = require('../services/firebaseService');
 const Razorpay = require('razorpay');
 
 // Initialize Razorpay
@@ -190,6 +191,26 @@ exports.createOrder = asyncHandler(async (req, res) => {
         { user: userId },
         { $set: { items: [] } }
     );
+
+    // Send notification to admins about new order
+    try {
+        // Get all admin users with FCM tokens
+        const admins = await User.find({
+            role: 'admin',
+            adminFcmToken: { $exists: true, $ne: null }
+        }).select('adminFcmToken');
+
+        if (admins.length > 0) {
+            const adminTokens = admins.map(admin => admin.adminFcmToken);
+
+            // Send Firebase notification
+            await firebaseService.sendOrderNotificationToAdmins(order, adminTokens);
+            console.log('Order notification sent to admins:', order.orderNumber);
+        }
+    } catch (notificationError) {
+        console.error('Failed to send order notification:', notificationError);
+        // Don't fail the order creation if notification fails
+    }
 
     // Create Razorpay order if payment method is not COD
     let razorpayOrder = null;

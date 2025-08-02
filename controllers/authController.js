@@ -13,10 +13,18 @@ function generateToken(user) {
 exports.register = asyncHandler(async (req, res) => {
     const { firstName, lastName, email, password, phone, role = 'user' } = req.body;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    // Check if user already exists by email
+    const existingUserByEmail = await User.findOne({ email });
+    if (existingUserByEmail) {
         return res.error('Email already exists', [], 409);
+    }
+
+    // Check if user already exists by phone (if phone is provided)
+    if (phone) {
+        const existingUserByPhone = await User.findOne({ phone });
+        if (existingUserByPhone) {
+            return res.error('Phone number already exists', [], 409);
+        }
     }
 
     // Create new user
@@ -90,10 +98,32 @@ exports.signup = asyncHandler(async (req, res) => {
 
 // Login
 exports.login = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    const { email, mobile, phone, password } = req.body;
 
-    // Find user by email
-    const user = await User.findOne({ email }).select('+password');
+    // Check if either email or mobile/phone is provided
+    const loginIdentifier = email || mobile || phone;
+    if (!loginIdentifier) {
+        return res.error('Email or mobile number is required', [], 400);
+    }
+
+    if (!password) {
+        return res.error('Password is required', [], 400);
+    }
+
+    // Find user by email or mobile/phone
+    let user;
+    if (email) {
+        user = await User.findOne({ email }).select('+password');
+    } else {
+        // Try to find by mobile or phone field
+        user = await User.findOne({
+            $or: [
+                { mobile: loginIdentifier },
+                { phone: loginIdentifier }
+            ]
+        }).select('+password');
+    }
+
     if (!user) {
         return res.error('Invalid credentials', [], 401);
     }

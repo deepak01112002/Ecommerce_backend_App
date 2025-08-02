@@ -1,6 +1,7 @@
 const Notification = require('../models/Notification');
 const User = require('../models/User');
 const { asyncHandler } = require('../middlewares/errorHandler');
+const firebaseService = require('../services/firebaseService');
 
 // Get user notifications
 exports.getUserNotifications = asyncHandler(async (req, res) => {
@@ -364,5 +365,123 @@ exports.createOrderNotification = async (userId, orderId, type, customData = {})
     
     return await Notification.createNotification(notificationData);
 };
+
+// FCM Token Management
+exports.saveFCMToken = asyncHandler(async (req, res) => {
+    const { fcmToken } = req.body;
+    const userId = req.user._id;
+
+    try {
+        // Update user with FCM token
+        await User.findByIdAndUpdate(userId, {
+            fcmToken: fcmToken,
+            fcmTokenUpdatedAt: new Date()
+        });
+
+        res.success({
+            message: 'FCM token saved successfully'
+        }, 'FCM token registered');
+    } catch (error) {
+        console.error('Error saving FCM token:', error);
+        res.error('Failed to save FCM token', [], 500);
+    }
+});
+
+exports.removeFCMToken = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    try {
+        // Remove FCM token from user
+        await User.findByIdAndUpdate(userId, {
+            $unset: { fcmToken: 1, fcmTokenUpdatedAt: 1 }
+        });
+
+        res.success({
+            message: 'FCM token removed successfully'
+        }, 'FCM token unregistered');
+    } catch (error) {
+        console.error('Error removing FCM token:', error);
+        res.error('Failed to remove FCM token', [], 500);
+    }
+});
+
+// Admin FCM Token Management
+exports.saveAdminFCMToken = asyncHandler(async (req, res) => {
+    const { fcmToken } = req.body;
+    const adminId = req.user._id;
+
+    try {
+        // Update admin user with FCM token
+        await User.findByIdAndUpdate(adminId, {
+            adminFcmToken: fcmToken,
+            adminFcmTokenUpdatedAt: new Date()
+        });
+
+        res.success({
+            message: 'Admin FCM token saved successfully'
+        }, 'Admin FCM token registered');
+    } catch (error) {
+        console.error('Error saving admin FCM token:', error);
+        res.error('Failed to save admin FCM token', [], 500);
+    }
+});
+
+exports.removeAdminFCMToken = asyncHandler(async (req, res) => {
+    const adminId = req.user._id;
+
+    try {
+        // Remove admin FCM token
+        await User.findByIdAndUpdate(adminId, {
+            $unset: { adminFcmToken: 1, adminFcmTokenUpdatedAt: 1 }
+        });
+
+        res.success({
+            message: 'Admin FCM token removed successfully'
+        }, 'Admin FCM token unregistered');
+    } catch (error) {
+        console.error('Error removing admin FCM token:', error);
+        res.error('Failed to remove admin FCM token', [], 500);
+    }
+});
+
+// Broadcast notification to all admins
+exports.broadcastToAdmins = asyncHandler(async (req, res) => {
+    const { title, body, type = 'system', data = {} } = req.body;
+
+    try {
+        // Get all admin users with FCM tokens
+        const admins = await User.find({
+            role: 'admin',
+            adminFcmToken: { $exists: true, $ne: null }
+        }).select('adminFcmToken');
+
+        if (admins.length === 0) {
+            return res.error('No admin devices found for notification', [], 404);
+        }
+
+        const adminTokens = admins.map(admin => admin.adminFcmToken);
+
+        // Send notification via Firebase
+        const result = await firebaseService.sendToMultipleDevices(
+            adminTokens,
+            { title, body },
+            { type, ...data }
+        );
+
+        if (result.success) {
+            res.success({
+                message: 'Notification sent to admins',
+                successCount: result.successCount,
+                failureCount: result.failureCount,
+                failedTokens: result.failedTokens || []
+            }, 'Broadcast notification sent');
+        } else {
+            res.error('Failed to send notification', [result.error], 500);
+        }
+    } catch (error) {
+        console.error('Error broadcasting to admins:', error);
+        res.error('Failed to broadcast notification', [], 500);
+    }
+});
 
 module.exports = exports;

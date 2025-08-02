@@ -37,7 +37,27 @@ router.post(
 router.post(
     '/login',
     [
-        body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
+        // Custom validation for email or phone
+        body().custom((_, { req }) => {
+            const { email, phone, mobile } = req.body;
+
+            // Check if at least one identifier is provided
+            if (!email && !phone && !mobile) {
+                throw new Error('Email or phone number is required');
+            }
+
+            // If email is provided, validate it
+            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                throw new Error('Valid email is required');
+            }
+
+            // If phone/mobile is provided, validate it (basic validation)
+            if ((phone || mobile) && !/^\d{10}$/.test(phone || mobile)) {
+                throw new Error('Valid 10-digit phone number is required');
+            }
+
+            return true;
+        }),
         body('password').notEmpty().withMessage('Password is required'),
     ],
     validateRequest,
