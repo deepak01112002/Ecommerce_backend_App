@@ -85,12 +85,12 @@ class FirebaseService {
         token: token,
         notification: {
           title: notification.title,
-          body: notification.body,
-          icon: notification.icon || '/favicon.ico'
+          body: notification.body
         },
         data: {
           ...data,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          icon: notification.icon || '/favicon.ico' // Move icon to data
         },
         webpush: {
           headers: {
@@ -140,12 +140,12 @@ class FirebaseService {
         tokens: tokens,
         notification: {
           title: notification.title,
-          body: notification.body,
-          icon: notification.icon || '/favicon.ico'
+          body: notification.body
         },
         data: {
           ...data,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          icon: notification.icon || '/favicon.ico' // Move icon to data
         },
         webpush: {
           headers: {
@@ -202,12 +202,12 @@ class FirebaseService {
         topic: topic,
         notification: {
           title: notification.title,
-          body: notification.body,
-          icon: notification.icon || '/favicon.ico'
+          body: notification.body
         },
         data: {
           ...data,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          icon: notification.icon || '/favicon.ico' // Move icon to data
         }
       };
 
