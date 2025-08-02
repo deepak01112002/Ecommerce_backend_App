@@ -135,4 +135,76 @@ router.post('/admin/broadcast',
     notificationController.broadcastToAdmins
 );
 
+// Test notification endpoint
+router.post('/test', async (req, res) => {
+  try {
+    const { token, title, body } = req.body;
+
+    if (!token) {
+      return res.error('FCM token is required', [], 400);
+    }
+
+    console.log('🧪 Testing notification to token:', token.substring(0, 20) + '...');
+
+    const firebaseService = require('../services/firebaseService');
+    const result = await firebaseService.sendToDevice(
+      token,
+      {
+        title: title || 'Test Notification',
+        body: body || 'This is a test notification from admin panel'
+      },
+      {
+        type: 'test',
+        timestamp: new Date().toISOString()
+      }
+    );
+
+    console.log('🧪 Test notification result:', result);
+
+    if (result.success) {
+      res.success('Test notification sent successfully', result);
+    } else {
+      res.error('Failed to send test notification', [result.error], 500);
+    }
+  } catch (error) {
+    console.error('❌ Test notification error:', error);
+    res.error('Failed to send test notification', [error.message], 500);
+  }
+});
+
+// Debug endpoint to check admin tokens
+router.get('/debug/admin-tokens', async (req, res) => {
+  try {
+    const User = require('../models/User');
+
+    // Get all admin users with FCM tokens
+    const admins = await User.find({
+      role: 'admin',
+      adminFcmToken: { $exists: true, $ne: null }
+    }).select('adminFcmToken firstName lastName email');
+
+    console.log('🔍 Debug: Found admin tokens:', {
+      count: admins.length,
+      admins: admins.map(admin => ({
+        name: `${admin.firstName} ${admin.lastName}`,
+        email: admin.email,
+        tokenPreview: admin.adminFcmToken ? admin.adminFcmToken.substring(0, 20) + '...' : 'No token'
+      }))
+    });
+
+    res.success('Admin tokens retrieved', {
+      count: admins.length,
+      tokens: admins.map(admin => ({
+        name: `${admin.firstName} ${admin.lastName}`,
+        email: admin.email,
+        token: admin.adminFcmToken,
+        tokenPreview: admin.adminFcmToken ? admin.adminFcmToken.substring(0, 20) + '...' : 'No token'
+      }))
+    });
+  } catch (error) {
+    console.error('❌ Debug admin tokens error:', error);
+    res.error('Failed to get admin tokens', [error.message], 500);
+  }
+});
+
 module.exports = router;
