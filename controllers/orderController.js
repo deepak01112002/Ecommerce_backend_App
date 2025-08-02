@@ -194,21 +194,38 @@ exports.createOrder = asyncHandler(async (req, res) => {
 
     // Send notification to admins about new order
     try {
+        console.log('🔍 Looking for admin users with FCM tokens...');
+
         // Get all admin users with FCM tokens
         const admins = await User.find({
             role: 'admin',
             adminFcmToken: { $exists: true, $ne: null }
-        }).select('adminFcmToken');
+        }).select('adminFcmToken firstName lastName email');
+
+        console.log('👥 Found admins with FCM tokens:', {
+            count: admins.length,
+            admins: admins.map(admin => ({
+                name: `${admin.firstName} ${admin.lastName}`,
+                email: admin.email,
+                hasToken: !!admin.adminFcmToken
+            }))
+        });
 
         if (admins.length > 0) {
             const adminTokens = admins.map(admin => admin.adminFcmToken);
+            console.log('📱 Admin FCM tokens:', adminTokens.length, 'tokens found');
 
             // Send Firebase notification
-            await firebaseService.sendOrderNotificationToAdmins(order, adminTokens);
-            console.log('Order notification sent to admins:', order.orderNumber);
+            const notificationResult = await firebaseService.sendOrderNotificationToAdmins(order, adminTokens);
+            console.log('✅ Order notification sent to admins:', {
+                orderNumber: order.orderNumber,
+                result: notificationResult
+            });
+        } else {
+            console.log('⚠️ No admin users with FCM tokens found');
         }
     } catch (notificationError) {
-        console.error('Failed to send order notification:', notificationError);
+        console.error('❌ Failed to send order notification:', notificationError);
         // Don't fail the order creation if notification fails
     }
 

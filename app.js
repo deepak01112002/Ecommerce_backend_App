@@ -397,6 +397,9 @@ app.get('/api/documentation', (req, res) => {
 const imageProxyRoutes = require('./routes/imageProxyRoutes');
 app.use('/api/images', imageProxyRoutes);
 
+// Initialize Firebase Service
+const firebaseService = require('./services/firebaseService');
+
 // Start URL Refresh Service for long-lived presigned URLs
 const urlRefreshService = require('./services/urlRefreshService');
 urlRefreshService.start();
