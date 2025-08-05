@@ -617,6 +617,16 @@ exports.getOrders = asyncHandler(async (req, res) => {
         paymentStatus: order.paymentStatus || 'pending',
         paymentMethod: order.paymentInfo?.method || 'unknown',
         shippingAddress: order.shippingAddress || {},
+        shipping: {
+            deliveryMethod: order.shipping?.deliveryMethod || 'manual',
+            carrier: order.shipping?.carrier || 'Manual Delivery',
+            trackingNumber: order.shipping?.trackingNumber || null,
+            assignedBy: order.shipping?.assignedBy || null,
+            assignedAt: order.shipping?.assignedAt || null,
+            adminNotes: order.shipping?.adminNotes || '',
+            estimatedDelivery: order.shipping?.estimatedDelivery || null,
+            actualDelivery: order.shipping?.actualDelivery || null
+        },
         createdAt: order.createdAt,
         orderDate: order.createdAt,
         created_at: order.createdAt,

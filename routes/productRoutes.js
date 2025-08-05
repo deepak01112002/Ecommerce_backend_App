@@ -7,6 +7,13 @@ const authMiddleware = require('../middlewares/authMiddleware');
 const { validateRequest } = require('../middlewares/errorHandler');
 // Import Contabo upload middleware (replaces multer)
 const { uploadMultipleImages } = require('../middlewares/contaboUpload');
+const multer = require('multer');
+
+// Configure multer for file uploads (for bulk upload)
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
 
 // Optional auth middleware
 const optionalAuth = (req, res, next) => {
@@ -102,6 +109,14 @@ router.patch('/:id/inventory',
     ],
     validateRequest,
     productController.updateInventory
+);
+
+// Bulk upload products from CSV/Excel file
+router.post('/bulk-upload',
+    authMiddleware,
+    adminMiddleware,
+    upload.single('file'),
+    productController.bulkUpload
 );
 
 module.exports = router;

@@ -139,6 +139,25 @@ const orderSchema = new mongoose.Schema({
         awbCode: String,
         courierCompanyId: Number,
         pickupLocation: String,
+
+        // Admin delivery method selection
+        deliveryMethod: {
+            type: String,
+            enum: ['manual', 'delivery_company', 'delhivery', 'shiprocket'],
+            default: 'manual'
+        },
+        deliveryCompanyId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'DeliveryCompany',
+            sparse: true
+        },
+        deliveryCompanyName: String,
+        adminNotes: String,
+        assignedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        assignedAt: Date,
         manifestUrl: String,
         labelUrl: String,
         invoiceUrl: String

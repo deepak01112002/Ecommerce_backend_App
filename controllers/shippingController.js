@@ -2,6 +2,7 @@ const Shipment = require('../models/Shipment');
 const ShipmentTracking = require('../models/ShipmentTracking');
 const Order = require('../models/Order');
 const ShiprocketService = require('../services/ShiprocketService');
+const DeliveryService = require('../services/DeliveryService');
 const { asyncHandler } = require('../middlewares/errorHandler');
 
 // Create shipment for order
@@ -339,9 +340,9 @@ exports.checkServiceability = asyncHandler(async (req, res) => {
     const { pickupPostcode, deliveryPostcode, weight, codAmount } = req.body;
 
     const serviceabilityResult = await ShiprocketService.checkServiceability(
-        pickupPostcode, 
-        deliveryPostcode, 
-        weight, 
+        pickupPostcode,
+        deliveryPostcode,
+        weight,
         codAmount || 0
     );
 
@@ -353,6 +354,171 @@ exports.checkServiceability = asyncHandler(async (req, res) => {
         couriers: serviceabilityResult.couriers,
         isServiceable: serviceabilityResult.couriers.length > 0
     }, 'Serviceability checked successfully');
+});
+
+// Get delivery options based on current delivery method
+exports.getDeliveryOptions = asyncHandler(async (req, res) => {
+    const { state, city, postalCode, weight = 1, codAmount = 0, orderValue = 0 } = req.query;
+
+    if (!state || !city || !postalCode) {
+        return res.error('State, city, and postal code are required', [], 400);
+    }
+
+    const location = { state, city, postalCode };
+    const orderDetails = {
+        weight: parseFloat(weight),
+        codAmount: parseFloat(codAmount),
+        orderValue: parseFloat(orderValue)
+    };
+
+    const deliveryOptions = await DeliveryService.getDeliveryOptions(location, orderDetails);
+
+    if (!deliveryOptions.success) {
+        return res.error('Failed to get delivery options', [deliveryOptions.error], 400);
+    }
+
+    res.success({
+        method: deliveryOptions.method,
+        location: location,
+        options: deliveryOptions.options,
+        count: deliveryOptions.options.length
+    }, 'Delivery options retrieved successfully');
+});
+
+// Create shipment using new delivery service
+exports.createShipmentV2 = asyncHandler(async (req, res) => {
+    const { orderId, deliveryOptionId, dimensions } = req.body;
+
+    const order = await Order.findById(orderId)
+        .populate('user', 'firstName lastName email phone')
+        .populate('items.product', 'name weight height');
+
+    if (!order) {
+        return res.error('Order not found', [], 404);
+    }
+
+    if (!order.canBeShipped()) {
+        return res.error('Order cannot be shipped at this time', [], 400);
+    }
+
+    // Get delivery options first
+    const location = {
+        state: order.shippingAddress.state,
+        city: order.shippingAddress.city,
+        postalCode: order.shippingAddress.postalCode
+    };
+
+    const orderDetails = {
+        weight: dimensions?.weight || 1,
+        codAmount: order.paymentInfo.method === 'cod' ? order.pricing.total : 0,
+        orderValue: order.pricing.total
+    };
+
+    const deliveryOptions = await DeliveryService.getDeliveryOptions(location, orderDetails);
+
+    if (!deliveryOptions.success) {
+        return res.error('Failed to get delivery options', [deliveryOptions.error], 400);
+    }
+
+    // Find the selected delivery option
+    const selectedOption = deliveryOptions.options.find(opt => opt.id === deliveryOptionId);
+
+    if (!selectedOption) {
+        return res.error('Invalid delivery option selected', [], 400);
+    }
+
+    // Prepare order data for shipment creation
+    const orderData = {
+        orderId: order._id,
+        orderNumber: order.orderNumber,
+        customerName: order.shippingAddress.fullName,
+        customerPhone: order.shippingAddress.phone,
+        customerEmail: order.user?.email || order.guestInfo?.email,
+        shippingAddress: order.shippingAddress,
+        items: order.items,
+        paymentMethod: order.paymentInfo.method === 'cod' ? 'COD' : 'Prepaid',
+        shippingCharges: order.pricing.shipping,
+        totalDiscount: order.pricing.discount,
+        subTotal: order.pricing.subtotal,
+        totalAmount: order.pricing.total,
+        dimensions: dimensions || {
+            length: 10,
+            breadth: 10,
+            height: 10,
+            weight: 1
+        }
+    };
+
+    // Create shipment using delivery service
+    const shipmentResult = await DeliveryService.createShipment(orderData, selectedOption);
+
+    if (!shipmentResult.success) {
+        return res.error('Failed to create shipment', [shipmentResult.error], 400);
+    }
+
+    // Create shipment record in database
+    const shipmentData = {
+        order: orderId,
+        user: order.user._id,
+        trackingNumber: shipmentResult.trackingNumber,
+        carrier: shipmentResult.carrier,
+        status: 'processing',
+        method: shipmentResult.method,
+        shippingAddress: {
+            name: order.shippingAddress.fullName,
+            phone: order.shippingAddress.phone,
+            email: order.user?.email || order.guestInfo?.email,
+            address: order.shippingAddress.addressLine1,
+            address2: order.shippingAddress.addressLine2,
+            city: order.shippingAddress.city,
+            state: order.shippingAddress.state,
+            country: order.shippingAddress.country,
+            pincode: order.shippingAddress.postalCode
+        },
+        items: order.items.map(item => ({
+            name: item.productSnapshot?.name || 'Product',
+            sku: item.product.toString(),
+            units: item.quantity,
+            sellingPrice: item.unitPrice,
+            discount: item.discount || 0,
+            tax: 0
+        })),
+        dimensions: orderData.dimensions,
+        paymentMode: order.paymentInfo.method === 'cod' ? 'cod' : 'prepaid',
+        subTotal: order.pricing.subtotal,
+        totalDiscount: order.pricing.discount,
+        totalAmount: order.pricing.total,
+        charges: shipmentResult.charges || selectedOption.charges,
+        estimatedDelivery: shipmentResult.estimatedDelivery
+    };
+
+    // Add method-specific data
+    if (shipmentResult.method === 'shiprocket') {
+        shipmentData.shiprocketOrderId = shipmentResult.shiprocketOrderId;
+        shipmentData.shiprocketShipmentId = shipmentResult.shiprocketShipmentId;
+        shipmentData.courierCompanyId = shipmentResult.courierCompanyId;
+        shipmentData.shiprocketResponse = shipmentResult.response;
+    } else if (shipmentResult.method === 'delivery_company') {
+        shipmentData.deliveryCompanyId = shipmentResult.companyId;
+        shipmentData.deliveryCompanyName = shipmentResult.companyName;
+        shipmentData.contactInfo = shipmentResult.contact;
+    }
+
+    const shipment = new Shipment(shipmentData);
+    await shipment.save();
+
+    // Update order with shipping info
+    order.shipping = shipmentResult.shipmentData;
+    order.status = 'processing';
+    await order.save();
+
+    res.success({
+        shipment,
+        trackingNumber: shipmentResult.trackingNumber,
+        carrier: shipmentResult.carrier,
+        method: shipmentResult.method,
+        estimatedDelivery: shipmentResult.estimatedDelivery
+    }, 'Shipment created successfully');
 });
 
 // Generate shipping labels
