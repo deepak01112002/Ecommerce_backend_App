@@ -1,0 +1,4458 @@
+{
+  "timestamp": "2025-08-05T18:52:57.447Z",
+  "totalEndpoints": 363,
+  "totalCategories": 43,
+  "methodStats": {
+    "GET": 169,
+    "POST": 82,
+    "PUT": 49,
+    "DELETE": 22,
+    "PATCH": 41
+  },
+  "apisByCategory": {
+    "address": [
+      {
+        "module": "address",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "address",
+        "method": "POST",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "address",
+        "method": "GET",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "address",
+        "method": "PUT",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "address",
+        "method": "DELETE",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "address",
+        "method": "PATCH",
+        "endpoint": "/:id/default",
+        "fullPath": "/api/:id/default"
+      },
+      {
+        "module": "address",
+        "method": "POST",
+        "endpoint": "/:id/validate",
+        "fullPath": "/api/:id/validate"
+      },
+      {
+        "module": "address",
+        "method": "GET",
+        "endpoint": "/default",
+        "fullPath": "/api/default"
+      }
+    ],
+    "adminDashboard": [
+      {
+        "module": "adminDashboard",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "adminDashboard",
+        "method": "GET",
+        "endpoint": "/quick-stats",
+        "fullPath": "/api/quick-stats"
+      }
+    ],
+    "adminDelivery": [
+      {
+        "module": "adminDelivery",
+        "method": "GET",
+        "endpoint": "/options",
+        "fullPath": "/api/options"
+      },
+      {
+        "module": "adminDelivery",
+        "method": "GET",
+        "endpoint": "/orders",
+        "fullPath": "/api/orders"
+      },
+      {
+        "module": "adminDelivery",
+        "method": "POST",
+        "endpoint": "/orders/:orderId/sync",
+        "fullPath": "/api/orders/:orderId/sync"
+      },
+      {
+        "module": "adminDelivery",
+        "method": "GET",
+        "endpoint": "/orders/pending",
+        "fullPath": "/api/orders/pending"
+      },
+      {
+        "module": "adminDelivery",
+        "method": "POST",
+        "endpoint": "/sync-all-delhivery",
+        "fullPath": "/api/sync-all-delhivery"
+      },
+      {
+        "module": "adminDelivery",
+        "method": "GET",
+        "endpoint": "/test",
+        "fullPath": "/api/test"
+      },
+      {
+        "module": "adminDelivery",
+        "method": "PUT",
+        "endpoint": "/update-method/:orderId",
+        "fullPath": "/api/update-method/:orderId"
+      }
+    ],
+    "adminManagement": [
+      {
+        "module": "adminManagement",
+        "method": "PATCH",
+        "endpoint": "/categories/:id/toggle-status",
+        "fullPath": "/api/categories/:id/toggle-status"
+      },
+      {
+        "module": "adminManagement",
+        "method": "PATCH",
+        "endpoint": "/coupons/:id/toggle-status",
+        "fullPath": "/api/coupons/:id/toggle-status"
+      },
+      {
+        "module": "adminManagement",
+        "method": "PATCH",
+        "endpoint": "/orders/:id/status",
+        "fullPath": "/api/orders/:id/status"
+      },
+      {
+        "module": "adminManagement",
+        "method": "PATCH",
+        "endpoint": "/products/:id/stock",
+        "fullPath": "/api/products/:id/stock"
+      },
+      {
+        "module": "adminManagement",
+        "method": "PATCH",
+        "endpoint": "/products/:id/toggle-status",
+        "fullPath": "/api/products/:id/toggle-status"
+      },
+      {
+        "module": "adminManagement",
+        "method": "PATCH",
+        "endpoint": "/system/maintenance",
+        "fullPath": "/api/system/maintenance"
+      },
+      {
+        "module": "adminManagement",
+        "method": "GET",
+        "endpoint": "/system/overview",
+        "fullPath": "/api/system/overview"
+      },
+      {
+        "module": "adminManagement",
+        "method": "GET",
+        "endpoint": "/users",
+        "fullPath": "/api/users"
+      },
+      {
+        "module": "adminManagement",
+        "method": "GET",
+        "endpoint": "/users/:id",
+        "fullPath": "/api/users/:id"
+      },
+      {
+        "module": "adminManagement",
+        "method": "PATCH",
+        "endpoint": "/users/:id/status",
+        "fullPath": "/api/users/:id/status"
+      },
+      {
+        "module": "adminManagement",
+        "method": "POST",
+        "endpoint": "/users/admin",
+        "fullPath": "/api/users/admin"
+      }
+    ],
+    "advancedReports": [
+      {
+        "module": "advancedReports",
+        "method": "GET",
+        "endpoint": "/customer-analytics",
+        "fullPath": "/api/customer-analytics"
+      },
+      {
+        "module": "advancedReports",
+        "method": "GET",
+        "endpoint": "/export/excel",
+        "fullPath": "/api/export/excel"
+      },
+      {
+        "module": "advancedReports",
+        "method": "GET",
+        "endpoint": "/inventory",
+        "fullPath": "/api/inventory"
+      },
+      {
+        "module": "advancedReports",
+        "method": "GET",
+        "endpoint": "/profit-loss",
+        "fullPath": "/api/profit-loss"
+      },
+      {
+        "module": "advancedReports",
+        "method": "GET",
+        "endpoint": "/sales",
+        "fullPath": "/api/sales"
+      }
+    ],
+    "appSettings": [
+      {
+        "module": "appSettings",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "appSettings",
+        "method": "GET",
+        "endpoint": "/admin",
+        "fullPath": "/api/admin"
+      },
+      {
+        "module": "appSettings",
+        "method": "PUT",
+        "endpoint": "/admin",
+        "fullPath": "/api/admin"
+      },
+      {
+        "module": "appSettings",
+        "method": "PUT",
+        "endpoint": "/admin/app-version",
+        "fullPath": "/api/admin/app-version"
+      },
+      {
+        "module": "appSettings",
+        "method": "PUT",
+        "endpoint": "/admin/business-hours",
+        "fullPath": "/api/admin/business-hours"
+      },
+      {
+        "module": "appSettings",
+        "method": "PUT",
+        "endpoint": "/admin/contact-info",
+        "fullPath": "/api/admin/contact-info"
+      },
+      {
+        "module": "appSettings",
+        "method": "PUT",
+        "endpoint": "/admin/delivery-settings",
+        "fullPath": "/api/admin/delivery-settings"
+      },
+      {
+        "module": "appSettings",
+        "method": "PUT",
+        "endpoint": "/admin/features",
+        "fullPath": "/api/admin/features"
+      },
+      {
+        "module": "appSettings",
+        "method": "PUT",
+        "endpoint": "/admin/maintenance",
+        "fullPath": "/api/admin/maintenance"
+      },
+      {
+        "module": "appSettings",
+        "method": "PUT",
+        "endpoint": "/admin/order-settings",
+        "fullPath": "/api/admin/order-settings"
+      },
+      {
+        "module": "appSettings",
+        "method": "POST",
+        "endpoint": "/admin/reset",
+        "fullPath": "/api/admin/reset"
+      },
+      {
+        "module": "appSettings",
+        "method": "PUT",
+        "endpoint": "/admin/toggle-active",
+        "fullPath": "/api/admin/toggle-active"
+      },
+      {
+        "module": "appSettings",
+        "method": "GET",
+        "endpoint": "/status",
+        "fullPath": "/api/status"
+      }
+    ],
+    "auth": [
+      {
+        "module": "auth",
+        "method": "POST",
+        "endpoint": "/login",
+        "fullPath": "/api/login"
+      },
+      {
+        "module": "auth",
+        "method": "GET",
+        "endpoint": "/profile",
+        "fullPath": "/api/profile"
+      },
+      {
+        "module": "auth",
+        "method": "PUT",
+        "endpoint": "/profile",
+        "fullPath": "/api/profile"
+      },
+      {
+        "module": "auth",
+        "method": "POST",
+        "endpoint": "/register",
+        "fullPath": "/api/register"
+      },
+      {
+        "module": "auth",
+        "method": "POST",
+        "endpoint": "/signup",
+        "fullPath": "/api/signup"
+      }
+    ],
+    "billManagement": [
+      {
+        "module": "billManagement",
+        "method": "GET",
+        "endpoint": "/analytics",
+        "fullPath": "/api/analytics"
+      },
+      {
+        "module": "billManagement",
+        "method": "GET",
+        "endpoint": "/bills",
+        "fullPath": "/api/bills"
+      },
+      {
+        "module": "billManagement",
+        "method": "GET",
+        "endpoint": "/dashboard",
+        "fullPath": "/api/dashboard"
+      },
+      {
+        "module": "billManagement",
+        "method": "GET",
+        "endpoint": "/export/excel",
+        "fullPath": "/api/export/excel"
+      },
+      {
+        "module": "billManagement",
+        "method": "POST",
+        "endpoint": "/generate-ca-report",
+        "fullPath": "/api/generate-ca-report"
+      }
+    ],
+    "businessSettings": [
+      {
+        "module": "businessSettings",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "businessSettings",
+        "method": "PUT",
+        "endpoint": "/company",
+        "fullPath": "/api/company"
+      },
+      {
+        "module": "businessSettings",
+        "method": "PUT",
+        "endpoint": "/features",
+        "fullPath": "/api/features"
+      },
+      {
+        "module": "businessSettings",
+        "method": "PUT",
+        "endpoint": "/gst",
+        "fullPath": "/api/gst"
+      },
+      {
+        "module": "businessSettings",
+        "method": "PUT",
+        "endpoint": "/inventory",
+        "fullPath": "/api/inventory"
+      },
+      {
+        "module": "businessSettings",
+        "method": "PUT",
+        "endpoint": "/notifications",
+        "fullPath": "/api/notifications"
+      },
+      {
+        "module": "businessSettings",
+        "method": "PUT",
+        "endpoint": "/orders",
+        "fullPath": "/api/orders"
+      },
+      {
+        "module": "businessSettings",
+        "method": "PUT",
+        "endpoint": "/payments",
+        "fullPath": "/api/payments"
+      },
+      {
+        "module": "businessSettings",
+        "method": "PUT",
+        "endpoint": "/returns",
+        "fullPath": "/api/returns"
+      },
+      {
+        "module": "businessSettings",
+        "method": "PUT",
+        "endpoint": "/shipping",
+        "fullPath": "/api/shipping"
+      }
+    ],
+    "cart": [
+      {
+        "module": "cart",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "cart",
+        "method": "POST",
+        "endpoint": "/add",
+        "fullPath": "/api/add"
+      },
+      {
+        "module": "cart",
+        "method": "DELETE",
+        "endpoint": "/clear",
+        "fullPath": "/api/clear"
+      },
+      {
+        "module": "cart",
+        "method": "PUT",
+        "endpoint": "/item/:itemId",
+        "fullPath": "/api/item/:itemId"
+      },
+      {
+        "module": "cart",
+        "method": "DELETE",
+        "endpoint": "/item/:itemId",
+        "fullPath": "/api/item/:itemId"
+      },
+      {
+        "module": "cart",
+        "method": "POST",
+        "endpoint": "/merge",
+        "fullPath": "/api/merge"
+      },
+      {
+        "module": "cart",
+        "method": "PUT",
+        "endpoint": "/update",
+        "fullPath": "/api/update"
+      }
+    ],
+    "category": [
+      {
+        "module": "category",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "category",
+        "method": "POST",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "category",
+        "method": "GET",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "category",
+        "method": "PUT",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "category",
+        "method": "DELETE",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "category",
+        "method": "GET",
+        "endpoint": "/breadcrumb/:slug",
+        "fullPath": "/api/breadcrumb/:slug"
+      },
+      {
+        "module": "category",
+        "method": "GET",
+        "endpoint": "/featured",
+        "fullPath": "/api/featured"
+      },
+      {
+        "module": "category",
+        "method": "GET",
+        "endpoint": "/search",
+        "fullPath": "/api/search"
+      },
+      {
+        "module": "category",
+        "method": "GET",
+        "endpoint": "/tree",
+        "fullPath": "/api/tree"
+      }
+    ],
+    "contabo": [
+      {
+        "module": "contabo",
+        "method": "GET",
+        "endpoint": "/bucket-stats",
+        "fullPath": "/api/bucket-stats"
+      },
+      {
+        "module": "contabo",
+        "method": "DELETE",
+        "endpoint": "/delete-file",
+        "fullPath": "/api/delete-file"
+      },
+      {
+        "module": "contabo",
+        "method": "GET",
+        "endpoint": "/list-files",
+        "fullPath": "/api/list-files"
+      },
+      {
+        "module": "contabo",
+        "method": "POST",
+        "endpoint": "/multiple-presigned-upload-urls",
+        "fullPath": "/api/multiple-presigned-upload-urls"
+      },
+      {
+        "module": "contabo",
+        "method": "POST",
+        "endpoint": "/presigned-download-url",
+        "fullPath": "/api/presigned-download-url"
+      },
+      {
+        "module": "contabo",
+        "method": "POST",
+        "endpoint": "/presigned-upload-url",
+        "fullPath": "/api/presigned-upload-url"
+      },
+      {
+        "module": "contabo",
+        "method": "GET",
+        "endpoint": "/test-connection",
+        "fullPath": "/api/test-connection"
+      }
+    ],
+    "coupon": [
+      {
+        "module": "coupon",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "coupon",
+        "method": "POST",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "coupon",
+        "method": "PUT",
+        "endpoint": "/:couponId",
+        "fullPath": "/api/:couponId"
+      },
+      {
+        "module": "coupon",
+        "method": "DELETE",
+        "endpoint": "/:couponId",
+        "fullPath": "/api/:couponId"
+      },
+      {
+        "module": "coupon",
+        "method": "GET",
+        "endpoint": "/admin",
+        "fullPath": "/api/admin"
+      },
+      {
+        "module": "coupon",
+        "method": "POST",
+        "endpoint": "/apply",
+        "fullPath": "/api/apply"
+      },
+      {
+        "module": "coupon",
+        "method": "POST",
+        "endpoint": "/validate",
+        "fullPath": "/api/validate"
+      }
+    ],
+    "dashboard": [
+      {
+        "module": "dashboard",
+        "method": "GET",
+        "endpoint": "/stats",
+        "fullPath": "/api/stats"
+      }
+    ],
+    "deliveryCompany": [
+      {
+        "module": "deliveryCompany",
+        "method": "PATCH",
+        "endpoint": "/:id/performance",
+        "fullPath": "/api/:id/performance"
+      },
+      {
+        "module": "deliveryCompany",
+        "method": "PATCH",
+        "endpoint": "/:id/preferred",
+        "fullPath": "/api/:id/preferred"
+      },
+      {
+        "module": "deliveryCompany",
+        "method": "PATCH",
+        "endpoint": "/:id/toggle-status",
+        "fullPath": "/api/:id/toggle-status"
+      },
+      {
+        "module": "deliveryCompany",
+        "method": "PATCH",
+        "endpoint": "/bulk/status",
+        "fullPath": "/api/bulk/status"
+      },
+      {
+        "module": "deliveryCompany",
+        "method": "GET",
+        "endpoint": "/dashboard/stats",
+        "fullPath": "/api/dashboard/stats"
+      },
+      {
+        "module": "deliveryCompany",
+        "method": "GET",
+        "endpoint": "/export",
+        "fullPath": "/api/export"
+      },
+      {
+        "module": "deliveryCompany",
+        "method": "GET",
+        "endpoint": "/location",
+        "fullPath": "/api/location"
+      },
+      {
+        "module": "deliveryCompany",
+        "method": "GET",
+        "endpoint": "/options",
+        "fullPath": "/api/options"
+      }
+    ],
+    "deliveryManagement": [
+      {
+        "module": "deliveryManagement",
+        "method": "GET",
+        "endpoint": "/assignments",
+        "fullPath": "/api/assignments"
+      },
+      {
+        "module": "deliveryManagement",
+        "method": "GET",
+        "endpoint": "/options",
+        "fullPath": "/api/options"
+      },
+      {
+        "module": "deliveryManagement",
+        "method": "POST",
+        "endpoint": "/orders/:orderId/assign",
+        "fullPath": "/api/orders/:orderId/assign"
+      },
+      {
+        "module": "deliveryManagement",
+        "method": "PUT",
+        "endpoint": "/orders/:orderId/assignment",
+        "fullPath": "/api/orders/:orderId/assignment"
+      },
+      {
+        "module": "deliveryManagement",
+        "method": "GET",
+        "endpoint": "/orders/pending",
+        "fullPath": "/api/orders/pending"
+      },
+      {
+        "module": "deliveryManagement",
+        "method": "GET",
+        "endpoint": "/serviceability/:pincode",
+        "fullPath": "/api/serviceability/:pincode"
+      },
+      {
+        "module": "deliveryManagement",
+        "method": "GET",
+        "endpoint": "/test",
+        "fullPath": "/api/test"
+      },
+      {
+        "module": "deliveryManagement",
+        "method": "GET",
+        "endpoint": "/track/:waybill",
+        "fullPath": "/api/track/:waybill"
+      }
+    ],
+    "gst": [
+      {
+        "module": "gst",
+        "method": "GET",
+        "endpoint": "/analytics",
+        "fullPath": "/api/analytics"
+      },
+      {
+        "module": "gst",
+        "method": "POST",
+        "endpoint": "/calculate",
+        "fullPath": "/api/calculate"
+      },
+      {
+        "module": "gst",
+        "method": "GET",
+        "endpoint": "/config",
+        "fullPath": "/api/config"
+      },
+      {
+        "module": "gst",
+        "method": "PUT",
+        "endpoint": "/config",
+        "fullPath": "/api/config"
+      },
+      {
+        "module": "gst",
+        "method": "POST",
+        "endpoint": "/hsn-codes",
+        "fullPath": "/api/hsn-codes"
+      },
+      {
+        "module": "gst",
+        "method": "PUT",
+        "endpoint": "/hsn-codes/:code",
+        "fullPath": "/api/hsn-codes/:code"
+      },
+      {
+        "module": "gst",
+        "method": "GET",
+        "endpoint": "/reports",
+        "fullPath": "/api/reports"
+      },
+      {
+        "module": "gst",
+        "method": "GET",
+        "endpoint": "/reports/:id",
+        "fullPath": "/api/reports/:id"
+      },
+      {
+        "module": "gst",
+        "method": "GET",
+        "endpoint": "/reports/:id/export/excel",
+        "fullPath": "/api/reports/:id/export/excel"
+      },
+      {
+        "module": "gst",
+        "method": "PATCH",
+        "endpoint": "/reports/:id/mark-filed",
+        "fullPath": "/api/reports/:id/mark-filed"
+      },
+      {
+        "module": "gst",
+        "method": "POST",
+        "endpoint": "/reports/generate",
+        "fullPath": "/api/reports/generate"
+      }
+    ],
+    "imageProxy": [
+      {
+        "module": "imageProxy",
+        "method": "GET",
+        "endpoint": "/:folder/:filename",
+        "fullPath": "/api/:folder/:filename"
+      },
+      {
+        "module": "imageProxy",
+        "method": "POST",
+        "endpoint": "/batch-urls",
+        "fullPath": "/api/batch-urls"
+      },
+      {
+        "module": "imageProxy",
+        "method": "DELETE",
+        "endpoint": "/cache/clear",
+        "fullPath": "/api/cache/clear"
+      },
+      {
+        "module": "imageProxy",
+        "method": "GET",
+        "endpoint": "/cache/stats",
+        "fullPath": "/api/cache/stats"
+      },
+      {
+        "module": "imageProxy",
+        "method": "GET",
+        "endpoint": "/direct/:folder/:filename",
+        "fullPath": "/api/direct/:folder/:filename"
+      }
+    ],
+    "imageSearch": [
+      {
+        "module": "imageSearch",
+        "method": "POST",
+        "endpoint": "/demo",
+        "fullPath": "/api/demo"
+      },
+      {
+        "module": "imageSearch",
+        "method": "GET",
+        "endpoint": "/health",
+        "fullPath": "/api/health"
+      },
+      {
+        "module": "imageSearch",
+        "method": "POST",
+        "endpoint": "/products/:productId/generate-hashes",
+        "fullPath": "/api/products/:productId/generate-hashes"
+      },
+      {
+        "module": "imageSearch",
+        "method": "POST",
+        "endpoint": "/search",
+        "fullPath": "/api/search"
+      },
+      {
+        "module": "imageSearch",
+        "method": "GET",
+        "endpoint": "/stats",
+        "fullPath": "/api/stats"
+      }
+    ],
+    "inventory": [
+      {
+        "module": "inventory",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "inventory",
+        "method": "GET",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "inventory",
+        "method": "PUT",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "inventory",
+        "method": "PATCH",
+        "endpoint": "/:id/release-stock",
+        "fullPath": "/api/:id/release-stock"
+      },
+      {
+        "module": "inventory",
+        "method": "PATCH",
+        "endpoint": "/:id/reserve-stock",
+        "fullPath": "/api/:id/reserve-stock"
+      },
+      {
+        "module": "inventory",
+        "method": "PATCH",
+        "endpoint": "/:id/stock-count",
+        "fullPath": "/api/:id/stock-count"
+      },
+      {
+        "module": "inventory",
+        "method": "PATCH",
+        "endpoint": "/:id/update-stock",
+        "fullPath": "/api/:id/update-stock"
+      },
+      {
+        "module": "inventory",
+        "method": "GET",
+        "endpoint": "/analytics",
+        "fullPath": "/api/analytics"
+      },
+      {
+        "module": "inventory",
+        "method": "GET",
+        "endpoint": "/dashboard",
+        "fullPath": "/api/dashboard"
+      },
+      {
+        "module": "inventory",
+        "method": "GET",
+        "endpoint": "/export/excel",
+        "fullPath": "/api/export/excel"
+      },
+      {
+        "module": "inventory",
+        "method": "GET",
+        "endpoint": "/low-stock",
+        "fullPath": "/api/low-stock"
+      },
+      {
+        "module": "inventory",
+        "method": "GET",
+        "endpoint": "/reorder-items",
+        "fullPath": "/api/reorder-items"
+      },
+      {
+        "module": "inventory",
+        "method": "GET",
+        "endpoint": "/reorder-suggestions",
+        "fullPath": "/api/reorder-suggestions"
+      }
+    ],
+    "invoice": [
+      {
+        "module": "invoice",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "invoice",
+        "method": "GET",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "invoice",
+        "method": "PUT",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "invoice",
+        "method": "PATCH",
+        "endpoint": "/:id/cancel",
+        "fullPath": "/api/:id/cancel"
+      },
+      {
+        "module": "invoice",
+        "method": "PATCH",
+        "endpoint": "/:id/mark-paid",
+        "fullPath": "/api/:id/mark-paid"
+      },
+      {
+        "module": "invoice",
+        "method": "GET",
+        "endpoint": "/:id/pdf",
+        "fullPath": "/api/:id/pdf"
+      },
+      {
+        "module": "invoice",
+        "method": "GET",
+        "endpoint": "/analytics",
+        "fullPath": "/api/analytics"
+      },
+      {
+        "module": "invoice",
+        "method": "GET",
+        "endpoint": "/enhanced/:id",
+        "fullPath": "/api/enhanced/:id"
+      },
+      {
+        "module": "invoice",
+        "method": "GET",
+        "endpoint": "/enhanced/all",
+        "fullPath": "/api/enhanced/all"
+      },
+      {
+        "module": "invoice",
+        "method": "POST",
+        "endpoint": "/enhanced/generate/:orderId",
+        "fullPath": "/api/enhanced/generate/:orderId"
+      },
+      {
+        "module": "invoice",
+        "method": "POST",
+        "endpoint": "/generate/:orderId",
+        "fullPath": "/api/generate/:orderId"
+      }
+    ],
+    "notification": [
+      {
+        "module": "notification",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "notification",
+        "method": "POST",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "notification",
+        "method": "GET",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "notification",
+        "method": "DELETE",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "notification",
+        "method": "PATCH",
+        "endpoint": "/:id/read",
+        "fullPath": "/api/:id/read"
+      },
+      {
+        "module": "notification",
+        "method": "GET",
+        "endpoint": "/admin/all",
+        "fullPath": "/api/admin/all"
+      },
+      {
+        "module": "notification",
+        "method": "GET",
+        "endpoint": "/admin/analytics",
+        "fullPath": "/api/admin/analytics"
+      },
+      {
+        "module": "notification",
+        "method": "POST",
+        "endpoint": "/admin/broadcast",
+        "fullPath": "/api/admin/broadcast"
+      },
+      {
+        "module": "notification",
+        "method": "POST",
+        "endpoint": "/admin/fcm-token",
+        "fullPath": "/api/admin/fcm-token"
+      },
+      {
+        "module": "notification",
+        "method": "DELETE",
+        "endpoint": "/admin/fcm-token",
+        "fullPath": "/api/admin/fcm-token"
+      },
+      {
+        "module": "notification",
+        "method": "GET",
+        "endpoint": "/debug/admin-tokens",
+        "fullPath": "/api/debug/admin-tokens"
+      },
+      {
+        "module": "notification",
+        "method": "POST",
+        "endpoint": "/fcm-token",
+        "fullPath": "/api/fcm-token"
+      },
+      {
+        "module": "notification",
+        "method": "DELETE",
+        "endpoint": "/fcm-token",
+        "fullPath": "/api/fcm-token"
+      },
+      {
+        "module": "notification",
+        "method": "PATCH",
+        "endpoint": "/mark-all-read",
+        "fullPath": "/api/mark-all-read"
+      },
+      {
+        "module": "notification",
+        "method": "GET",
+        "endpoint": "/settings",
+        "fullPath": "/api/settings"
+      },
+      {
+        "module": "notification",
+        "method": "PUT",
+        "endpoint": "/settings",
+        "fullPath": "/api/settings"
+      },
+      {
+        "module": "notification",
+        "method": "POST",
+        "endpoint": "/test",
+        "fullPath": "/api/test"
+      }
+    ],
+    "order": [
+      {
+        "module": "order",
+        "method": "POST",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "order",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "order",
+        "method": "GET",
+        "endpoint": "/:orderId",
+        "fullPath": "/api/:orderId"
+      },
+      {
+        "module": "order",
+        "method": "PATCH",
+        "endpoint": "/:orderId/cancel",
+        "fullPath": "/api/:orderId/cancel"
+      },
+      {
+        "module": "order",
+        "method": "GET",
+        "endpoint": "/:orderId/track",
+        "fullPath": "/api/:orderId/track"
+      },
+      {
+        "module": "order",
+        "method": "PUT",
+        "endpoint": "/admin/:id",
+        "fullPath": "/api/admin/:id"
+      },
+      {
+        "module": "order",
+        "method": "PATCH",
+        "endpoint": "/admin/:id/status",
+        "fullPath": "/api/admin/:id/status"
+      },
+      {
+        "module": "order",
+        "method": "PUT",
+        "endpoint": "/admin/:orderId/delivery-method",
+        "fullPath": "/api/admin/:orderId/delivery-method"
+      },
+      {
+        "module": "order",
+        "method": "GET",
+        "endpoint": "/admin/all",
+        "fullPath": "/api/admin/all"
+      },
+      {
+        "module": "order",
+        "method": "PUT",
+        "endpoint": "/admin/bulk-delivery-method",
+        "fullPath": "/api/admin/bulk-delivery-method"
+      },
+      {
+        "module": "order",
+        "method": "GET",
+        "endpoint": "/admin/by-delivery-method",
+        "fullPath": "/api/admin/by-delivery-method"
+      },
+      {
+        "module": "order",
+        "method": "GET",
+        "endpoint": "/admin/delivery-options",
+        "fullPath": "/api/admin/delivery-options"
+      },
+      {
+        "module": "order",
+        "method": "GET",
+        "endpoint": "/admin/pending-delivery-assignment",
+        "fullPath": "/api/admin/pending-delivery-assignment"
+      },
+      {
+        "module": "order",
+        "method": "GET",
+        "endpoint": "/my-orders",
+        "fullPath": "/api/my-orders"
+      },
+      {
+        "module": "order",
+        "method": "GET",
+        "endpoint": "/test",
+        "fullPath": "/api/test"
+      }
+    ],
+    "payment": [
+      {
+        "module": "payment",
+        "method": "GET",
+        "endpoint": "/:paymentId",
+        "fullPath": "/api/:paymentId"
+      },
+      {
+        "module": "payment",
+        "method": "POST",
+        "endpoint": "/confirm-cod",
+        "fullPath": "/api/confirm-cod"
+      },
+      {
+        "module": "payment",
+        "method": "POST",
+        "endpoint": "/create",
+        "fullPath": "/api/create"
+      },
+      {
+        "module": "payment",
+        "method": "POST",
+        "endpoint": "/create-order",
+        "fullPath": "/api/create-order"
+      },
+      {
+        "module": "payment",
+        "method": "GET",
+        "endpoint": "/details/:paymentId",
+        "fullPath": "/api/details/:paymentId"
+      },
+      {
+        "module": "payment",
+        "method": "POST",
+        "endpoint": "/failure",
+        "fullPath": "/api/failure"
+      },
+      {
+        "module": "payment",
+        "method": "GET",
+        "endpoint": "/methods",
+        "fullPath": "/api/methods"
+      },
+      {
+        "module": "payment",
+        "method": "POST",
+        "endpoint": "/refund",
+        "fullPath": "/api/refund"
+      },
+      {
+        "module": "payment",
+        "method": "POST",
+        "endpoint": "/verify",
+        "fullPath": "/api/verify"
+      },
+      {
+        "module": "payment",
+        "method": "POST",
+        "endpoint": "/webhook",
+        "fullPath": "/api/webhook"
+      }
+    ],
+    "product": [
+      {
+        "module": "product",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "product",
+        "method": "POST",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "product",
+        "method": "GET",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "product",
+        "method": "PUT",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "product",
+        "method": "DELETE",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "product",
+        "method": "PATCH",
+        "endpoint": "/:id/inventory",
+        "fullPath": "/api/:id/inventory"
+      },
+      {
+        "module": "product",
+        "method": "DELETE",
+        "endpoint": "/:id/permanent",
+        "fullPath": "/api/:id/permanent"
+      },
+      {
+        "module": "product",
+        "method": "GET",
+        "endpoint": "/featured",
+        "fullPath": "/api/featured"
+      },
+      {
+        "module": "product",
+        "method": "GET",
+        "endpoint": "/search",
+        "fullPath": "/api/search"
+      }
+    ],
+    "productionCart": [
+      {
+        "module": "productionCart",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "productionCart",
+        "method": "POST",
+        "endpoint": "/add",
+        "fullPath": "/api/add"
+      },
+      {
+        "module": "productionCart",
+        "method": "DELETE",
+        "endpoint": "/clear",
+        "fullPath": "/api/clear"
+      },
+      {
+        "module": "productionCart",
+        "method": "DELETE",
+        "endpoint": "/remove/:itemId",
+        "fullPath": "/api/remove/:itemId"
+      },
+      {
+        "module": "productionCart",
+        "method": "PUT",
+        "endpoint": "/update/:itemId",
+        "fullPath": "/api/update/:itemId"
+      },
+      {
+        "module": "productionCart",
+        "method": "POST",
+        "endpoint": "/validate",
+        "fullPath": "/api/validate"
+      }
+    ],
+    "productionCategory": [
+      {
+        "module": "productionCategory",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "productionCategory",
+        "method": "GET",
+        "endpoint": "/:identifier/products",
+        "fullPath": "/api/:identifier/products"
+      },
+      {
+        "module": "productionCategory",
+        "method": "GET",
+        "endpoint": "/:identifier/subcategories",
+        "fullPath": "/api/:identifier/subcategories"
+      },
+      {
+        "module": "productionCategory",
+        "method": "GET",
+        "endpoint": "/main",
+        "fullPath": "/api/main"
+      },
+      {
+        "module": "productionCategory",
+        "method": "GET",
+        "endpoint": "/search",
+        "fullPath": "/api/search"
+      },
+      {
+        "module": "productionCategory",
+        "method": "GET",
+        "endpoint": "/tree",
+        "fullPath": "/api/tree"
+      }
+    ],
+    "productionOrder": [
+      {
+        "module": "productionOrder",
+        "method": "POST",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "productionOrder",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "productionOrder",
+        "method": "GET",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "productionOrder",
+        "method": "PUT",
+        "endpoint": "/:id/cancel",
+        "fullPath": "/api/:id/cancel"
+      },
+      {
+        "module": "productionOrder",
+        "method": "POST",
+        "endpoint": "/:id/return",
+        "fullPath": "/api/:id/return"
+      },
+      {
+        "module": "productionOrder",
+        "method": "PUT",
+        "endpoint": "/admin/:id/status",
+        "fullPath": "/api/admin/:id/status"
+      },
+      {
+        "module": "productionOrder",
+        "method": "GET",
+        "endpoint": "/admin/all",
+        "fullPath": "/api/admin/all"
+      },
+      {
+        "module": "productionOrder",
+        "method": "GET",
+        "endpoint": "/admin/analytics",
+        "fullPath": "/api/admin/analytics"
+      },
+      {
+        "module": "productionOrder",
+        "method": "POST",
+        "endpoint": "/validate-cart",
+        "fullPath": "/api/validate-cart"
+      }
+    ],
+    "productionProduct": [
+      {
+        "module": "productionProduct",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "productionProduct",
+        "method": "GET",
+        "endpoint": "/:id/recommendations",
+        "fullPath": "/api/:id/recommendations"
+      },
+      {
+        "module": "productionProduct",
+        "method": "GET",
+        "endpoint": "/:identifier",
+        "fullPath": "/api/:identifier"
+      }
+    ],
+    "production": [
+      {
+        "module": "production",
+        "method": "GET",
+        "endpoint": "/bestsellers",
+        "fullPath": "/api/bestsellers"
+      },
+      {
+        "module": "production",
+        "method": "GET",
+        "endpoint": "/featured",
+        "fullPath": "/api/featured"
+      },
+      {
+        "module": "production",
+        "method": "GET",
+        "endpoint": "/search",
+        "fullPath": "/api/search"
+      },
+      {
+        "module": "production",
+        "method": "GET",
+        "endpoint": "/stats",
+        "fullPath": "/api/stats"
+      },
+      {
+        "module": "production",
+        "method": "GET",
+        "endpoint": "/trending",
+        "fullPath": "/api/trending"
+      }
+    ],
+    "purchaseOrder": [
+      {
+        "module": "purchaseOrder",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "POST",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "GET",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "PUT",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "PATCH",
+        "endpoint": "/:id/approve",
+        "fullPath": "/api/:id/approve"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "PATCH",
+        "endpoint": "/:id/cancel",
+        "fullPath": "/api/:id/cancel"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "GET",
+        "endpoint": "/:id/pdf",
+        "fullPath": "/api/:id/pdf"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "PATCH",
+        "endpoint": "/:id/receive-items",
+        "fullPath": "/api/:id/receive-items"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "PATCH",
+        "endpoint": "/:id/reject",
+        "fullPath": "/api/:id/reject"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "GET",
+        "endpoint": "/analytics",
+        "fullPath": "/api/analytics"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "GET",
+        "endpoint": "/export/excel",
+        "fullPath": "/api/export/excel"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "GET",
+        "endpoint": "/overdue",
+        "fullPath": "/api/overdue"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "GET",
+        "endpoint": "/pending-approval",
+        "fullPath": "/api/pending-approval"
+      },
+      {
+        "module": "purchaseOrder",
+        "method": "GET",
+        "endpoint": "/summary",
+        "fullPath": "/api/summary"
+      }
+    ],
+    "qrCode": [
+      {
+        "module": "qrCode",
+        "method": "POST",
+        "endpoint": "/categories/all",
+        "fullPath": "/api/categories/all"
+      },
+      {
+        "module": "qrCode",
+        "method": "POST",
+        "endpoint": "/category/:categoryId",
+        "fullPath": "/api/category/:categoryId"
+      },
+      {
+        "module": "qrCode",
+        "method": "POST",
+        "endpoint": "/product/:productId",
+        "fullPath": "/api/product/:productId"
+      },
+      {
+        "module": "qrCode",
+        "method": "POST",
+        "endpoint": "/products/all",
+        "fullPath": "/api/products/all"
+      },
+      {
+        "module": "qrCode",
+        "method": "POST",
+        "endpoint": "/scan",
+        "fullPath": "/api/scan"
+      },
+      {
+        "module": "qrCode",
+        "method": "GET",
+        "endpoint": "/scanner",
+        "fullPath": "/api/scanner"
+      }
+    ],
+    "return": [
+      {
+        "module": "return",
+        "method": "POST",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "return",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "return",
+        "method": "GET",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "return",
+        "method": "PATCH",
+        "endpoint": "/:id/approve",
+        "fullPath": "/api/:id/approve"
+      },
+      {
+        "module": "return",
+        "method": "PATCH",
+        "endpoint": "/:id/complete",
+        "fullPath": "/api/:id/complete"
+      },
+      {
+        "module": "return",
+        "method": "PATCH",
+        "endpoint": "/:id/reject",
+        "fullPath": "/api/:id/reject"
+      },
+      {
+        "module": "return",
+        "method": "PATCH",
+        "endpoint": "/:id/schedule-pickup",
+        "fullPath": "/api/:id/schedule-pickup"
+      },
+      {
+        "module": "return",
+        "method": "GET",
+        "endpoint": "/admin/all",
+        "fullPath": "/api/admin/all"
+      },
+      {
+        "module": "return",
+        "method": "GET",
+        "endpoint": "/admin/statistics",
+        "fullPath": "/api/admin/statistics"
+      }
+    ],
+    "review": [
+      {
+        "module": "review",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "review",
+        "method": "POST",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "review",
+        "method": "PUT",
+        "endpoint": "/:reviewId",
+        "fullPath": "/api/:reviewId"
+      },
+      {
+        "module": "review",
+        "method": "DELETE",
+        "endpoint": "/:reviewId",
+        "fullPath": "/api/:reviewId"
+      },
+      {
+        "module": "review",
+        "method": "POST",
+        "endpoint": "/:reviewId/helpful",
+        "fullPath": "/api/:reviewId/helpful"
+      },
+      {
+        "module": "review",
+        "method": "POST",
+        "endpoint": "/:reviewId/report",
+        "fullPath": "/api/:reviewId/report"
+      },
+      {
+        "module": "review",
+        "method": "PATCH",
+        "endpoint": "/:reviewId/visibility",
+        "fullPath": "/api/:reviewId/visibility"
+      },
+      {
+        "module": "review",
+        "method": "GET",
+        "endpoint": "/product/:productId",
+        "fullPath": "/api/product/:productId"
+      }
+    ],
+    "shipping": [
+      {
+        "module": "shipping",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "shipping",
+        "method": "GET",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "shipping",
+        "method": "PATCH",
+        "endpoint": "/:id/cancel",
+        "fullPath": "/api/:id/cancel"
+      },
+      {
+        "module": "shipping",
+        "method": "GET",
+        "endpoint": "/analytics/summary",
+        "fullPath": "/api/analytics/summary"
+      },
+      {
+        "module": "shipping",
+        "method": "POST",
+        "endpoint": "/check-serviceability",
+        "fullPath": "/api/check-serviceability"
+      },
+      {
+        "module": "shipping",
+        "method": "GET",
+        "endpoint": "/delivery-options",
+        "fullPath": "/api/delivery-options"
+      },
+      {
+        "module": "shipping",
+        "method": "POST",
+        "endpoint": "/generate-labels",
+        "fullPath": "/api/generate-labels"
+      },
+      {
+        "module": "shipping",
+        "method": "POST",
+        "endpoint": "/generate-pickup",
+        "fullPath": "/api/generate-pickup"
+      },
+      {
+        "module": "shipping",
+        "method": "GET",
+        "endpoint": "/my-shipments",
+        "fullPath": "/api/my-shipments"
+      },
+      {
+        "module": "shipping",
+        "method": "POST",
+        "endpoint": "/orders/:orderId/create-shipment",
+        "fullPath": "/api/orders/:orderId/create-shipment"
+      },
+      {
+        "module": "shipping",
+        "method": "POST",
+        "endpoint": "/orders/:orderId/create-shipment-v2",
+        "fullPath": "/api/orders/:orderId/create-shipment-v2"
+      },
+      {
+        "module": "shipping",
+        "method": "GET",
+        "endpoint": "/track/:awbCode",
+        "fullPath": "/api/track/:awbCode"
+      },
+      {
+        "module": "shipping",
+        "method": "POST",
+        "endpoint": "/webhook/shiprocket",
+        "fullPath": "/api/webhook/shiprocket"
+      }
+    ],
+    "socialMedia": [
+      {
+        "module": "socialMedia",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "socialMedia",
+        "method": "POST",
+        "endpoint": "/:id/click",
+        "fullPath": "/api/:id/click"
+      },
+      {
+        "module": "socialMedia",
+        "method": "POST",
+        "endpoint": "/admin",
+        "fullPath": "/api/admin"
+      },
+      {
+        "module": "socialMedia",
+        "method": "GET",
+        "endpoint": "/admin/:id",
+        "fullPath": "/api/admin/:id"
+      },
+      {
+        "module": "socialMedia",
+        "method": "PUT",
+        "endpoint": "/admin/:id",
+        "fullPath": "/api/admin/:id"
+      },
+      {
+        "module": "socialMedia",
+        "method": "DELETE",
+        "endpoint": "/admin/:id",
+        "fullPath": "/api/admin/:id"
+      },
+      {
+        "module": "socialMedia",
+        "method": "GET",
+        "endpoint": "/admin/all",
+        "fullPath": "/api/admin/all"
+      },
+      {
+        "module": "socialMedia",
+        "method": "GET",
+        "endpoint": "/admin/analytics",
+        "fullPath": "/api/admin/analytics"
+      },
+      {
+        "module": "socialMedia",
+        "method": "PUT",
+        "endpoint": "/admin/bulk/reorder",
+        "fullPath": "/api/admin/bulk/reorder"
+      }
+    ],
+    "supplier": [
+      {
+        "module": "supplier",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "supplier",
+        "method": "POST",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "supplier",
+        "method": "GET",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "supplier",
+        "method": "PUT",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "supplier",
+        "method": "DELETE",
+        "endpoint": "/:id",
+        "fullPath": "/api/:id"
+      },
+      {
+        "module": "supplier",
+        "method": "PATCH",
+        "endpoint": "/:id/approve",
+        "fullPath": "/api/:id/approve"
+      },
+      {
+        "module": "supplier",
+        "method": "PATCH",
+        "endpoint": "/:id/financials",
+        "fullPath": "/api/:id/financials"
+      },
+      {
+        "module": "supplier",
+        "method": "PATCH",
+        "endpoint": "/:id/performance",
+        "fullPath": "/api/:id/performance"
+      },
+      {
+        "module": "supplier",
+        "method": "GET",
+        "endpoint": "/active",
+        "fullPath": "/api/active"
+      },
+      {
+        "module": "supplier",
+        "method": "GET",
+        "endpoint": "/analytics",
+        "fullPath": "/api/analytics"
+      },
+      {
+        "module": "supplier",
+        "method": "GET",
+        "endpoint": "/export/excel",
+        "fullPath": "/api/export/excel"
+      },
+      {
+        "module": "supplier",
+        "method": "GET",
+        "endpoint": "/performance-report",
+        "fullPath": "/api/performance-report"
+      }
+    ],
+    "support": [
+      {
+        "module": "support",
+        "method": "GET",
+        "endpoint": "/admin/dashboard",
+        "fullPath": "/api/admin/dashboard"
+      },
+      {
+        "module": "support",
+        "method": "GET",
+        "endpoint": "/admin/statistics",
+        "fullPath": "/api/admin/statistics"
+      },
+      {
+        "module": "support",
+        "method": "GET",
+        "endpoint": "/admin/tickets",
+        "fullPath": "/api/admin/tickets"
+      },
+      {
+        "module": "support",
+        "method": "PATCH",
+        "endpoint": "/admin/tickets/:id/assign",
+        "fullPath": "/api/admin/tickets/:id/assign"
+      },
+      {
+        "module": "support",
+        "method": "PATCH",
+        "endpoint": "/admin/tickets/:id/close",
+        "fullPath": "/api/admin/tickets/:id/close"
+      },
+      {
+        "module": "support",
+        "method": "PATCH",
+        "endpoint": "/admin/tickets/:id/escalate",
+        "fullPath": "/api/admin/tickets/:id/escalate"
+      },
+      {
+        "module": "support",
+        "method": "POST",
+        "endpoint": "/admin/tickets/:id/messages",
+        "fullPath": "/api/admin/tickets/:id/messages"
+      },
+      {
+        "module": "support",
+        "method": "PATCH",
+        "endpoint": "/admin/tickets/:id/resolve",
+        "fullPath": "/api/admin/tickets/:id/resolve"
+      },
+      {
+        "module": "support",
+        "method": "POST",
+        "endpoint": "/tickets",
+        "fullPath": "/api/tickets"
+      },
+      {
+        "module": "support",
+        "method": "GET",
+        "endpoint": "/tickets",
+        "fullPath": "/api/tickets"
+      },
+      {
+        "module": "support",
+        "method": "GET",
+        "endpoint": "/tickets/:id",
+        "fullPath": "/api/tickets/:id"
+      },
+      {
+        "module": "support",
+        "method": "POST",
+        "endpoint": "/tickets/:id/messages",
+        "fullPath": "/api/tickets/:id/messages"
+      }
+    ],
+    "systemSettings": [
+      {
+        "module": "systemSettings",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "systemSettings",
+        "method": "PUT",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "systemSettings",
+        "method": "GET",
+        "endpoint": "/export",
+        "fullPath": "/api/export"
+      },
+      {
+        "module": "systemSettings",
+        "method": "GET",
+        "endpoint": "/history",
+        "fullPath": "/api/history"
+      },
+      {
+        "module": "systemSettings",
+        "method": "POST",
+        "endpoint": "/import",
+        "fullPath": "/api/import"
+      },
+      {
+        "module": "systemSettings",
+        "method": "POST",
+        "endpoint": "/reset",
+        "fullPath": "/api/reset"
+      },
+      {
+        "module": "systemSettings",
+        "method": "GET",
+        "endpoint": "/sections/:section",
+        "fullPath": "/api/sections/:section"
+      },
+      {
+        "module": "systemSettings",
+        "method": "PUT",
+        "endpoint": "/sections/:section",
+        "fullPath": "/api/sections/:section"
+      },
+      {
+        "module": "systemSettings",
+        "method": "GET",
+        "endpoint": "/status",
+        "fullPath": "/api/status"
+      },
+      {
+        "module": "systemSettings",
+        "method": "GET",
+        "endpoint": "/validate",
+        "fullPath": "/api/validate"
+      },
+      {
+        "module": "systemSettings",
+        "method": "GET",
+        "endpoint": "/values/:path",
+        "fullPath": "/api/values/:path"
+      },
+      {
+        "module": "systemSettings",
+        "method": "PUT",
+        "endpoint": "/values/:path",
+        "fullPath": "/api/values/:path"
+      }
+    ],
+    "upload": [
+      {
+        "module": "upload",
+        "method": "POST",
+        "endpoint": "/category-image",
+        "fullPath": "/api/category-image"
+      },
+      {
+        "module": "upload",
+        "method": "DELETE",
+        "endpoint": "/delete",
+        "fullPath": "/api/delete"
+      },
+      {
+        "module": "upload",
+        "method": "POST",
+        "endpoint": "/delete-multiple",
+        "fullPath": "/api/delete-multiple"
+      },
+      {
+        "module": "upload",
+        "method": "POST",
+        "endpoint": "/multiple",
+        "fullPath": "/api/multiple"
+      },
+      {
+        "module": "upload",
+        "method": "POST",
+        "endpoint": "/product-images",
+        "fullPath": "/api/product-images"
+      },
+      {
+        "module": "upload",
+        "method": "POST",
+        "endpoint": "/single",
+        "fullPath": "/api/single"
+      },
+      {
+        "module": "upload",
+        "method": "GET",
+        "endpoint": "/storage-info",
+        "fullPath": "/api/storage-info"
+      },
+      {
+        "module": "upload",
+        "method": "GET",
+        "endpoint": "/test-connection",
+        "fullPath": "/api/test-connection"
+      }
+    ],
+    "user": [
+      {
+        "module": "user",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "user",
+        "method": "GET",
+        "endpoint": "/:userId",
+        "fullPath": "/api/:userId"
+      },
+      {
+        "module": "user",
+        "method": "PUT",
+        "endpoint": "/:userId",
+        "fullPath": "/api/:userId"
+      },
+      {
+        "module": "user",
+        "method": "DELETE",
+        "endpoint": "/:userId",
+        "fullPath": "/api/:userId"
+      },
+      {
+        "module": "user",
+        "method": "POST",
+        "endpoint": "/addresses",
+        "fullPath": "/api/addresses"
+      },
+      {
+        "module": "user",
+        "method": "GET",
+        "endpoint": "/addresses",
+        "fullPath": "/api/addresses"
+      },
+      {
+        "module": "user",
+        "method": "PUT",
+        "endpoint": "/addresses/:addressId",
+        "fullPath": "/api/addresses/:addressId"
+      },
+      {
+        "module": "user",
+        "method": "DELETE",
+        "endpoint": "/addresses/:addressId",
+        "fullPath": "/api/addresses/:addressId"
+      },
+      {
+        "module": "user",
+        "method": "PUT",
+        "endpoint": "/change-password",
+        "fullPath": "/api/change-password"
+      }
+    ],
+    "wallet": [
+      {
+        "module": "wallet",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "wallet",
+        "method": "POST",
+        "endpoint": "/add-money",
+        "fullPath": "/api/add-money"
+      },
+      {
+        "module": "wallet",
+        "method": "GET",
+        "endpoint": "/balance",
+        "fullPath": "/api/balance"
+      },
+      {
+        "module": "wallet",
+        "method": "POST",
+        "endpoint": "/check-balance",
+        "fullPath": "/api/check-balance"
+      },
+      {
+        "module": "wallet",
+        "method": "POST",
+        "endpoint": "/process-payment",
+        "fullPath": "/api/process-payment"
+      },
+      {
+        "module": "wallet",
+        "method": "GET",
+        "endpoint": "/transactions",
+        "fullPath": "/api/transactions"
+      },
+      {
+        "module": "wallet",
+        "method": "GET",
+        "endpoint": "/transactions/:id",
+        "fullPath": "/api/transactions/:id"
+      },
+      {
+        "module": "wallet",
+        "method": "GET",
+        "endpoint": "/transactions/summary",
+        "fullPath": "/api/transactions/summary"
+      }
+    ],
+    "wishlist": [
+      {
+        "module": "wishlist",
+        "method": "GET",
+        "endpoint": "/",
+        "fullPath": "/api/"
+      },
+      {
+        "module": "wishlist",
+        "method": "POST",
+        "endpoint": "/add",
+        "fullPath": "/api/add"
+      },
+      {
+        "module": "wishlist",
+        "method": "GET",
+        "endpoint": "/check/:productId",
+        "fullPath": "/api/check/:productId"
+      },
+      {
+        "module": "wishlist",
+        "method": "DELETE",
+        "endpoint": "/clear",
+        "fullPath": "/api/clear"
+      },
+      {
+        "module": "wishlist",
+        "method": "DELETE",
+        "endpoint": "/remove/:productId",
+        "fullPath": "/api/remove/:productId"
+      }
+    ]
+  },
+  "allAPIs": [
+    {
+      "module": "address",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "address",
+      "method": "POST",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "adminDashboard",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "appSettings",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "businessSettings",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "cart",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "category",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "category",
+      "method": "POST",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "coupon",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "coupon",
+      "method": "POST",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "inventory",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "invoice",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "notification",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "notification",
+      "method": "POST",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "order",
+      "method": "POST",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "order",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "product",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "product",
+      "method": "POST",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "productionCart",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "productionCategory",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "productionOrder",
+      "method": "POST",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "productionOrder",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "productionProduct",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "POST",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "return",
+      "method": "POST",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "return",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "review",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "review",
+      "method": "POST",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "shipping",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "socialMedia",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "supplier",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "supplier",
+      "method": "POST",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "systemSettings",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "systemSettings",
+      "method": "PUT",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "user",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "wallet",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "wishlist",
+      "method": "GET",
+      "endpoint": "/",
+      "fullPath": "/api/"
+    },
+    {
+      "module": "coupon",
+      "method": "PUT",
+      "endpoint": "/:couponId",
+      "fullPath": "/api/:couponId"
+    },
+    {
+      "module": "coupon",
+      "method": "DELETE",
+      "endpoint": "/:couponId",
+      "fullPath": "/api/:couponId"
+    },
+    {
+      "module": "imageProxy",
+      "method": "GET",
+      "endpoint": "/:folder/:filename",
+      "fullPath": "/api/:folder/:filename"
+    },
+    {
+      "module": "address",
+      "method": "GET",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "address",
+      "method": "PUT",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "address",
+      "method": "DELETE",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "category",
+      "method": "GET",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "category",
+      "method": "PUT",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "category",
+      "method": "DELETE",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "inventory",
+      "method": "GET",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "inventory",
+      "method": "PUT",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "invoice",
+      "method": "GET",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "invoice",
+      "method": "PUT",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "notification",
+      "method": "GET",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "notification",
+      "method": "DELETE",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "product",
+      "method": "GET",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "product",
+      "method": "PUT",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "product",
+      "method": "DELETE",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "productionOrder",
+      "method": "GET",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "GET",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "PUT",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "return",
+      "method": "GET",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "shipping",
+      "method": "GET",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "supplier",
+      "method": "GET",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "supplier",
+      "method": "PUT",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "supplier",
+      "method": "DELETE",
+      "endpoint": "/:id",
+      "fullPath": "/api/:id"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "PATCH",
+      "endpoint": "/:id/approve",
+      "fullPath": "/api/:id/approve"
+    },
+    {
+      "module": "return",
+      "method": "PATCH",
+      "endpoint": "/:id/approve",
+      "fullPath": "/api/:id/approve"
+    },
+    {
+      "module": "supplier",
+      "method": "PATCH",
+      "endpoint": "/:id/approve",
+      "fullPath": "/api/:id/approve"
+    },
+    {
+      "module": "invoice",
+      "method": "PATCH",
+      "endpoint": "/:id/cancel",
+      "fullPath": "/api/:id/cancel"
+    },
+    {
+      "module": "productionOrder",
+      "method": "PUT",
+      "endpoint": "/:id/cancel",
+      "fullPath": "/api/:id/cancel"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "PATCH",
+      "endpoint": "/:id/cancel",
+      "fullPath": "/api/:id/cancel"
+    },
+    {
+      "module": "shipping",
+      "method": "PATCH",
+      "endpoint": "/:id/cancel",
+      "fullPath": "/api/:id/cancel"
+    },
+    {
+      "module": "socialMedia",
+      "method": "POST",
+      "endpoint": "/:id/click",
+      "fullPath": "/api/:id/click"
+    },
+    {
+      "module": "return",
+      "method": "PATCH",
+      "endpoint": "/:id/complete",
+      "fullPath": "/api/:id/complete"
+    },
+    {
+      "module": "address",
+      "method": "PATCH",
+      "endpoint": "/:id/default",
+      "fullPath": "/api/:id/default"
+    },
+    {
+      "module": "supplier",
+      "method": "PATCH",
+      "endpoint": "/:id/financials",
+      "fullPath": "/api/:id/financials"
+    },
+    {
+      "module": "product",
+      "method": "PATCH",
+      "endpoint": "/:id/inventory",
+      "fullPath": "/api/:id/inventory"
+    },
+    {
+      "module": "invoice",
+      "method": "PATCH",
+      "endpoint": "/:id/mark-paid",
+      "fullPath": "/api/:id/mark-paid"
+    },
+    {
+      "module": "invoice",
+      "method": "GET",
+      "endpoint": "/:id/pdf",
+      "fullPath": "/api/:id/pdf"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "GET",
+      "endpoint": "/:id/pdf",
+      "fullPath": "/api/:id/pdf"
+    },
+    {
+      "module": "deliveryCompany",
+      "method": "PATCH",
+      "endpoint": "/:id/performance",
+      "fullPath": "/api/:id/performance"
+    },
+    {
+      "module": "supplier",
+      "method": "PATCH",
+      "endpoint": "/:id/performance",
+      "fullPath": "/api/:id/performance"
+    },
+    {
+      "module": "product",
+      "method": "DELETE",
+      "endpoint": "/:id/permanent",
+      "fullPath": "/api/:id/permanent"
+    },
+    {
+      "module": "deliveryCompany",
+      "method": "PATCH",
+      "endpoint": "/:id/preferred",
+      "fullPath": "/api/:id/preferred"
+    },
+    {
+      "module": "notification",
+      "method": "PATCH",
+      "endpoint": "/:id/read",
+      "fullPath": "/api/:id/read"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "PATCH",
+      "endpoint": "/:id/receive-items",
+      "fullPath": "/api/:id/receive-items"
+    },
+    {
+      "module": "productionProduct",
+      "method": "GET",
+      "endpoint": "/:id/recommendations",
+      "fullPath": "/api/:id/recommendations"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "PATCH",
+      "endpoint": "/:id/reject",
+      "fullPath": "/api/:id/reject"
+    },
+    {
+      "module": "return",
+      "method": "PATCH",
+      "endpoint": "/:id/reject",
+      "fullPath": "/api/:id/reject"
+    },
+    {
+      "module": "inventory",
+      "method": "PATCH",
+      "endpoint": "/:id/release-stock",
+      "fullPath": "/api/:id/release-stock"
+    },
+    {
+      "module": "inventory",
+      "method": "PATCH",
+      "endpoint": "/:id/reserve-stock",
+      "fullPath": "/api/:id/reserve-stock"
+    },
+    {
+      "module": "productionOrder",
+      "method": "POST",
+      "endpoint": "/:id/return",
+      "fullPath": "/api/:id/return"
+    },
+    {
+      "module": "return",
+      "method": "PATCH",
+      "endpoint": "/:id/schedule-pickup",
+      "fullPath": "/api/:id/schedule-pickup"
+    },
+    {
+      "module": "inventory",
+      "method": "PATCH",
+      "endpoint": "/:id/stock-count",
+      "fullPath": "/api/:id/stock-count"
+    },
+    {
+      "module": "deliveryCompany",
+      "method": "PATCH",
+      "endpoint": "/:id/toggle-status",
+      "fullPath": "/api/:id/toggle-status"
+    },
+    {
+      "module": "inventory",
+      "method": "PATCH",
+      "endpoint": "/:id/update-stock",
+      "fullPath": "/api/:id/update-stock"
+    },
+    {
+      "module": "address",
+      "method": "POST",
+      "endpoint": "/:id/validate",
+      "fullPath": "/api/:id/validate"
+    },
+    {
+      "module": "productionProduct",
+      "method": "GET",
+      "endpoint": "/:identifier",
+      "fullPath": "/api/:identifier"
+    },
+    {
+      "module": "productionCategory",
+      "method": "GET",
+      "endpoint": "/:identifier/products",
+      "fullPath": "/api/:identifier/products"
+    },
+    {
+      "module": "productionCategory",
+      "method": "GET",
+      "endpoint": "/:identifier/subcategories",
+      "fullPath": "/api/:identifier/subcategories"
+    },
+    {
+      "module": "order",
+      "method": "GET",
+      "endpoint": "/:orderId",
+      "fullPath": "/api/:orderId"
+    },
+    {
+      "module": "order",
+      "method": "PATCH",
+      "endpoint": "/:orderId/cancel",
+      "fullPath": "/api/:orderId/cancel"
+    },
+    {
+      "module": "order",
+      "method": "GET",
+      "endpoint": "/:orderId/track",
+      "fullPath": "/api/:orderId/track"
+    },
+    {
+      "module": "payment",
+      "method": "GET",
+      "endpoint": "/:paymentId",
+      "fullPath": "/api/:paymentId"
+    },
+    {
+      "module": "review",
+      "method": "PUT",
+      "endpoint": "/:reviewId",
+      "fullPath": "/api/:reviewId"
+    },
+    {
+      "module": "review",
+      "method": "DELETE",
+      "endpoint": "/:reviewId",
+      "fullPath": "/api/:reviewId"
+    },
+    {
+      "module": "review",
+      "method": "POST",
+      "endpoint": "/:reviewId/helpful",
+      "fullPath": "/api/:reviewId/helpful"
+    },
+    {
+      "module": "review",
+      "method": "POST",
+      "endpoint": "/:reviewId/report",
+      "fullPath": "/api/:reviewId/report"
+    },
+    {
+      "module": "review",
+      "method": "PATCH",
+      "endpoint": "/:reviewId/visibility",
+      "fullPath": "/api/:reviewId/visibility"
+    },
+    {
+      "module": "user",
+      "method": "GET",
+      "endpoint": "/:userId",
+      "fullPath": "/api/:userId"
+    },
+    {
+      "module": "user",
+      "method": "PUT",
+      "endpoint": "/:userId",
+      "fullPath": "/api/:userId"
+    },
+    {
+      "module": "user",
+      "method": "DELETE",
+      "endpoint": "/:userId",
+      "fullPath": "/api/:userId"
+    },
+    {
+      "module": "supplier",
+      "method": "GET",
+      "endpoint": "/active",
+      "fullPath": "/api/active"
+    },
+    {
+      "module": "cart",
+      "method": "POST",
+      "endpoint": "/add",
+      "fullPath": "/api/add"
+    },
+    {
+      "module": "productionCart",
+      "method": "POST",
+      "endpoint": "/add",
+      "fullPath": "/api/add"
+    },
+    {
+      "module": "wishlist",
+      "method": "POST",
+      "endpoint": "/add",
+      "fullPath": "/api/add"
+    },
+    {
+      "module": "wallet",
+      "method": "POST",
+      "endpoint": "/add-money",
+      "fullPath": "/api/add-money"
+    },
+    {
+      "module": "user",
+      "method": "POST",
+      "endpoint": "/addresses",
+      "fullPath": "/api/addresses"
+    },
+    {
+      "module": "user",
+      "method": "GET",
+      "endpoint": "/addresses",
+      "fullPath": "/api/addresses"
+    },
+    {
+      "module": "user",
+      "method": "PUT",
+      "endpoint": "/addresses/:addressId",
+      "fullPath": "/api/addresses/:addressId"
+    },
+    {
+      "module": "user",
+      "method": "DELETE",
+      "endpoint": "/addresses/:addressId",
+      "fullPath": "/api/addresses/:addressId"
+    },
+    {
+      "module": "appSettings",
+      "method": "GET",
+      "endpoint": "/admin",
+      "fullPath": "/api/admin"
+    },
+    {
+      "module": "appSettings",
+      "method": "PUT",
+      "endpoint": "/admin",
+      "fullPath": "/api/admin"
+    },
+    {
+      "module": "coupon",
+      "method": "GET",
+      "endpoint": "/admin",
+      "fullPath": "/api/admin"
+    },
+    {
+      "module": "socialMedia",
+      "method": "POST",
+      "endpoint": "/admin",
+      "fullPath": "/api/admin"
+    },
+    {
+      "module": "order",
+      "method": "PUT",
+      "endpoint": "/admin/:id",
+      "fullPath": "/api/admin/:id"
+    },
+    {
+      "module": "socialMedia",
+      "method": "GET",
+      "endpoint": "/admin/:id",
+      "fullPath": "/api/admin/:id"
+    },
+    {
+      "module": "socialMedia",
+      "method": "PUT",
+      "endpoint": "/admin/:id",
+      "fullPath": "/api/admin/:id"
+    },
+    {
+      "module": "socialMedia",
+      "method": "DELETE",
+      "endpoint": "/admin/:id",
+      "fullPath": "/api/admin/:id"
+    },
+    {
+      "module": "order",
+      "method": "PATCH",
+      "endpoint": "/admin/:id/status",
+      "fullPath": "/api/admin/:id/status"
+    },
+    {
+      "module": "productionOrder",
+      "method": "PUT",
+      "endpoint": "/admin/:id/status",
+      "fullPath": "/api/admin/:id/status"
+    },
+    {
+      "module": "order",
+      "method": "PUT",
+      "endpoint": "/admin/:orderId/delivery-method",
+      "fullPath": "/api/admin/:orderId/delivery-method"
+    },
+    {
+      "module": "notification",
+      "method": "GET",
+      "endpoint": "/admin/all",
+      "fullPath": "/api/admin/all"
+    },
+    {
+      "module": "order",
+      "method": "GET",
+      "endpoint": "/admin/all",
+      "fullPath": "/api/admin/all"
+    },
+    {
+      "module": "productionOrder",
+      "method": "GET",
+      "endpoint": "/admin/all",
+      "fullPath": "/api/admin/all"
+    },
+    {
+      "module": "return",
+      "method": "GET",
+      "endpoint": "/admin/all",
+      "fullPath": "/api/admin/all"
+    },
+    {
+      "module": "socialMedia",
+      "method": "GET",
+      "endpoint": "/admin/all",
+      "fullPath": "/api/admin/all"
+    },
+    {
+      "module": "notification",
+      "method": "GET",
+      "endpoint": "/admin/analytics",
+      "fullPath": "/api/admin/analytics"
+    },
+    {
+      "module": "productionOrder",
+      "method": "GET",
+      "endpoint": "/admin/analytics",
+      "fullPath": "/api/admin/analytics"
+    },
+    {
+      "module": "socialMedia",
+      "method": "GET",
+      "endpoint": "/admin/analytics",
+      "fullPath": "/api/admin/analytics"
+    },
+    {
+      "module": "appSettings",
+      "method": "PUT",
+      "endpoint": "/admin/app-version",
+      "fullPath": "/api/admin/app-version"
+    },
+    {
+      "module": "notification",
+      "method": "POST",
+      "endpoint": "/admin/broadcast",
+      "fullPath": "/api/admin/broadcast"
+    },
+    {
+      "module": "order",
+      "method": "PUT",
+      "endpoint": "/admin/bulk-delivery-method",
+      "fullPath": "/api/admin/bulk-delivery-method"
+    },
+    {
+      "module": "socialMedia",
+      "method": "PUT",
+      "endpoint": "/admin/bulk/reorder",
+      "fullPath": "/api/admin/bulk/reorder"
+    },
+    {
+      "module": "appSettings",
+      "method": "PUT",
+      "endpoint": "/admin/business-hours",
+      "fullPath": "/api/admin/business-hours"
+    },
+    {
+      "module": "order",
+      "method": "GET",
+      "endpoint": "/admin/by-delivery-method",
+      "fullPath": "/api/admin/by-delivery-method"
+    },
+    {
+      "module": "appSettings",
+      "method": "PUT",
+      "endpoint": "/admin/contact-info",
+      "fullPath": "/api/admin/contact-info"
+    },
+    {
+      "module": "support",
+      "method": "GET",
+      "endpoint": "/admin/dashboard",
+      "fullPath": "/api/admin/dashboard"
+    },
+    {
+      "module": "order",
+      "method": "GET",
+      "endpoint": "/admin/delivery-options",
+      "fullPath": "/api/admin/delivery-options"
+    },
+    {
+      "module": "appSettings",
+      "method": "PUT",
+      "endpoint": "/admin/delivery-settings",
+      "fullPath": "/api/admin/delivery-settings"
+    },
+    {
+      "module": "notification",
+      "method": "POST",
+      "endpoint": "/admin/fcm-token",
+      "fullPath": "/api/admin/fcm-token"
+    },
+    {
+      "module": "notification",
+      "method": "DELETE",
+      "endpoint": "/admin/fcm-token",
+      "fullPath": "/api/admin/fcm-token"
+    },
+    {
+      "module": "appSettings",
+      "method": "PUT",
+      "endpoint": "/admin/features",
+      "fullPath": "/api/admin/features"
+    },
+    {
+      "module": "appSettings",
+      "method": "PUT",
+      "endpoint": "/admin/maintenance",
+      "fullPath": "/api/admin/maintenance"
+    },
+    {
+      "module": "appSettings",
+      "method": "PUT",
+      "endpoint": "/admin/order-settings",
+      "fullPath": "/api/admin/order-settings"
+    },
+    {
+      "module": "order",
+      "method": "GET",
+      "endpoint": "/admin/pending-delivery-assignment",
+      "fullPath": "/api/admin/pending-delivery-assignment"
+    },
+    {
+      "module": "appSettings",
+      "method": "POST",
+      "endpoint": "/admin/reset",
+      "fullPath": "/api/admin/reset"
+    },
+    {
+      "module": "return",
+      "method": "GET",
+      "endpoint": "/admin/statistics",
+      "fullPath": "/api/admin/statistics"
+    },
+    {
+      "module": "support",
+      "method": "GET",
+      "endpoint": "/admin/statistics",
+      "fullPath": "/api/admin/statistics"
+    },
+    {
+      "module": "support",
+      "method": "GET",
+      "endpoint": "/admin/tickets",
+      "fullPath": "/api/admin/tickets"
+    },
+    {
+      "module": "support",
+      "method": "PATCH",
+      "endpoint": "/admin/tickets/:id/assign",
+      "fullPath": "/api/admin/tickets/:id/assign"
+    },
+    {
+      "module": "support",
+      "method": "PATCH",
+      "endpoint": "/admin/tickets/:id/close",
+      "fullPath": "/api/admin/tickets/:id/close"
+    },
+    {
+      "module": "support",
+      "method": "PATCH",
+      "endpoint": "/admin/tickets/:id/escalate",
+      "fullPath": "/api/admin/tickets/:id/escalate"
+    },
+    {
+      "module": "support",
+      "method": "POST",
+      "endpoint": "/admin/tickets/:id/messages",
+      "fullPath": "/api/admin/tickets/:id/messages"
+    },
+    {
+      "module": "support",
+      "method": "PATCH",
+      "endpoint": "/admin/tickets/:id/resolve",
+      "fullPath": "/api/admin/tickets/:id/resolve"
+    },
+    {
+      "module": "appSettings",
+      "method": "PUT",
+      "endpoint": "/admin/toggle-active",
+      "fullPath": "/api/admin/toggle-active"
+    },
+    {
+      "module": "billManagement",
+      "method": "GET",
+      "endpoint": "/analytics",
+      "fullPath": "/api/analytics"
+    },
+    {
+      "module": "gst",
+      "method": "GET",
+      "endpoint": "/analytics",
+      "fullPath": "/api/analytics"
+    },
+    {
+      "module": "inventory",
+      "method": "GET",
+      "endpoint": "/analytics",
+      "fullPath": "/api/analytics"
+    },
+    {
+      "module": "invoice",
+      "method": "GET",
+      "endpoint": "/analytics",
+      "fullPath": "/api/analytics"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "GET",
+      "endpoint": "/analytics",
+      "fullPath": "/api/analytics"
+    },
+    {
+      "module": "supplier",
+      "method": "GET",
+      "endpoint": "/analytics",
+      "fullPath": "/api/analytics"
+    },
+    {
+      "module": "shipping",
+      "method": "GET",
+      "endpoint": "/analytics/summary",
+      "fullPath": "/api/analytics/summary"
+    },
+    {
+      "module": "coupon",
+      "method": "POST",
+      "endpoint": "/apply",
+      "fullPath": "/api/apply"
+    },
+    {
+      "module": "deliveryManagement",
+      "method": "GET",
+      "endpoint": "/assignments",
+      "fullPath": "/api/assignments"
+    },
+    {
+      "module": "wallet",
+      "method": "GET",
+      "endpoint": "/balance",
+      "fullPath": "/api/balance"
+    },
+    {
+      "module": "imageProxy",
+      "method": "POST",
+      "endpoint": "/batch-urls",
+      "fullPath": "/api/batch-urls"
+    },
+    {
+      "module": "production",
+      "method": "GET",
+      "endpoint": "/bestsellers",
+      "fullPath": "/api/bestsellers"
+    },
+    {
+      "module": "billManagement",
+      "method": "GET",
+      "endpoint": "/bills",
+      "fullPath": "/api/bills"
+    },
+    {
+      "module": "category",
+      "method": "GET",
+      "endpoint": "/breadcrumb/:slug",
+      "fullPath": "/api/breadcrumb/:slug"
+    },
+    {
+      "module": "contabo",
+      "method": "GET",
+      "endpoint": "/bucket-stats",
+      "fullPath": "/api/bucket-stats"
+    },
+    {
+      "module": "deliveryCompany",
+      "method": "PATCH",
+      "endpoint": "/bulk/status",
+      "fullPath": "/api/bulk/status"
+    },
+    {
+      "module": "imageProxy",
+      "method": "DELETE",
+      "endpoint": "/cache/clear",
+      "fullPath": "/api/cache/clear"
+    },
+    {
+      "module": "imageProxy",
+      "method": "GET",
+      "endpoint": "/cache/stats",
+      "fullPath": "/api/cache/stats"
+    },
+    {
+      "module": "gst",
+      "method": "POST",
+      "endpoint": "/calculate",
+      "fullPath": "/api/calculate"
+    },
+    {
+      "module": "adminManagement",
+      "method": "PATCH",
+      "endpoint": "/categories/:id/toggle-status",
+      "fullPath": "/api/categories/:id/toggle-status"
+    },
+    {
+      "module": "qrCode",
+      "method": "POST",
+      "endpoint": "/categories/all",
+      "fullPath": "/api/categories/all"
+    },
+    {
+      "module": "upload",
+      "method": "POST",
+      "endpoint": "/category-image",
+      "fullPath": "/api/category-image"
+    },
+    {
+      "module": "qrCode",
+      "method": "POST",
+      "endpoint": "/category/:categoryId",
+      "fullPath": "/api/category/:categoryId"
+    },
+    {
+      "module": "user",
+      "method": "PUT",
+      "endpoint": "/change-password",
+      "fullPath": "/api/change-password"
+    },
+    {
+      "module": "wallet",
+      "method": "POST",
+      "endpoint": "/check-balance",
+      "fullPath": "/api/check-balance"
+    },
+    {
+      "module": "shipping",
+      "method": "POST",
+      "endpoint": "/check-serviceability",
+      "fullPath": "/api/check-serviceability"
+    },
+    {
+      "module": "wishlist",
+      "method": "GET",
+      "endpoint": "/check/:productId",
+      "fullPath": "/api/check/:productId"
+    },
+    {
+      "module": "cart",
+      "method": "DELETE",
+      "endpoint": "/clear",
+      "fullPath": "/api/clear"
+    },
+    {
+      "module": "productionCart",
+      "method": "DELETE",
+      "endpoint": "/clear",
+      "fullPath": "/api/clear"
+    },
+    {
+      "module": "wishlist",
+      "method": "DELETE",
+      "endpoint": "/clear",
+      "fullPath": "/api/clear"
+    },
+    {
+      "module": "businessSettings",
+      "method": "PUT",
+      "endpoint": "/company",
+      "fullPath": "/api/company"
+    },
+    {
+      "module": "gst",
+      "method": "GET",
+      "endpoint": "/config",
+      "fullPath": "/api/config"
+    },
+    {
+      "module": "gst",
+      "method": "PUT",
+      "endpoint": "/config",
+      "fullPath": "/api/config"
+    },
+    {
+      "module": "payment",
+      "method": "POST",
+      "endpoint": "/confirm-cod",
+      "fullPath": "/api/confirm-cod"
+    },
+    {
+      "module": "adminManagement",
+      "method": "PATCH",
+      "endpoint": "/coupons/:id/toggle-status",
+      "fullPath": "/api/coupons/:id/toggle-status"
+    },
+    {
+      "module": "payment",
+      "method": "POST",
+      "endpoint": "/create",
+      "fullPath": "/api/create"
+    },
+    {
+      "module": "payment",
+      "method": "POST",
+      "endpoint": "/create-order",
+      "fullPath": "/api/create-order"
+    },
+    {
+      "module": "advancedReports",
+      "method": "GET",
+      "endpoint": "/customer-analytics",
+      "fullPath": "/api/customer-analytics"
+    },
+    {
+      "module": "billManagement",
+      "method": "GET",
+      "endpoint": "/dashboard",
+      "fullPath": "/api/dashboard"
+    },
+    {
+      "module": "inventory",
+      "method": "GET",
+      "endpoint": "/dashboard",
+      "fullPath": "/api/dashboard"
+    },
+    {
+      "module": "deliveryCompany",
+      "method": "GET",
+      "endpoint": "/dashboard/stats",
+      "fullPath": "/api/dashboard/stats"
+    },
+    {
+      "module": "notification",
+      "method": "GET",
+      "endpoint": "/debug/admin-tokens",
+      "fullPath": "/api/debug/admin-tokens"
+    },
+    {
+      "module": "address",
+      "method": "GET",
+      "endpoint": "/default",
+      "fullPath": "/api/default"
+    },
+    {
+      "module": "upload",
+      "method": "DELETE",
+      "endpoint": "/delete",
+      "fullPath": "/api/delete"
+    },
+    {
+      "module": "contabo",
+      "method": "DELETE",
+      "endpoint": "/delete-file",
+      "fullPath": "/api/delete-file"
+    },
+    {
+      "module": "upload",
+      "method": "POST",
+      "endpoint": "/delete-multiple",
+      "fullPath": "/api/delete-multiple"
+    },
+    {
+      "module": "shipping",
+      "method": "GET",
+      "endpoint": "/delivery-options",
+      "fullPath": "/api/delivery-options"
+    },
+    {
+      "module": "imageSearch",
+      "method": "POST",
+      "endpoint": "/demo",
+      "fullPath": "/api/demo"
+    },
+    {
+      "module": "payment",
+      "method": "GET",
+      "endpoint": "/details/:paymentId",
+      "fullPath": "/api/details/:paymentId"
+    },
+    {
+      "module": "imageProxy",
+      "method": "GET",
+      "endpoint": "/direct/:folder/:filename",
+      "fullPath": "/api/direct/:folder/:filename"
+    },
+    {
+      "module": "invoice",
+      "method": "GET",
+      "endpoint": "/enhanced/:id",
+      "fullPath": "/api/enhanced/:id"
+    },
+    {
+      "module": "invoice",
+      "method": "GET",
+      "endpoint": "/enhanced/all",
+      "fullPath": "/api/enhanced/all"
+    },
+    {
+      "module": "invoice",
+      "method": "POST",
+      "endpoint": "/enhanced/generate/:orderId",
+      "fullPath": "/api/enhanced/generate/:orderId"
+    },
+    {
+      "module": "deliveryCompany",
+      "method": "GET",
+      "endpoint": "/export",
+      "fullPath": "/api/export"
+    },
+    {
+      "module": "systemSettings",
+      "method": "GET",
+      "endpoint": "/export",
+      "fullPath": "/api/export"
+    },
+    {
+      "module": "advancedReports",
+      "method": "GET",
+      "endpoint": "/export/excel",
+      "fullPath": "/api/export/excel"
+    },
+    {
+      "module": "billManagement",
+      "method": "GET",
+      "endpoint": "/export/excel",
+      "fullPath": "/api/export/excel"
+    },
+    {
+      "module": "inventory",
+      "method": "GET",
+      "endpoint": "/export/excel",
+      "fullPath": "/api/export/excel"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "GET",
+      "endpoint": "/export/excel",
+      "fullPath": "/api/export/excel"
+    },
+    {
+      "module": "supplier",
+      "method": "GET",
+      "endpoint": "/export/excel",
+      "fullPath": "/api/export/excel"
+    },
+    {
+      "module": "payment",
+      "method": "POST",
+      "endpoint": "/failure",
+      "fullPath": "/api/failure"
+    },
+    {
+      "module": "notification",
+      "method": "POST",
+      "endpoint": "/fcm-token",
+      "fullPath": "/api/fcm-token"
+    },
+    {
+      "module": "notification",
+      "method": "DELETE",
+      "endpoint": "/fcm-token",
+      "fullPath": "/api/fcm-token"
+    },
+    {
+      "module": "category",
+      "method": "GET",
+      "endpoint": "/featured",
+      "fullPath": "/api/featured"
+    },
+    {
+      "module": "product",
+      "method": "GET",
+      "endpoint": "/featured",
+      "fullPath": "/api/featured"
+    },
+    {
+      "module": "production",
+      "method": "GET",
+      "endpoint": "/featured",
+      "fullPath": "/api/featured"
+    },
+    {
+      "module": "businessSettings",
+      "method": "PUT",
+      "endpoint": "/features",
+      "fullPath": "/api/features"
+    },
+    {
+      "module": "billManagement",
+      "method": "POST",
+      "endpoint": "/generate-ca-report",
+      "fullPath": "/api/generate-ca-report"
+    },
+    {
+      "module": "shipping",
+      "method": "POST",
+      "endpoint": "/generate-labels",
+      "fullPath": "/api/generate-labels"
+    },
+    {
+      "module": "shipping",
+      "method": "POST",
+      "endpoint": "/generate-pickup",
+      "fullPath": "/api/generate-pickup"
+    },
+    {
+      "module": "invoice",
+      "method": "POST",
+      "endpoint": "/generate/:orderId",
+      "fullPath": "/api/generate/:orderId"
+    },
+    {
+      "module": "businessSettings",
+      "method": "PUT",
+      "endpoint": "/gst",
+      "fullPath": "/api/gst"
+    },
+    {
+      "module": "imageSearch",
+      "method": "GET",
+      "endpoint": "/health",
+      "fullPath": "/api/health"
+    },
+    {
+      "module": "systemSettings",
+      "method": "GET",
+      "endpoint": "/history",
+      "fullPath": "/api/history"
+    },
+    {
+      "module": "gst",
+      "method": "POST",
+      "endpoint": "/hsn-codes",
+      "fullPath": "/api/hsn-codes"
+    },
+    {
+      "module": "gst",
+      "method": "PUT",
+      "endpoint": "/hsn-codes/:code",
+      "fullPath": "/api/hsn-codes/:code"
+    },
+    {
+      "module": "systemSettings",
+      "method": "POST",
+      "endpoint": "/import",
+      "fullPath": "/api/import"
+    },
+    {
+      "module": "advancedReports",
+      "method": "GET",
+      "endpoint": "/inventory",
+      "fullPath": "/api/inventory"
+    },
+    {
+      "module": "businessSettings",
+      "method": "PUT",
+      "endpoint": "/inventory",
+      "fullPath": "/api/inventory"
+    },
+    {
+      "module": "cart",
+      "method": "PUT",
+      "endpoint": "/item/:itemId",
+      "fullPath": "/api/item/:itemId"
+    },
+    {
+      "module": "cart",
+      "method": "DELETE",
+      "endpoint": "/item/:itemId",
+      "fullPath": "/api/item/:itemId"
+    },
+    {
+      "module": "contabo",
+      "method": "GET",
+      "endpoint": "/list-files",
+      "fullPath": "/api/list-files"
+    },
+    {
+      "module": "deliveryCompany",
+      "method": "GET",
+      "endpoint": "/location",
+      "fullPath": "/api/location"
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "endpoint": "/login",
+      "fullPath": "/api/login"
+    },
+    {
+      "module": "inventory",
+      "method": "GET",
+      "endpoint": "/low-stock",
+      "fullPath": "/api/low-stock"
+    },
+    {
+      "module": "productionCategory",
+      "method": "GET",
+      "endpoint": "/main",
+      "fullPath": "/api/main"
+    },
+    {
+      "module": "notification",
+      "method": "PATCH",
+      "endpoint": "/mark-all-read",
+      "fullPath": "/api/mark-all-read"
+    },
+    {
+      "module": "cart",
+      "method": "POST",
+      "endpoint": "/merge",
+      "fullPath": "/api/merge"
+    },
+    {
+      "module": "payment",
+      "method": "GET",
+      "endpoint": "/methods",
+      "fullPath": "/api/methods"
+    },
+    {
+      "module": "upload",
+      "method": "POST",
+      "endpoint": "/multiple",
+      "fullPath": "/api/multiple"
+    },
+    {
+      "module": "contabo",
+      "method": "POST",
+      "endpoint": "/multiple-presigned-upload-urls",
+      "fullPath": "/api/multiple-presigned-upload-urls"
+    },
+    {
+      "module": "order",
+      "method": "GET",
+      "endpoint": "/my-orders",
+      "fullPath": "/api/my-orders"
+    },
+    {
+      "module": "shipping",
+      "method": "GET",
+      "endpoint": "/my-shipments",
+      "fullPath": "/api/my-shipments"
+    },
+    {
+      "module": "businessSettings",
+      "method": "PUT",
+      "endpoint": "/notifications",
+      "fullPath": "/api/notifications"
+    },
+    {
+      "module": "adminDelivery",
+      "method": "GET",
+      "endpoint": "/options",
+      "fullPath": "/api/options"
+    },
+    {
+      "module": "deliveryCompany",
+      "method": "GET",
+      "endpoint": "/options",
+      "fullPath": "/api/options"
+    },
+    {
+      "module": "deliveryManagement",
+      "method": "GET",
+      "endpoint": "/options",
+      "fullPath": "/api/options"
+    },
+    {
+      "module": "adminDelivery",
+      "method": "GET",
+      "endpoint": "/orders",
+      "fullPath": "/api/orders"
+    },
+    {
+      "module": "businessSettings",
+      "method": "PUT",
+      "endpoint": "/orders",
+      "fullPath": "/api/orders"
+    },
+    {
+      "module": "adminManagement",
+      "method": "PATCH",
+      "endpoint": "/orders/:id/status",
+      "fullPath": "/api/orders/:id/status"
+    },
+    {
+      "module": "deliveryManagement",
+      "method": "POST",
+      "endpoint": "/orders/:orderId/assign",
+      "fullPath": "/api/orders/:orderId/assign"
+    },
+    {
+      "module": "deliveryManagement",
+      "method": "PUT",
+      "endpoint": "/orders/:orderId/assignment",
+      "fullPath": "/api/orders/:orderId/assignment"
+    },
+    {
+      "module": "shipping",
+      "method": "POST",
+      "endpoint": "/orders/:orderId/create-shipment",
+      "fullPath": "/api/orders/:orderId/create-shipment"
+    },
+    {
+      "module": "shipping",
+      "method": "POST",
+      "endpoint": "/orders/:orderId/create-shipment-v2",
+      "fullPath": "/api/orders/:orderId/create-shipment-v2"
+    },
+    {
+      "module": "adminDelivery",
+      "method": "POST",
+      "endpoint": "/orders/:orderId/sync",
+      "fullPath": "/api/orders/:orderId/sync"
+    },
+    {
+      "module": "adminDelivery",
+      "method": "GET",
+      "endpoint": "/orders/pending",
+      "fullPath": "/api/orders/pending"
+    },
+    {
+      "module": "deliveryManagement",
+      "method": "GET",
+      "endpoint": "/orders/pending",
+      "fullPath": "/api/orders/pending"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "GET",
+      "endpoint": "/overdue",
+      "fullPath": "/api/overdue"
+    },
+    {
+      "module": "businessSettings",
+      "method": "PUT",
+      "endpoint": "/payments",
+      "fullPath": "/api/payments"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "GET",
+      "endpoint": "/pending-approval",
+      "fullPath": "/api/pending-approval"
+    },
+    {
+      "module": "supplier",
+      "method": "GET",
+      "endpoint": "/performance-report",
+      "fullPath": "/api/performance-report"
+    },
+    {
+      "module": "contabo",
+      "method": "POST",
+      "endpoint": "/presigned-download-url",
+      "fullPath": "/api/presigned-download-url"
+    },
+    {
+      "module": "contabo",
+      "method": "POST",
+      "endpoint": "/presigned-upload-url",
+      "fullPath": "/api/presigned-upload-url"
+    },
+    {
+      "module": "wallet",
+      "method": "POST",
+      "endpoint": "/process-payment",
+      "fullPath": "/api/process-payment"
+    },
+    {
+      "module": "upload",
+      "method": "POST",
+      "endpoint": "/product-images",
+      "fullPath": "/api/product-images"
+    },
+    {
+      "module": "qrCode",
+      "method": "POST",
+      "endpoint": "/product/:productId",
+      "fullPath": "/api/product/:productId"
+    },
+    {
+      "module": "review",
+      "method": "GET",
+      "endpoint": "/product/:productId",
+      "fullPath": "/api/product/:productId"
+    },
+    {
+      "module": "adminManagement",
+      "method": "PATCH",
+      "endpoint": "/products/:id/stock",
+      "fullPath": "/api/products/:id/stock"
+    },
+    {
+      "module": "adminManagement",
+      "method": "PATCH",
+      "endpoint": "/products/:id/toggle-status",
+      "fullPath": "/api/products/:id/toggle-status"
+    },
+    {
+      "module": "imageSearch",
+      "method": "POST",
+      "endpoint": "/products/:productId/generate-hashes",
+      "fullPath": "/api/products/:productId/generate-hashes"
+    },
+    {
+      "module": "qrCode",
+      "method": "POST",
+      "endpoint": "/products/all",
+      "fullPath": "/api/products/all"
+    },
+    {
+      "module": "auth",
+      "method": "GET",
+      "endpoint": "/profile",
+      "fullPath": "/api/profile"
+    },
+    {
+      "module": "auth",
+      "method": "PUT",
+      "endpoint": "/profile",
+      "fullPath": "/api/profile"
+    },
+    {
+      "module": "advancedReports",
+      "method": "GET",
+      "endpoint": "/profit-loss",
+      "fullPath": "/api/profit-loss"
+    },
+    {
+      "module": "adminDashboard",
+      "method": "GET",
+      "endpoint": "/quick-stats",
+      "fullPath": "/api/quick-stats"
+    },
+    {
+      "module": "payment",
+      "method": "POST",
+      "endpoint": "/refund",
+      "fullPath": "/api/refund"
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "endpoint": "/register",
+      "fullPath": "/api/register"
+    },
+    {
+      "module": "productionCart",
+      "method": "DELETE",
+      "endpoint": "/remove/:itemId",
+      "fullPath": "/api/remove/:itemId"
+    },
+    {
+      "module": "wishlist",
+      "method": "DELETE",
+      "endpoint": "/remove/:productId",
+      "fullPath": "/api/remove/:productId"
+    },
+    {
+      "module": "inventory",
+      "method": "GET",
+      "endpoint": "/reorder-items",
+      "fullPath": "/api/reorder-items"
+    },
+    {
+      "module": "inventory",
+      "method": "GET",
+      "endpoint": "/reorder-suggestions",
+      "fullPath": "/api/reorder-suggestions"
+    },
+    {
+      "module": "gst",
+      "method": "GET",
+      "endpoint": "/reports",
+      "fullPath": "/api/reports"
+    },
+    {
+      "module": "gst",
+      "method": "GET",
+      "endpoint": "/reports/:id",
+      "fullPath": "/api/reports/:id"
+    },
+    {
+      "module": "gst",
+      "method": "GET",
+      "endpoint": "/reports/:id/export/excel",
+      "fullPath": "/api/reports/:id/export/excel"
+    },
+    {
+      "module": "gst",
+      "method": "PATCH",
+      "endpoint": "/reports/:id/mark-filed",
+      "fullPath": "/api/reports/:id/mark-filed"
+    },
+    {
+      "module": "gst",
+      "method": "POST",
+      "endpoint": "/reports/generate",
+      "fullPath": "/api/reports/generate"
+    },
+    {
+      "module": "systemSettings",
+      "method": "POST",
+      "endpoint": "/reset",
+      "fullPath": "/api/reset"
+    },
+    {
+      "module": "businessSettings",
+      "method": "PUT",
+      "endpoint": "/returns",
+      "fullPath": "/api/returns"
+    },
+    {
+      "module": "advancedReports",
+      "method": "GET",
+      "endpoint": "/sales",
+      "fullPath": "/api/sales"
+    },
+    {
+      "module": "qrCode",
+      "method": "POST",
+      "endpoint": "/scan",
+      "fullPath": "/api/scan"
+    },
+    {
+      "module": "qrCode",
+      "method": "GET",
+      "endpoint": "/scanner",
+      "fullPath": "/api/scanner"
+    },
+    {
+      "module": "category",
+      "method": "GET",
+      "endpoint": "/search",
+      "fullPath": "/api/search"
+    },
+    {
+      "module": "imageSearch",
+      "method": "POST",
+      "endpoint": "/search",
+      "fullPath": "/api/search"
+    },
+    {
+      "module": "product",
+      "method": "GET",
+      "endpoint": "/search",
+      "fullPath": "/api/search"
+    },
+    {
+      "module": "productionCategory",
+      "method": "GET",
+      "endpoint": "/search",
+      "fullPath": "/api/search"
+    },
+    {
+      "module": "production",
+      "method": "GET",
+      "endpoint": "/search",
+      "fullPath": "/api/search"
+    },
+    {
+      "module": "systemSettings",
+      "method": "GET",
+      "endpoint": "/sections/:section",
+      "fullPath": "/api/sections/:section"
+    },
+    {
+      "module": "systemSettings",
+      "method": "PUT",
+      "endpoint": "/sections/:section",
+      "fullPath": "/api/sections/:section"
+    },
+    {
+      "module": "deliveryManagement",
+      "method": "GET",
+      "endpoint": "/serviceability/:pincode",
+      "fullPath": "/api/serviceability/:pincode"
+    },
+    {
+      "module": "notification",
+      "method": "GET",
+      "endpoint": "/settings",
+      "fullPath": "/api/settings"
+    },
+    {
+      "module": "notification",
+      "method": "PUT",
+      "endpoint": "/settings",
+      "fullPath": "/api/settings"
+    },
+    {
+      "module": "businessSettings",
+      "method": "PUT",
+      "endpoint": "/shipping",
+      "fullPath": "/api/shipping"
+    },
+    {
+      "module": "auth",
+      "method": "POST",
+      "endpoint": "/signup",
+      "fullPath": "/api/signup"
+    },
+    {
+      "module": "upload",
+      "method": "POST",
+      "endpoint": "/single",
+      "fullPath": "/api/single"
+    },
+    {
+      "module": "dashboard",
+      "method": "GET",
+      "endpoint": "/stats",
+      "fullPath": "/api/stats"
+    },
+    {
+      "module": "imageSearch",
+      "method": "GET",
+      "endpoint": "/stats",
+      "fullPath": "/api/stats"
+    },
+    {
+      "module": "production",
+      "method": "GET",
+      "endpoint": "/stats",
+      "fullPath": "/api/stats"
+    },
+    {
+      "module": "appSettings",
+      "method": "GET",
+      "endpoint": "/status",
+      "fullPath": "/api/status"
+    },
+    {
+      "module": "systemSettings",
+      "method": "GET",
+      "endpoint": "/status",
+      "fullPath": "/api/status"
+    },
+    {
+      "module": "upload",
+      "method": "GET",
+      "endpoint": "/storage-info",
+      "fullPath": "/api/storage-info"
+    },
+    {
+      "module": "purchaseOrder",
+      "method": "GET",
+      "endpoint": "/summary",
+      "fullPath": "/api/summary"
+    },
+    {
+      "module": "adminDelivery",
+      "method": "POST",
+      "endpoint": "/sync-all-delhivery",
+      "fullPath": "/api/sync-all-delhivery"
+    },
+    {
+      "module": "adminManagement",
+      "method": "PATCH",
+      "endpoint": "/system/maintenance",
+      "fullPath": "/api/system/maintenance"
+    },
+    {
+      "module": "adminManagement",
+      "method": "GET",
+      "endpoint": "/system/overview",
+      "fullPath": "/api/system/overview"
+    },
+    {
+      "module": "adminDelivery",
+      "method": "GET",
+      "endpoint": "/test",
+      "fullPath": "/api/test"
+    },
+    {
+      "module": "deliveryManagement",
+      "method": "GET",
+      "endpoint": "/test",
+      "fullPath": "/api/test"
+    },
+    {
+      "module": "notification",
+      "method": "POST",
+      "endpoint": "/test",
+      "fullPath": "/api/test"
+    },
+    {
+      "module": "order",
+      "method": "GET",
+      "endpoint": "/test",
+      "fullPath": "/api/test"
+    },
+    {
+      "module": "contabo",
+      "method": "GET",
+      "endpoint": "/test-connection",
+      "fullPath": "/api/test-connection"
+    },
+    {
+      "module": "upload",
+      "method": "GET",
+      "endpoint": "/test-connection",
+      "fullPath": "/api/test-connection"
+    },
+    {
+      "module": "support",
+      "method": "POST",
+      "endpoint": "/tickets",
+      "fullPath": "/api/tickets"
+    },
+    {
+      "module": "support",
+      "method": "GET",
+      "endpoint": "/tickets",
+      "fullPath": "/api/tickets"
+    },
+    {
+      "module": "support",
+      "method": "GET",
+      "endpoint": "/tickets/:id",
+      "fullPath": "/api/tickets/:id"
+    },
+    {
+      "module": "support",
+      "method": "POST",
+      "endpoint": "/tickets/:id/messages",
+      "fullPath": "/api/tickets/:id/messages"
+    },
+    {
+      "module": "shipping",
+      "method": "GET",
+      "endpoint": "/track/:awbCode",
+      "fullPath": "/api/track/:awbCode"
+    },
+    {
+      "module": "deliveryManagement",
+      "method": "GET",
+      "endpoint": "/track/:waybill",
+      "fullPath": "/api/track/:waybill"
+    },
+    {
+      "module": "wallet",
+      "method": "GET",
+      "endpoint": "/transactions",
+      "fullPath": "/api/transactions"
+    },
+    {
+      "module": "wallet",
+      "method": "GET",
+      "endpoint": "/transactions/:id",
+      "fullPath": "/api/transactions/:id"
+    },
+    {
+      "module": "wallet",
+      "method": "GET",
+      "endpoint": "/transactions/summary",
+      "fullPath": "/api/transactions/summary"
+    },
+    {
+      "module": "category",
+      "method": "GET",
+      "endpoint": "/tree",
+      "fullPath": "/api/tree"
+    },
+    {
+      "module": "productionCategory",
+      "method": "GET",
+      "endpoint": "/tree",
+      "fullPath": "/api/tree"
+    },
+    {
+      "module": "production",
+      "method": "GET",
+      "endpoint": "/trending",
+      "fullPath": "/api/trending"
+    },
+    {
+      "module": "cart",
+      "method": "PUT",
+      "endpoint": "/update",
+      "fullPath": "/api/update"
+    },
+    {
+      "module": "adminDelivery",
+      "method": "PUT",
+      "endpoint": "/update-method/:orderId",
+      "fullPath": "/api/update-method/:orderId"
+    },
+    {
+      "module": "productionCart",
+      "method": "PUT",
+      "endpoint": "/update/:itemId",
+      "fullPath": "/api/update/:itemId"
+    },
+    {
+      "module": "adminManagement",
+      "method": "GET",
+      "endpoint": "/users",
+      "fullPath": "/api/users"
+    },
+    {
+      "module": "adminManagement",
+      "method": "GET",
+      "endpoint": "/users/:id",
+      "fullPath": "/api/users/:id"
+    },
+    {
+      "module": "adminManagement",
+      "method": "PATCH",
+      "endpoint": "/users/:id/status",
+      "fullPath": "/api/users/:id/status"
+    },
+    {
+      "module": "adminManagement",
+      "method": "POST",
+      "endpoint": "/users/admin",
+      "fullPath": "/api/users/admin"
+    },
+    {
+      "module": "coupon",
+      "method": "POST",
+      "endpoint": "/validate",
+      "fullPath": "/api/validate"
+    },
+    {
+      "module": "productionCart",
+      "method": "POST",
+      "endpoint": "/validate",
+      "fullPath": "/api/validate"
+    },
+    {
+      "module": "systemSettings",
+      "method": "GET",
+      "endpoint": "/validate",
+      "fullPath": "/api/validate"
+    },
+    {
+      "module": "productionOrder",
+      "method": "POST",
+      "endpoint": "/validate-cart",
+      "fullPath": "/api/validate-cart"
+    },
+    {
+      "module": "systemSettings",
+      "method": "GET",
+      "endpoint": "/values/:path",
+      "fullPath": "/api/values/:path"
+    },
+    {
+      "module": "systemSettings",
+      "method": "PUT",
+      "endpoint": "/values/:path",
+      "fullPath": "/api/values/:path"
+    },
+    {
+      "module": "payment",
+      "method": "POST",
+      "endpoint": "/verify",
+      "fullPath": "/api/verify"
+    },
+    {
+      "module": "payment",
+      "method": "POST",
+      "endpoint": "/webhook",
+      "fullPath": "/api/webhook"
+    },
+    {
+      "module": "shipping",
+      "method": "POST",
+      "endpoint": "/webhook/shiprocket",
+      "fullPath": "/api/webhook/shiprocket"
+    }
+  ]
+}

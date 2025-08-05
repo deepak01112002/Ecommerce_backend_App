@@ -194,6 +194,9 @@ userSchema.virtual('name').get(function() {
 
 // Virtual for default address
 userSchema.virtual('defaultAddress').get(function() {
+    if (!this.addresses || !Array.isArray(this.addresses) || this.addresses.length === 0) {
+        return null;
+    }
     return this.addresses.find(addr => addr.isDefault) || this.addresses[0];
 });
 

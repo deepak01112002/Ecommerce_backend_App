@@ -46,6 +46,29 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     }],
+    imageHashes: [{
+        imageUrl: { type: String, required: true },
+        hashes: {
+            standard: { type: String },
+            rotated_90: { type: String },
+            rotated_180: { type: String },
+            rotated_270: { type: String },
+            flipped: { type: String },
+            flopped: { type: String }
+        },
+        colorHistogram: {
+            red: [{ type: Number }],
+            green: [{ type: Number }],
+            blue: [{ type: Number }]
+        },
+        metadata: {
+            width: { type: Number },
+            height: { type: Number },
+            format: { type: String },
+            aspectRatio: { type: Number }
+        },
+        createdAt: { type: Date, default: Date.now }
+    }],
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
@@ -363,5 +386,7 @@ productSchema.index({ availability: 1, isActive: 1 });
 productSchema.index({ stock: 1, isActive: 1 });
 productSchema.index({ viewCount: -1, isActive: 1 });
 productSchema.index({ salesCount: -1, isActive: 1 });
+productSchema.index({ 'imageHashes.hashes.standard': 1, isActive: 1 });
+productSchema.index({ 'imageHashes.imageUrl': 1 });
 
 module.exports = mongoose.model('Product', productSchema);

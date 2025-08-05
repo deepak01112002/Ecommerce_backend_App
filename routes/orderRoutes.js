@@ -2,6 +2,7 @@ const express = require('express');
 const { body } = require('express-validator');
 const router = express.Router();
 const orderController = require('../controllers/orderController');
+const adminOrderController = require('../controllers/adminOrderController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const adminMiddleware = require('../middlewares/adminMiddleware');
 
@@ -53,6 +54,17 @@ router.get('/admin/all', (req, res, next) => {
     next();
 }, authMiddleware, adminMiddleware, orderController.getOrders);
 
+// Admin delivery method management routes - must be before /:orderId
+router.get('/admin/delivery-options', authMiddleware, adminMiddleware, adminOrderController.getDeliveryMethodOptions);
+router.get('/admin/by-delivery-method', authMiddleware, adminMiddleware, adminOrderController.getOrdersByDeliveryMethod);
+router.get('/admin/pending-delivery-assignment', authMiddleware, adminMiddleware, adminOrderController.getOrdersPendingDeliveryAssignment);
+router.put('/admin/bulk-delivery-method', authMiddleware, adminMiddleware, adminOrderController.bulkUpdateDeliveryMethod);
+
+// Admin routes with specific orderId - must be before generic /:orderId
+router.put('/admin/:orderId/delivery-method', authMiddleware, adminMiddleware, adminOrderController.updateOrderDeliveryMethod);
+router.put('/admin/:id', authMiddleware, adminMiddleware, orderController.updateOrder);
+router.patch('/admin/:id/status', authMiddleware, adminMiddleware, orderController.updateOrderStatus);
+
 // Get single order details (must be after specific routes)
 router.get('/:orderId', optionalAuth, orderController.getOrderById);
 
@@ -61,7 +73,5 @@ router.get('/:orderId/track', optionalAuth, orderController.trackOrder);
 
 // Cancel order (authenticated users only)
 router.patch('/:orderId/cancel', authMiddleware, orderController.cancelOrder);
-router.put('/admin/:id', authMiddleware, adminMiddleware, orderController.updateOrder);
-router.patch('/admin/:id/status', authMiddleware, adminMiddleware, orderController.updateOrderStatus);
 
 module.exports = router;
