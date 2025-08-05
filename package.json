@@ -31,6 +31,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.850.0",
     "@aws-sdk/s3-request-presigner": "^3.850.0",
+    "@types/react-beautiful-dnd": "^13.1.8",
     "aws-sdk": "^2.1692.0",
     "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
@@ -38,6 +39,7 @@
     "canvas": "^3.1.2",
     "colors": "^1.4.0",
     "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
     "dotenv": "^16.5.0",
     "exceljs": "^4.4.0",
     "express": "^5.1.0",
@@ -50,13 +52,18 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.1",
     "morgan": "^1.10.0",
+    "multer": "^2.0.2",
     "node-cache": "^5.1.2",
     "node-cron": "^4.2.1",
+    "node-fetch": "^3.3.2",
     "pdfkit": "^0.17.1",
     "qrcode": "^1.5.4",
     "razorpay": "^2.9.6",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-hot-toast": "^2.5.2",
     "sharp": "^0.34.3",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

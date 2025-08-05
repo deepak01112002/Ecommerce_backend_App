@@ -5,7 +5,7 @@
 - **Passed Tests:** 22
 - **Failed Tests:** 0
 - **Success Rate:** 100.00%
-- **Test Date:** 2025-07-19T19:38:33.713Z
+- **Test Date:** 2025-08-03T19:07:56.447Z
 
 ## 🏆 Test Results by Category
 - **Authentication:** 1/1 (100.0%)
@@ -64,7 +64,7 @@
 - **Endpoint:** /auth/login
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 422ms
+- **Response Time:** 430ms
 
 - **Result:** API working correctly
 
@@ -74,7 +74,7 @@
 - **Endpoint:** /admin/dashboard/quick-stats
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 108ms
+- **Response Time:** 117ms
 
 - **Result:** API working correctly
 
@@ -84,7 +84,7 @@
 - **Endpoint:** /admin/business-settings
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 166ms
+- **Response Time:** 157ms
 
 - **Result:** API working correctly
 
@@ -94,7 +94,7 @@
 - **Endpoint:** /products
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 247ms
+- **Response Time:** 193ms
 
 - **Result:** API working correctly
 
@@ -104,7 +104,7 @@
 - **Endpoint:** /categories
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 2483ms
+- **Response Time:** 157ms
 
 - **Result:** API working correctly
 
@@ -114,7 +114,7 @@
 - **Endpoint:** /orders
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 126ms
+- **Response Time:** 114ms
 
 - **Result:** API working correctly
 
@@ -124,7 +124,7 @@
 - **Endpoint:** /invoices
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 182ms
+- **Response Time:** 149ms
 
 - **Result:** API working correctly
 
@@ -134,7 +134,7 @@
 - **Endpoint:** /gst/config
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 84ms
+- **Response Time:** 75ms
 
 - **Result:** API working correctly
 
@@ -144,7 +144,7 @@
 - **Endpoint:** /inventory/dashboard
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 297ms
+- **Response Time:** 270ms
 
 - **Result:** API working correctly
 
@@ -154,7 +154,7 @@
 - **Endpoint:** /suppliers
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 227ms
+- **Response Time:** 189ms
 
 - **Result:** API working correctly
 
@@ -164,7 +164,7 @@
 - **Endpoint:** /purchase-orders
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 166ms
+- **Response Time:** 148ms
 
 - **Result:** API working correctly
 
@@ -174,7 +174,7 @@
 - **Endpoint:** /returns/admin/all
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 163ms
+- **Response Time:** 153ms
 
 - **Result:** API working correctly
 
@@ -184,7 +184,7 @@
 - **Endpoint:** /support/admin/dashboard
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 342ms
+- **Response Time:** 239ms
 
 - **Result:** API working correctly
 
@@ -194,7 +194,7 @@
 - **Endpoint:** /notifications
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 161ms
+- **Response Time:** 160ms
 
 - **Result:** API working correctly
 
@@ -204,7 +204,7 @@
 - **Endpoint:** /settings
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 125ms
+- **Response Time:** 109ms
 
 - **Result:** API working correctly
 
@@ -214,7 +214,7 @@
 - **Endpoint:** /settings/validate
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 128ms
+- **Response Time:** 109ms
 
 - **Result:** API working correctly
 
@@ -224,7 +224,7 @@
 - **Endpoint:** /settings/status
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 127ms
+- **Response Time:** 121ms
 
 - **Result:** API working correctly
 
@@ -234,7 +234,7 @@
 - **Endpoint:** /admin/business-settings/company
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 174ms
+- **Response Time:** 168ms
 
 - **Result:** API working correctly
 
@@ -244,7 +244,7 @@
 - **Endpoint:** /admin/business-settings/gst
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 162ms
+- **Response Time:** 157ms
 
 - **Result:** API working correctly
 
@@ -254,7 +254,7 @@
 - **Endpoint:** /admin/business-settings/payments
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 160ms
+- **Response Time:** 180ms
 
 - **Result:** API working correctly
 
@@ -264,7 +264,7 @@
 - **Endpoint:** /admin/business-settings/orders
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 170ms
+- **Response Time:** 169ms
 
 - **Result:** API working correctly
 
@@ -274,7 +274,7 @@
 - **Endpoint:** /admin/business-settings/features
 - **Status:** ✅ PASS
 - **Status Code:** 200
-- **Response Time:** 163ms
+- **Response Time:** 181ms
 
 - **Result:** API working correctly
 

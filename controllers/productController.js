@@ -4,6 +4,11 @@ const Category = require('../models/Category');
 const Wishlist = require('../models/Wishlist');
 const { asyncHandler, validateRequest } = require('../middlewares/errorHandler');
 const contaboStorage = require('../services/contaboStorage');
+const productImageHashService = require('../services/productImageHashService');
+const csv = require('csv-parser');
+const xlsx = require('xlsx');
+const fs = require('fs');
+const path = require('path');
 
 // Get all products with advanced filtering and pagination
 exports.getProducts = asyncHandler(async (req, res) => {
@@ -477,6 +482,15 @@ exports.createProduct = asyncHandler(async (req, res) => {
     await product.save();
     await product.populate('category', 'name slug');
 
+    // Generate image hashes in background (non-blocking)
+    if (images && images.length > 0) {
+        console.log(`🔄 Starting background hash generation for new product: ${product.name}`);
+        productImageHashService.generateHashesInBackground(product, images, {
+            timeout: 15000,
+            maxRetries: 2
+        });
+    }
+
     const formattedProduct = {
         _id: product._id,
         id: product._id,
@@ -644,12 +658,24 @@ exports.updateProduct = asyncHandler(async (req, res) => {
         return res.error('Invalid JSON format in request', [], 400);
     }
 
+    // Check if images have changed for hash regeneration
+    const imagesChanged = productImageHashService.imagesChanged(existingProduct.images, updateData.images);
+
     // Update product
     const product = await Product.findByIdAndUpdate(
         id,
         updateData,
         { new: true, runValidators: true }
     ).populate('category', 'name slug');
+
+    // Generate image hashes in background if images changed (non-blocking)
+    if (imagesChanged && updateData.images && updateData.images.length > 0) {
+        console.log(`🔄 Images changed for product: ${product.name}, regenerating hashes in background`);
+        productImageHashService.generateHashesInBackground(product, updateData.images, {
+            timeout: 15000,
+            maxRetries: 2
+        });
+    }
 
     const formattedProduct = {
         _id: product._id,
@@ -932,4 +958,129 @@ exports.getProductRecommendations = asyncHandler(async (req, res) => {
             category: product.category.name
         }
     }, `${type} recommendations retrieved successfully`);
+});
+
+// Bulk upload products from CSV/Excel file
+exports.bulkUpload = asyncHandler(async (req, res) => {
+    if (!req.file) {
+        return res.error('No file uploaded', [], 400);
+    }
+
+    const file = req.file;
+    const results = {
+        success: 0,
+        failed: 0,
+        errors: []
+    };
+
+    try {
+        let products = [];
+
+        // Parse file based on type
+        if (file.mimetype === 'text/csv') {
+            // Parse CSV file
+            const csvData = file.buffer.toString('utf8');
+            const lines = csvData.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+                const product = {};
+
+                headers.forEach((header, index) => {
+                    product[header] = values[index] || '';
+                });
+
+                if (product.name && product.price) {
+                    products.push(product);
+                }
+            }
+        } else if (file.mimetype.includes('sheet') || file.mimetype.includes('excel')) {
+            // Parse Excel file
+            const workbook = xlsx.read(file.buffer, { type: 'buffer' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            products = xlsx.utils.sheet_to_json(worksheet);
+        } else {
+            return res.error('Unsupported file format. Please use CSV or Excel files.', [], 400);
+        }
+
+        console.log(`📋 Parsed ${products.length} products from file`);
+
+        // Process each product
+        for (let i = 0; i < products.length; i++) {
+            const productData = products[i];
+
+            try {
+                // Skip instruction rows or empty rows
+                if (!productData.name || productData.name.includes('INSTRUCTIONS') || productData.name.includes('Sample Product')) {
+                    continue;
+                }
+
+                // Find or create category
+                let category = null;
+                if (productData.category) {
+                    category = await Category.findOne({ name: new RegExp(productData.category, 'i') });
+                    if (!category) {
+                        // Create new category if it doesn't exist
+                        category = new Category({
+                            name: productData.category,
+                            slug: productData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                            description: `Auto-created category for ${productData.category}`
+                        });
+                        await category.save();
+                        console.log(`✅ Created new category: ${category.name}`);
+                    }
+                }
+
+                // Parse images
+                let images = [];
+                if (productData.imageUrl1) images.push(productData.imageUrl1);
+                if (productData.imageUrl2) images.push(productData.imageUrl2);
+                if (productData.imageUrl3) images.push(productData.imageUrl3);
+
+                // Create product
+                const product = new Product({
+                    name: productData.name,
+                    description: productData.description || '',
+                    price: parseFloat(productData.price) || 0,
+                    originalPrice: parseFloat(productData.price) || 0,
+                    category: category ? category._id : null,
+                    stock: parseInt(productData.stock) || 0,
+                    isActive: true,
+                    isFeatured: false,
+                    images: images,
+                    specifications: {
+                        weight: productData.weight || '',
+                        height: productData.height || '',
+                        material: productData.material || '',
+                        color: productData.color || ''
+                    },
+                    tags: productData.subcategory ? [productData.subcategory] : [],
+                    sku: productData.sku || `SKU${Date.now()}${i}`
+                });
+
+                await product.save();
+                results.success++;
+
+                console.log(`✅ Created product: ${product.name}`);
+
+            } catch (error) {
+                results.failed++;
+                results.errors.push(`Row ${i + 1}: ${error.message}`);
+                console.error(`❌ Failed to create product at row ${i + 1}:`, error.message);
+            }
+        }
+
+        console.log(`🎯 Bulk upload completed: ${results.success} success, ${results.failed} failed`);
+
+        res.success(results, `Bulk upload completed. ${results.success} products created successfully.`);
+
+    } catch (error) {
+        console.error('Bulk upload error:', error);
+        res.error('Failed to process bulk upload', [error.message], 500);
+    }
 });

@@ -92,7 +92,7 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 ---
 
 
-## 📦 Product Management (9 endpoints)
+## 📦 Product Management (10 endpoints)
 **Base Path:** `/api/products`
 
 ### 1. GET /api/products/featured
@@ -139,6 +139,11 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 - **Method:** PATCH
 - **Endpoint:** `/api/products/:id/inventory`
 - **Description:** Modify products data
+
+### 10. POST /api/products/bulk-upload
+- **Method:** POST
+- **Endpoint:** `/api/products/bulk-upload`
+- **Description:** Create products data
 
 ---
 
@@ -312,7 +317,7 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 ---
 
 
-## 📋 Order Management (9 endpoints)
+## 📋 Order Management (15 endpoints)
 **Base Path:** `/api/orders`
 
 ### 1. POST /api/orders/
@@ -330,34 +335,64 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 - **Endpoint:** `/api/orders/my-orders`
 - **Description:** Retrieve orders data
 
-### 4. GET /api/orders/:orderId
+### 4. GET /api/orders/test
 - **Method:** GET
-- **Endpoint:** `/api/orders/:orderId`
+- **Endpoint:** `/api/orders/test`
 - **Description:** Retrieve orders data
 
-### 5. GET /api/orders/:orderId/track
-- **Method:** GET
-- **Endpoint:** `/api/orders/:orderId/track`
-- **Description:** Retrieve orders data
-
-### 6. PATCH /api/orders/:orderId/cancel
-- **Method:** PATCH
-- **Endpoint:** `/api/orders/:orderId/cancel`
-- **Description:** Modify orders data
-
-### 7. GET /api/orders/admin/all
+### 5. GET /api/orders/admin/all
 - **Method:** GET
 - **Endpoint:** `/api/orders/admin/all`
 - **Description:** Retrieve orders data
 
-### 8. PUT /api/orders/admin/:id
+### 6. GET /api/orders/admin/delivery-options
+- **Method:** GET
+- **Endpoint:** `/api/orders/admin/delivery-options`
+- **Description:** Retrieve orders data
+
+### 7. GET /api/orders/admin/by-delivery-method
+- **Method:** GET
+- **Endpoint:** `/api/orders/admin/by-delivery-method`
+- **Description:** Retrieve orders data
+
+### 8. GET /api/orders/admin/pending-delivery-assignment
+- **Method:** GET
+- **Endpoint:** `/api/orders/admin/pending-delivery-assignment`
+- **Description:** Retrieve orders data
+
+### 9. PUT /api/orders/admin/bulk-delivery-method
+- **Method:** PUT
+- **Endpoint:** `/api/orders/admin/bulk-delivery-method`
+- **Description:** Update orders data
+
+### 10. PUT /api/orders/admin/:orderId/delivery-method
+- **Method:** PUT
+- **Endpoint:** `/api/orders/admin/:orderId/delivery-method`
+- **Description:** Update orders data
+
+### 11. PUT /api/orders/admin/:id
 - **Method:** PUT
 - **Endpoint:** `/api/orders/admin/:id`
 - **Description:** Update orders data
 
-### 9. PATCH /api/orders/admin/:id/status
+### 12. PATCH /api/orders/admin/:id/status
 - **Method:** PATCH
 - **Endpoint:** `/api/orders/admin/:id/status`
+- **Description:** Modify orders data
+
+### 13. GET /api/orders/:orderId
+- **Method:** GET
+- **Endpoint:** `/api/orders/:orderId`
+- **Description:** Retrieve orders data
+
+### 14. GET /api/orders/:orderId/track
+- **Method:** GET
+- **Endpoint:** `/api/orders/:orderId/track`
+- **Description:** Retrieve orders data
+
+### 15. PATCH /api/orders/:orderId/cancel
+- **Method:** PATCH
+- **Endpoint:** `/api/orders/:orderId/cancel`
 - **Description:** Modify orders data
 
 ---
@@ -696,7 +731,7 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 ---
 
 
-## 🚚 Shipping Management (11 endpoints)
+## 🚚 Shipping Management (13 endpoints)
 **Base Path:** `/api/shipping`
 
 ### 1. POST /api/shipping/webhook/shiprocket
@@ -709,47 +744,57 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 - **Endpoint:** `/api/shipping/check-serviceability`
 - **Description:** Create shipping data
 
-### 3. GET /api/shipping/my-shipments
+### 3. GET /api/shipping/delivery-options
+- **Method:** GET
+- **Endpoint:** `/api/shipping/delivery-options`
+- **Description:** Retrieve shipping data
+
+### 4. GET /api/shipping/my-shipments
 - **Method:** GET
 - **Endpoint:** `/api/shipping/my-shipments`
 - **Description:** Retrieve shipping data
 
-### 4. GET /api/shipping/track/:awbCode
+### 5. GET /api/shipping/track/:awbCode
 - **Method:** GET
 - **Endpoint:** `/api/shipping/track/:awbCode`
 - **Description:** Retrieve shipping data
 
-### 5. GET /api/shipping/:id
+### 6. GET /api/shipping/:id
 - **Method:** GET
 - **Endpoint:** `/api/shipping/:id`
 - **Description:** Get single item by ID
 
-### 6. GET /api/shipping/
+### 7. GET /api/shipping/
 - **Method:** GET
 - **Endpoint:** `/api/shipping/`
 - **Description:** Get all items with pagination and filtering
 
-### 7. POST /api/shipping/orders/:orderId/create-shipment
+### 8. POST /api/shipping/orders/:orderId/create-shipment
 - **Method:** POST
 - **Endpoint:** `/api/shipping/orders/:orderId/create-shipment`
 - **Description:** Create shipping data
 
-### 8. PATCH /api/shipping/:id/cancel
+### 9. POST /api/shipping/orders/:orderId/create-shipment-v2
+- **Method:** POST
+- **Endpoint:** `/api/shipping/orders/:orderId/create-shipment-v2`
+- **Description:** Create shipping data
+
+### 10. PATCH /api/shipping/:id/cancel
 - **Method:** PATCH
 - **Endpoint:** `/api/shipping/:id/cancel`
 - **Description:** Modify shipping data
 
-### 9. POST /api/shipping/generate-pickup
+### 11. POST /api/shipping/generate-pickup
 - **Method:** POST
 - **Endpoint:** `/api/shipping/generate-pickup`
 - **Description:** Create shipping data
 
-### 10. POST /api/shipping/generate-labels
+### 12. POST /api/shipping/generate-labels
 - **Method:** POST
 - **Endpoint:** `/api/shipping/generate-labels`
 - **Description:** Create shipping data
 
-### 11. GET /api/shipping/analytics/summary
+### 13. GET /api/shipping/analytics/summary
 - **Method:** GET
 - **Endpoint:** `/api/shipping/analytics/summary`
 - **Description:** Retrieve shipping data
@@ -757,7 +802,7 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 ---
 
 
-## 🧾 Invoice System (8 endpoints)
+## 🧾 Invoice System (11 endpoints)
 **Base Path:** `/api/invoices`
 
 ### 1. POST /api/invoices/generate/:orderId
@@ -798,6 +843,21 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 ### 8. GET /api/invoices/:id/pdf
 - **Method:** GET
 - **Endpoint:** `/api/invoices/:id/pdf`
+- **Description:** Retrieve invoices data
+
+### 9. POST /api/invoices/enhanced/generate/:orderId
+- **Method:** POST
+- **Endpoint:** `/api/invoices/enhanced/generate/:orderId`
+- **Description:** Create invoices data
+
+### 10. GET /api/invoices/enhanced/all
+- **Method:** GET
+- **Endpoint:** `/api/invoices/enhanced/all`
+- **Description:** Retrieve invoices data
+
+### 11. GET /api/invoices/enhanced/:id
+- **Method:** GET
+- **Endpoint:** `/api/invoices/enhanced/:id`
 - **Description:** Retrieve invoices data
 
 ---
@@ -1139,7 +1199,7 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 ---
 
 
-## 🔔 Notification System (10 endpoints)
+## 🔔 Notification System (17 endpoints)
 **Base Path:** `/api/notifications`
 
 ### 1. GET /api/notifications/
@@ -1177,19 +1237,54 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 - **Endpoint:** `/api/notifications/:id`
 - **Description:** Delete item by ID
 
-### 8. POST /api/notifications/
+### 8. POST /api/notifications/fcm-token
+- **Method:** POST
+- **Endpoint:** `/api/notifications/fcm-token`
+- **Description:** Create notifications data
+
+### 9. DELETE /api/notifications/fcm-token
+- **Method:** DELETE
+- **Endpoint:** `/api/notifications/fcm-token`
+- **Description:** Remove notifications data
+
+### 10. POST /api/notifications/
 - **Method:** POST
 - **Endpoint:** `/api/notifications/`
 - **Description:** Create new item
 
-### 9. GET /api/notifications/admin/all
+### 11. GET /api/notifications/admin/all
 - **Method:** GET
 - **Endpoint:** `/api/notifications/admin/all`
 - **Description:** Retrieve notifications data
 
-### 10. GET /api/notifications/admin/analytics
+### 12. GET /api/notifications/admin/analytics
 - **Method:** GET
 - **Endpoint:** `/api/notifications/admin/analytics`
+- **Description:** Retrieve notifications data
+
+### 13. POST /api/notifications/admin/fcm-token
+- **Method:** POST
+- **Endpoint:** `/api/notifications/admin/fcm-token`
+- **Description:** Create notifications data
+
+### 14. DELETE /api/notifications/admin/fcm-token
+- **Method:** DELETE
+- **Endpoint:** `/api/notifications/admin/fcm-token`
+- **Description:** Remove notifications data
+
+### 15. POST /api/notifications/admin/broadcast
+- **Method:** POST
+- **Endpoint:** `/api/notifications/admin/broadcast`
+- **Description:** Create notifications data
+
+### 16. POST /api/notifications/test
+- **Method:** POST
+- **Endpoint:** `/api/notifications/test`
+- **Description:** Create notifications data
+
+### 17. GET /api/notifications/debug/admin-tokens
+- **Method:** GET
+- **Endpoint:** `/api/notifications/debug/admin-tokens`
 - **Description:** Retrieve notifications data
 
 ---
@@ -1411,7 +1506,7 @@ This document contains ALL API endpoints available in the Ghanshyam Ecommerce Ba
 
 ## 📊 SUMMARY
 
-- **Total API Endpoints:** 245
+- **Total API Endpoints:** 264
 - **Base Paths:** 29
 - **Categories:** 29
 
@@ -1440,4 +1535,4 @@ Get token from: `POST /api/auth/login`
 ---
 
 *Generated automatically from route files*
-*Last updated: 2025-07-26T14:30:14.515Z*
+*Last updated: 2025-08-05T20:39:11.827Z*

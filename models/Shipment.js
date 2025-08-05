@@ -38,6 +38,22 @@ const shipmentSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+
+    // Delivery method and company info
+    method: {
+        type: String,
+        enum: ['manual', 'shiprocket', 'delivery_company'],
+        default: 'manual'
+    },
+    deliveryCompanyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'DeliveryCompany',
+        sparse: true
+    },
+    deliveryCompanyName: {
+        type: String,
+        trim: true
+    },
     status: {
         type: String,
         enum: [

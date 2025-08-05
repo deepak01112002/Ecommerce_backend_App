@@ -1,0 +1,12 @@
+name,description,price,category,subcategory,stock,sku,weight,height,material,color,imageUrl1,imageUrl2,imageUrl3
+INSTRUCTIONS:,Upload images to S3 first via product edit form,Price in INR,Main category name,Sub category name,Stock quantity,Unique SKU code,Weight in KG,Height in CM,Material type,Color name,Use Contabo S3 HTTPS URLs only,Use Contabo S3 HTTPS URLs only,Use Contabo S3 HTTPS URLs only
+Sample Product,This is a sample product description,999.99,Category Name,Subcategory Name,100,SKU001,2.5,15,Brass,Golden,https://your-bucket.contabo.com/products/image1.jpg,https://your-bucket.contabo.com/products/image2.jpg,https://your-bucket.contabo.com/products/image3.jpg
+Ganesha Idol Small,Beautiful small Ganesha idol for home decoration,599.99,Religious Items,Idols,50,GANESHA001,1.2,8,Brass,Golden,https://example.com/ganesha1.jpg,https://example.com/ganesha2.jpg,
+Lakshmi Diya Set,Traditional brass diya set with Lakshmi design,899.99,Religious Items,Diyas,25,DIYA001,2.0,6,Brass,Golden,https://example.com/diya1.jpg,https://example.com/diya2.jpg,https://example.com/diya3.jpg
+Hanuman Pendant,Silver Hanuman pendant with chain,1299.99,Jewelry,Pendants,30,HANUMAN001,0.5,3,Silver,Silver,https://example.com/hanuman1.jpg,,
+Shiva Trishul,Decorative Shiva Trishul for wall mounting,1599.99,Religious Items,Wall Decor,15,TRISHUL001,3.5,25,Brass,Antique,https://example.com/trishul1.jpg,https://example.com/trishul2.jpg,
+Krishna Flute,Handcrafted Krishna flute replica,799.99,Musical Items,Flutes,40,FLUTE001,0.8,12,Wood,Brown,https://example.com/flute1.jpg,https://example.com/flute2.jpg,
+Rudraksha Mala,Authentic 108 bead Rudraksha mala,2499.99,Jewelry,Malas,20,RUDRAKSHA001,0.3,2,Rudraksha,Brown,https://example.com/rudraksha1.jpg,,
+Om Wall Hanging,Decorative Om symbol wall hanging,699.99,Religious Items,Wall Decor,35,OM001,1.5,15,Metal,Golden,https://example.com/om1.jpg,https://example.com/om2.jpg,https://example.com/om3.jpg
+Tulsi Plant Pot,Sacred Tulsi plant with decorative pot,399.99,Plants,Sacred Plants,60,TULSI001,2.8,20,Ceramic,Terracotta,https://example.com/tulsi1.jpg,https://example.com/tulsi2.jpg,
+Conch Shell,Natural conch shell for religious ceremonies,1199.99,Religious Items,Ceremonial,10,CONCH001,1.0,8,Shell,Natural,https://example.com/conch1.jpg,,

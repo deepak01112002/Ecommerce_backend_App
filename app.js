@@ -265,6 +265,8 @@ const adminManagementRoutes = require('./routes/adminManagementRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const businessSettingsRoutes = require('./routes/businessSettingsRoutes');
 const qrCodeRoutes = require('./routes/qrCodeRoutes');
+const imageSearchRoutes = require('./routes/imageSearchRoutes');
+const deliveryCompanyRoutes = require('./routes/deliveryCompanyRoutes');
 
 // Production Routes (Enhanced & Comprehensive)
 const productionRoutes = require('./routes/productionRoutes');
@@ -305,6 +307,18 @@ app.use('/api/admin/management', adminManagementRoutes);
 app.use('/api/admin/business-settings', businessSettingsRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/qr-codes', qrCodeRoutes);
+app.use('/api/image-search', imageSearchRoutes);
+app.use('/api/delivery-companies', deliveryCompanyRoutes);
+app.use('/api/delivery-management', require('./routes/deliveryManagementRoutes'));
+app.use('/api/admin-delivery', require('./routes/adminDeliveryRoutes'));
+
+// Social Media Routes
+const socialMediaRoutes = require('./routes/socialMediaRoutes');
+app.use('/api/social-media', socialMediaRoutes);
+
+// App Settings Routes
+const appSettingsRoutes = require('./routes/appSettingsRoutes');
+app.use('/api/app-settings', appSettingsRoutes);
 
 // Contabo Storage Routes
 const contaboRoutes = require('./routes/contaboRoutes');
@@ -403,6 +417,11 @@ const firebaseService = require('./services/firebaseService');
 // Start URL Refresh Service for long-lived presigned URLs
 const urlRefreshService = require('./services/urlRefreshService');
 urlRefreshService.start();
+
+// Start Delhivery Auto-Sync Service for real-time tracking updates
+console.log('🚀 Initializing Delhivery Auto-Sync Service...');
+const delhiveryAutoSyncService = require('./services/delhiveryAutoSyncService');
+delhiveryAutoSyncService.start();
 
 // Production enhanced routes (additional endpoints)
 app.use('/api/v2', productionRoutes);

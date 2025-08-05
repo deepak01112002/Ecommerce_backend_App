@@ -21,6 +21,20 @@ router.post('/check-serviceability',
     shippingController.checkServiceability
 );
 
+// Get delivery options (public)
+router.get('/delivery-options',
+    [
+        query('state').notEmpty().withMessage('State is required'),
+        query('city').notEmpty().withMessage('City is required'),
+        query('postalCode').notEmpty().withMessage('Postal code is required'),
+        query('weight').optional().isFloat({ min: 0.1 }).withMessage('Weight must be greater than 0'),
+        query('codAmount').optional().isFloat({ min: 0 }).withMessage('COD amount must be positive'),
+        query('orderValue').optional().isFloat({ min: 0 }).withMessage('Order value must be positive')
+    ],
+    validateRequest,
+    shippingController.getDeliveryOptions
+);
+
 // Protected routes (require authentication)
 router.use(authMiddleware);
 
@@ -94,6 +108,20 @@ router.post('/orders/:orderId/create-shipment',
     ],
     validateRequest,
     shippingController.createShipment
+);
+
+// Create shipment using new delivery service (admin)
+router.post('/orders/:orderId/create-shipment-v2',
+    [
+        param('orderId').isMongoId().withMessage('Invalid order ID'),
+        body('deliveryOptionId').notEmpty().withMessage('Delivery option ID is required'),
+        body('dimensions.length').optional().isFloat({ min: 1 }).withMessage('Length must be positive'),
+        body('dimensions.breadth').optional().isFloat({ min: 1 }).withMessage('Breadth must be positive'),
+        body('dimensions.height').optional().isFloat({ min: 1 }).withMessage('Height must be positive'),
+        body('dimensions.weight').optional().isFloat({ min: 0.1 }).withMessage('Weight must be greater than 0')
+    ],
+    validateRequest,
+    shippingController.createShipmentV2
 );
 
 // Cancel shipment (admin)
