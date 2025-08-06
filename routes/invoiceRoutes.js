@@ -7,12 +7,49 @@ const authMiddleware = require('../middlewares/authMiddleware');
 const adminMiddleware = require('../middlewares/adminMiddleware');
 const { validateRequest } = require('../middlewares/errorHandler');
 
-// All invoice routes require authentication
+// USER ROUTES (Authentication required, no admin needed)
+
+// Get user's invoices
+router.get('/my-invoices',
+    authMiddleware,
+    [
+        query('page').optional().isInt({ min: 1 }).withMessage('Page must be positive integer'),
+        query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Limit must be between 1 and 50'),
+        query('status').optional().isIn(['draft', 'sent', 'paid', 'cancelled', 'refunded']).withMessage('Invalid status'),
+        query('paymentStatus').optional().isIn(['pending', 'paid', 'partial', 'overdue', 'cancelled']).withMessage('Invalid payment status')
+    ],
+    validateRequest,
+    invoiceController.getUserInvoices
+);
+
+// Get user's invoice by order ID
+router.get('/order/:orderId',
+    authMiddleware,
+    [
+        param('orderId').isMongoId().withMessage('Invalid order ID')
+    ],
+    validateRequest,
+    invoiceController.getUserInvoiceByOrder
+);
+
+// Download user's invoice PDF by order ID
+router.get('/order/:orderId/download',
+    authMiddleware,
+    [
+        param('orderId').isMongoId().withMessage('Invalid order ID'),
+        query('format').optional().isIn(['A4', 'thermal']).withMessage('Invalid format. Use A4 or thermal')
+    ],
+    validateRequest,
+    invoiceController.downloadUserInvoiceByOrder
+);
+
+// ADMIN ROUTES (Authentication + Admin required)
+// All admin routes require authentication and admin privileges
 router.use(authMiddleware);
+router.use(adminMiddleware);
 
 // Generate invoice from order (Admin only)
 router.post('/generate/:orderId',
-    adminMiddleware,
     [
         param('orderId').isMongoId().withMessage('Invalid order ID'),
         body('companyDetails.name').optional().isString().withMessage('Company name must be string'),
@@ -29,7 +66,6 @@ router.post('/generate/:orderId',
 
 // Get all invoices (Admin only)
 router.get('/',
-    adminMiddleware,
     [
         query('page').optional().isInt({ min: 1 }).withMessage('Page must be positive integer'),
         query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
@@ -45,7 +81,6 @@ router.get('/',
 
 // Get invoice analytics (Admin only)
 router.get('/analytics',
-    adminMiddleware,
     [
         query('startDate').optional().isISO8601().withMessage('Invalid start date format'),
         query('endDate').optional().isISO8601().withMessage('Invalid end date format'),
@@ -55,18 +90,8 @@ router.get('/analytics',
     invoiceController.getInvoiceAnalytics
 );
 
-// Get single invoice
-router.get('/:id',
-    [
-        param('id').isMongoId().withMessage('Invalid invoice ID')
-    ],
-    validateRequest,
-    invoiceController.getInvoice
-);
-
 // Update invoice (Admin only)
 router.put('/:id',
-    adminMiddleware,
     [
         param('id').isMongoId().withMessage('Invalid invoice ID'),
         body('customerDetails.name').optional().isString().withMessage('Customer name must be string'),
@@ -81,7 +106,6 @@ router.put('/:id',
 
 // Mark invoice as paid (Admin only)
 router.patch('/:id/mark-paid',
-    adminMiddleware,
     [
         param('id').isMongoId().withMessage('Invalid invoice ID'),
         body('paymentDate').optional().isISO8601().withMessage('Invalid payment date format'),
@@ -95,7 +119,6 @@ router.patch('/:id/mark-paid',
 
 // Cancel invoice (Admin only)
 router.patch('/:id/cancel',
-    adminMiddleware,
     [
         param('id').isMongoId().withMessage('Invalid invoice ID'),
         body('reason').notEmpty().withMessage('Cancellation reason is required')
@@ -116,7 +139,6 @@ router.get('/:id/pdf',
 
 // Enhanced invoice generation from order (with thermal support)
 router.post('/enhanced/generate/:orderId',
-    adminMiddleware,
     [
         param('orderId').isMongoId().withMessage('Invalid order ID'),
         body('generatePDF').optional().isBoolean().withMessage('generatePDF must be boolean'),
@@ -128,7 +150,6 @@ router.post('/enhanced/generate/:orderId',
 
 // Enhanced get all invoices (with better filtering)
 router.get('/enhanced/all',
-    adminMiddleware,
     [
         query('page').optional().isInt({ min: 1 }).withMessage('Page must be positive integer'),
         query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),

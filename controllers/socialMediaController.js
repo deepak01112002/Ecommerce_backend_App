@@ -6,7 +6,7 @@ const SocialMedia = require('../models/SocialMedia');
 // @route   GET /api/social-media
 // @access  Public
 const getSocialMediaLinks = asyncHandler(async (req, res) => {
-    const { platform, active = true } = req.query;
+    const { platform, active = 'true' } = req.query;
 
     let query = {};
     if (platform) query.platform = platform;
