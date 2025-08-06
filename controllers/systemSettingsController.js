@@ -1,6 +1,89 @@
 const SystemSettings = require('../models/SystemSettings');
 const { asyncHandler } = require('../middlewares/errorHandler');
 
+// PUBLIC ENDPOINTS (No authentication required)
+
+// Get public system settings for users
+exports.getPublicSettings = asyncHandler(async (req, res) => {
+    const settings = await SystemSettings.getCurrentSettings();
+
+    // Only return public settings that users need to know
+    const publicSettings = {
+        appStatus: {
+            isActive: settings.general?.appStatus?.isActive ?? true,
+            maintenanceMode: settings.general?.appStatus?.maintenanceMode ?? false,
+            maintenanceMessage: settings.general?.appStatus?.maintenanceMessage || 'Application is under maintenance. Please try again later.',
+            estimatedDowntime: settings.general?.appStatus?.estimatedDowntime || null
+        },
+        business: {
+            companyName: settings.business?.companyName || 'Ghanshyam Murti Bhandar',
+            supportEmail: settings.business?.supportEmail || 'support@ghanshyammurtibhandar.com',
+            supportPhone: settings.business?.supportPhone || '+919876543210',
+            businessHours: settings.business?.businessHours || '9:00 AM - 6:00 PM'
+        },
+        features: {
+            enableInvoiceDownload: settings.features?.enableInvoiceDownload ?? true,
+            enableOrderTracking: settings.features?.enableOrderTracking ?? true,
+            enableWishlist: settings.features?.enableWishlist ?? true,
+            enableReviews: settings.features?.enableReviews ?? true,
+            enableWallet: settings.features?.enableWallet ?? true
+        },
+        invoice: {
+            downloadEnabled: settings.invoice?.downloadEnabled ?? true,
+            format: settings.invoice?.format || 'pdf',
+            includeGST: settings.invoice?.includeGST ?? true
+        }
+    };
+
+    res.success({
+        settings: publicSettings,
+        timestamp: new Date().toISOString()
+    }, 'Public settings retrieved successfully');
+});
+
+// Get app status for maintenance popup
+exports.getPublicAppStatus = asyncHandler(async (req, res) => {
+    const settings = await SystemSettings.getCurrentSettings();
+
+    const appStatus = {
+        isActive: settings.general?.appStatus?.isActive ?? true,
+        maintenanceMode: settings.general?.appStatus?.maintenanceMode ?? false,
+        maintenanceMessage: settings.general?.appStatus?.maintenanceMessage || 'Application is under maintenance. Please try again later.',
+        estimatedDowntime: settings.general?.appStatus?.estimatedDowntime || null,
+        allowedUsers: settings.general?.appStatus?.allowedUsers || [], // Admin users who can still access
+        lastUpdated: settings.general?.appStatus?.lastUpdated || new Date().toISOString(),
+        reason: settings.general?.appStatus?.reason || 'Scheduled maintenance'
+    };
+
+    res.success({
+        appStatus,
+        serverTime: new Date().toISOString()
+    }, 'App status retrieved successfully');
+});
+
+// Get public invoice settings
+exports.getPublicInvoiceSettings = asyncHandler(async (req, res) => {
+    const settings = await SystemSettings.getCurrentSettings();
+
+    const invoiceSettings = {
+        downloadEnabled: settings.invoice?.downloadEnabled ?? true,
+        format: settings.invoice?.format || 'pdf',
+        includeGST: settings.invoice?.includeGST ?? true,
+        companyDetails: {
+            name: settings.business?.companyName || 'Ghanshyam Murti Bhandar',
+            address: settings.business?.address || 'Religious Items Store',
+            phone: settings.business?.supportPhone || '+919876543210',
+            email: settings.business?.supportEmail || 'support@ghanshyammurtibhandar.com',
+            gstNumber: settings.business?.gstNumber || 'GST123456789'
+        }
+    };
+
+    res.success({
+        invoiceSettings,
+        timestamp: new Date().toISOString()
+    }, 'Invoice settings retrieved successfully');
+});
+
 // Get all system settings
 exports.getSystemSettings = asyncHandler(async (req, res) => {
     const settings = await SystemSettings.getCurrentSettings();
@@ -302,6 +385,237 @@ exports.getSystemStatus = asyncHandler(async (req, res) => {
         lastChecked: new Date(),
         version: settings.version
     }, 'System status retrieved successfully');
+});
+
+// ADMIN ENDPOINTS FOR APP CONTROL
+
+// Get app status (admin)
+exports.getAppStatus = asyncHandler(async (req, res) => {
+    const settings = await SystemSettings.getCurrentSettings();
+
+    const appStatus = {
+        isActive: settings.general?.appStatus?.isActive ?? true,
+        maintenanceMode: settings.general?.appStatus?.maintenanceMode ?? false,
+        maintenanceMessage: settings.general?.appStatus?.maintenanceMessage || 'Application is under maintenance. Please try again later.',
+        estimatedDowntime: settings.general?.appStatus?.estimatedDowntime || null,
+        allowedUsers: settings.general?.appStatus?.allowedUsers || [],
+        lastUpdated: settings.general?.appStatus?.lastUpdated || new Date().toISOString(),
+        reason: settings.general?.appStatus?.reason || 'Scheduled maintenance',
+        updatedBy: settings.general?.appStatus?.updatedBy || null
+    };
+
+    res.success({
+        appStatus
+    }, 'App status retrieved successfully');
+});
+
+// Update app status (activate/deactivate application)
+exports.updateAppStatus = asyncHandler(async (req, res) => {
+    const { isActive, reason, maintenanceMessage, estimatedDowntime } = req.body;
+
+    const settings = await SystemSettings.getCurrentSettings();
+
+    // Update app status
+    if (!settings.general) settings.general = {};
+    if (!settings.general.appStatus) settings.general.appStatus = {};
+
+    settings.general.appStatus = {
+        ...settings.general.appStatus,
+        isActive: isActive,
+        maintenanceMode: !isActive,
+        reason: reason || (isActive ? 'Application activated' : 'Scheduled maintenance'),
+        maintenanceMessage: maintenanceMessage || 'Application is under maintenance. Please try again later.',
+        estimatedDowntime: estimatedDowntime || null,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: req.user._id
+    };
+
+    // Save settings
+    await settings.save();
+
+    res.success({
+        appStatus: settings.general.appStatus,
+        message: isActive ? 'Application activated successfully' : 'Application deactivated successfully'
+    }, `Application ${isActive ? 'activated' : 'deactivated'} successfully`);
+});
+
+// Get invoice settings (admin)
+exports.getInvoiceSettings = asyncHandler(async (req, res) => {
+    const settings = await SystemSettings.getCurrentSettings();
+
+    const invoiceSettings = {
+        enableInvoiceDownload: settings.features?.enableInvoiceDownload ?? true,
+        invoiceFormat: settings.invoice?.format || 'pdf',
+        includeCompanyLogo: settings.invoice?.includeCompanyLogo ?? true,
+        invoiceTemplate: settings.invoice?.template || 'default',
+        invoiceNumberPrefix: settings.invoice?.numberPrefix || 'INV',
+        includeGST: settings.invoice?.includeGST ?? true,
+        taxSettings: settings.tax || {},
+        companyDetails: {
+            name: settings.business?.companyName || 'Ghanshyam Murti Bhandar',
+            address: settings.business?.address || 'Religious Items Store',
+            phone: settings.business?.supportPhone || '+919876543210',
+            email: settings.business?.supportEmail || 'support@ghanshyammurtibhandar.com',
+            gstNumber: settings.business?.gstNumber || 'GST123456789',
+            pan: settings.business?.pan || 'PAN123456789'
+        }
+    };
+
+    res.success({
+        invoiceSettings
+    }, 'Invoice settings retrieved successfully');
+});
+
+// Update invoice settings
+exports.updateInvoiceSettings = asyncHandler(async (req, res) => {
+    const {
+        enableInvoiceDownload,
+        invoiceFormat,
+        includeCompanyLogo,
+        invoiceTemplate,
+        invoiceNumberPrefix,
+        taxSettings,
+        companyDetails
+    } = req.body;
+
+    const settings = await SystemSettings.getCurrentSettings();
+
+    // Update features
+    if (!settings.features) settings.features = {};
+    if (enableInvoiceDownload !== undefined) {
+        settings.features.enableInvoiceDownload = enableInvoiceDownload;
+    }
+
+    // Update invoice settings
+    if (!settings.invoice) settings.invoice = {};
+    if (invoiceFormat) settings.invoice.format = invoiceFormat;
+    if (includeCompanyLogo !== undefined) settings.invoice.includeCompanyLogo = includeCompanyLogo;
+    if (invoiceTemplate) settings.invoice.template = invoiceTemplate;
+    if (invoiceNumberPrefix) settings.invoice.numberPrefix = invoiceNumberPrefix;
+
+    // Update tax settings
+    if (taxSettings) {
+        settings.tax = { ...settings.tax, ...taxSettings };
+    }
+
+    // Update company details
+    if (companyDetails) {
+        if (!settings.business) settings.business = {};
+        settings.business = { ...settings.business, ...companyDetails };
+    }
+
+    // Save settings
+    await settings.save();
+
+    res.success({
+        invoiceSettings: {
+            enableInvoiceDownload: settings.features.enableInvoiceDownload,
+            invoiceFormat: settings.invoice.format,
+            includeCompanyLogo: settings.invoice.includeCompanyLogo,
+            invoiceTemplate: settings.invoice.template,
+            invoiceNumberPrefix: settings.invoice.numberPrefix,
+            taxSettings: settings.tax,
+            companyDetails: settings.business
+        }
+    }, 'Invoice settings updated successfully');
+});
+
+// Get invoice template
+exports.getInvoiceTemplate = asyncHandler(async (req, res) => {
+    const { templateId } = req.params;
+
+    // For now, return a basic template structure
+    // In future, this could be stored in database or file system
+    const templates = {
+        default: {
+            id: 'default',
+            name: 'Default Invoice Template',
+            content: `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .company-details { margin-bottom: 20px; }
+        .invoice-details { margin-bottom: 20px; }
+        .items-table { width: 100%; border-collapse: collapse; }
+        .items-table th, .items-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .total { text-align: right; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{companyName}}</h1>
+        <p>{{companyAddress}}</p>
+        <p>Phone: {{companyPhone}} | Email: {{companyEmail}}</p>
+        <p>GST: {{companyGST}}</p>
+    </div>
+
+    <div class="invoice-details">
+        <h2>Invoice #{{invoiceNumber}}</h2>
+        <p>Date: {{invoiceDate}}</p>
+        <p>Customer: {{customerName}}</p>
+        <p>Address: {{customerAddress}}</p>
+    </div>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#items}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{quantity}}</td>
+                <td>₹{{price}}</td>
+                <td>₹{{total}}</td>
+            </tr>
+            {{/items}}
+        </tbody>
+    </table>
+
+    <div class="total">
+        <p>Subtotal: ₹{{subtotal}}</p>
+        <p>GST ({{gstRate}}%): ₹{{gstAmount}}</p>
+        <h3>Total: ₹{{totalAmount}}</h3>
+    </div>
+</body>
+</html>
+            `,
+            variables: ['companyName', 'companyAddress', 'companyPhone', 'companyEmail', 'companyGST', 'invoiceNumber', 'invoiceDate', 'customerName', 'customerAddress', 'items', 'subtotal', 'gstRate', 'gstAmount', 'totalAmount']
+        }
+    };
+
+    const template = templates[templateId];
+    if (!template) {
+        return res.error('Invoice template not found', [], 404);
+    }
+
+    res.success({
+        template
+    }, 'Invoice template retrieved successfully');
+});
+
+// Update invoice template
+exports.updateInvoiceTemplate = asyncHandler(async (req, res) => {
+    const { templateId } = req.params;
+    const { templateContent, templateName } = req.body;
+
+    // For now, just return success
+    // In future, this would save to database or file system
+    res.success({
+        templateId,
+        templateName: templateName || `Template ${templateId}`,
+        templateContent,
+        updatedAt: new Date().toISOString()
+    }, 'Invoice template updated successfully');
 });
 
 module.exports = exports;

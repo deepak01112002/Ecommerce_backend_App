@@ -6,6 +6,8 @@ const User = require('../models/User');
 const Address = require('../models/Address');
 const Wallet = require('../models/Wallet');
 const WalletTransaction = require('../models/WalletTransaction');
+const Invoice = require('../models/Invoice');
+const SystemSettings = require('../models/SystemSettings');
 const { asyncHandler, validateRequest } = require('../middlewares/errorHandler');
 const firebaseService = require('../services/firebaseService');
 const Razorpay = require('razorpay');
@@ -457,6 +459,198 @@ exports.trackOrder = asyncHandler(async (req, res) => {
 
     res.success(trackingResponse, 'Order tracking information retrieved successfully');
 });
+
+// Download order invoice (authenticated users only)
+exports.downloadOrderInvoice = asyncHandler(async (req, res) => {
+    const { orderId } = req.params;
+    const { format = 'A4' } = req.query;
+    const userId = req.user._id;
+
+    // Validate orderId format
+    if (!orderId || !orderId.match(/^[0-9a-fA-F]{24}$/)) {
+        return res.error('Invalid order ID format', [], 400);
+    }
+
+    // First verify the order belongs to the user
+    const order = await Order.findOne({ _id: orderId, user: userId });
+    if (!order) {
+        return res.error('Order not found or access denied', [], 404);
+    }
+
+    // Check if invoice download is enabled in system settings
+    const settings = await SystemSettings.getCurrentSettings();
+    if (!settings.features?.enableInvoiceDownload) {
+        return res.error('Invoice download is currently disabled', [], 403);
+    }
+
+    // Find the invoice for this order
+    const invoice = await Invoice.findOne({ order: orderId, user: userId })
+        .populate('items.product', 'name description');
+
+    if (!invoice) {
+        return res.error('Invoice not found for this order', [], 404);
+    }
+
+    try {
+        let pdfBuffer;
+
+        if (format === 'thermal') {
+            pdfBuffer = await generateThermalPDF(invoice);
+        } else {
+            pdfBuffer = await generateStandardPDF(invoice);
+        }
+
+        // Update download timestamp
+        invoice.downloadedAt = new Date();
+        await invoice.save();
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="Invoice-${invoice.formattedInvoiceNumber}.pdf"`);
+        res.send(pdfBuffer);
+    } catch (error) {
+        console.error('PDF generation error:', error);
+        return res.error('Failed to generate invoice PDF', [error.message], 500);
+    }
+});
+
+// Helper function to generate standard PDF (copied from invoice controller)
+async function generateStandardPDF(invoice) {
+    return new Promise((resolve, reject) => {
+        try {
+            const PDFDocument = require('pdfkit');
+            const doc = new PDFDocument({ margin: 50 });
+            const buffers = [];
+
+            doc.on('data', buffers.push.bind(buffers));
+            doc.on('end', () => {
+                const pdfData = Buffer.concat(buffers);
+                resolve(pdfData);
+            });
+
+            // Header
+            doc.fontSize(20).text(invoice.companyDetails.name || 'Ghanshyam Murti Bhandar', 50, 50);
+            doc.fontSize(10).text(invoice.companyDetails.address || 'Religious Items Store', 50, 80);
+            doc.text(`Phone: ${invoice.companyDetails.phone || '+919876543210'}`, 50, 95);
+            doc.text(`Email: ${invoice.companyDetails.email || 'support@ghanshyammurtibhandar.com'}`, 50, 110);
+            doc.text(`GSTIN: ${invoice.companyDetails.gstin || 'GST123456789'}`, 50, 125);
+
+            // Invoice details
+            doc.fontSize(16).text('INVOICE', 400, 50);
+            doc.fontSize(10).text(`Invoice No: ${invoice.formattedInvoiceNumber}`, 400, 80);
+            doc.text(`Date: ${invoice.invoiceDate.toLocaleDateString()}`, 400, 95);
+            doc.text(`Due Date: ${invoice.dueDate ? invoice.dueDate.toLocaleDateString() : 'N/A'}`, 400, 110);
+
+            // Customer details
+            doc.text('Bill To:', 50, 160);
+            doc.text(invoice.customerDetails.name, 50, 175);
+            doc.text(invoice.customerDetails.address, 50, 190);
+            doc.text(`Phone: ${invoice.customerDetails.phone}`, 50, 205);
+            doc.text(`Email: ${invoice.customerDetails.email}`, 50, 220);
+
+            // Items table
+            let yPosition = 260;
+            doc.text('Item', 50, yPosition);
+            doc.text('Qty', 200, yPosition);
+            doc.text('Rate', 250, yPosition);
+            doc.text('Amount', 350, yPosition);
+            doc.text('GST', 420, yPosition);
+            doc.text('Total', 480, yPosition);
+
+            yPosition += 20;
+            doc.moveTo(50, yPosition).lineTo(550, yPosition).stroke();
+            yPosition += 10;
+
+            invoice.items.forEach(item => {
+                doc.text(item.name, 50, yPosition);
+                doc.text(item.quantity.toString(), 200, yPosition);
+                doc.text(`₹${item.rate}`, 250, yPosition);
+                doc.text(`₹${item.taxableAmount}`, 350, yPosition);
+                doc.text(`₹${(item.cgst + item.sgst + item.igst)}`, 420, yPosition);
+                doc.text(`₹${item.totalAmount}`, 480, yPosition);
+                yPosition += 20;
+            });
+
+            // Totals
+            yPosition += 20;
+            doc.text(`Subtotal: ₹${invoice.pricing.subtotal}`, 350, yPosition);
+            yPosition += 15;
+            doc.text(`GST: ₹${invoice.pricing.totalGST}`, 350, yPosition);
+            yPosition += 15;
+            doc.fontSize(12).text(`Total: ₹${invoice.pricing.grandTotal}`, 350, yPosition);
+
+            // Terms and conditions
+            if (invoice.termsAndConditions) {
+                yPosition += 40;
+                doc.fontSize(10).text('Terms & Conditions:', 50, yPosition);
+                doc.text(invoice.termsAndConditions, 50, yPosition + 15);
+            }
+
+            doc.end();
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+// Helper function to generate thermal PDF (copied from invoice controller)
+async function generateThermalPDF(invoice) {
+    return new Promise((resolve, reject) => {
+        try {
+            const PDFDocument = require('pdfkit');
+            const doc = new PDFDocument({
+                size: [164, 'auto'], // 58mm width
+                margin: 10
+            });
+            const buffers = [];
+
+            doc.on('data', buffers.push.bind(buffers));
+            doc.on('end', () => {
+                const pdfData = Buffer.concat(buffers);
+                resolve(pdfData);
+            });
+
+            // Header
+            doc.fontSize(12).text(invoice.companyDetails.name || 'Ghanshyam Murti Bhandar', { align: 'center' });
+            doc.fontSize(8).text(invoice.companyDetails.address || 'Religious Items Store', { align: 'center' });
+            doc.text(`Ph: ${invoice.companyDetails.phone || '+919876543210'}`, { align: 'center' });
+            doc.text(`GSTIN: ${invoice.companyDetails.gstin || 'GST123456789'}`, { align: 'center' });
+
+            doc.moveDown();
+            doc.text('--------------------------------', { align: 'center' });
+            doc.text('INVOICE', { align: 'center' });
+            doc.text('--------------------------------', { align: 'center' });
+
+            // Invoice details
+            doc.text(`Invoice: ${invoice.formattedInvoiceNumber}`);
+            doc.text(`Date: ${invoice.invoiceDate.toLocaleDateString()}`);
+            doc.text(`Customer: ${invoice.customerDetails.name}`);
+
+            doc.moveDown();
+            doc.text('--------------------------------');
+
+            // Items
+            invoice.items.forEach(item => {
+                doc.text(`${item.name}`);
+                doc.text(`${item.quantity} x ₹${item.rate} = ₹${item.totalAmount}`);
+                doc.moveDown(0.5);
+            });
+
+            doc.text('--------------------------------');
+            doc.text(`Subtotal: ₹${invoice.pricing.subtotal}`);
+            doc.text(`GST: ₹${invoice.pricing.totalGST}`);
+            doc.text('--------------------------------');
+            doc.fontSize(10).text(`TOTAL: ₹${invoice.pricing.grandTotal}`, { align: 'center' });
+            doc.text('--------------------------------');
+
+            doc.moveDown();
+            doc.fontSize(8).text('Thank you for your business!', { align: 'center' });
+
+            doc.end();
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
 
 // List all orders (admin)
 exports.getOrders = asyncHandler(async (req, res) => {

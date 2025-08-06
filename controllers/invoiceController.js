@@ -1,5 +1,6 @@
 const Invoice = require('../models/Invoice');
 const Order = require('../models/Order');
+const SystemSettings = require('../models/SystemSettings');
 const { asyncHandler } = require('../middlewares/errorHandler');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
@@ -7,6 +8,144 @@ const JsBarcode = require('jsbarcode');
 const { Canvas } = require('canvas');
 const fs = require('fs');
 const path = require('path');
+
+// USER INVOICE METHODS
+
+// Get user's invoices
+exports.getUserInvoices = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const {
+        page = 1,
+        limit = 20,
+        status,
+        paymentStatus
+    } = req.query;
+
+    const query = { user: userId, isActive: true };
+
+    // Filters
+    if (status) query.status = status;
+    if (paymentStatus) query['paymentDetails.status'] = paymentStatus;
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const invoices = await Invoice.find(query)
+        .populate('order', 'orderNumber status')
+        .sort({ invoiceDate: -1 })
+        .skip(skip)
+        .limit(parseInt(limit))
+        .select('invoiceNumber invoiceDate status paymentDetails.status pricing.grandTotal');
+
+    const total = await Invoice.countDocuments(query);
+
+    const formattedInvoices = invoices.map(invoice => ({
+        _id: invoice._id,
+        invoiceNumber: invoice.formattedInvoiceNumber,
+        invoiceDate: invoice.invoiceDate,
+        orderNumber: invoice.order?.orderNumber,
+        status: invoice.status,
+        paymentStatus: invoice.paymentDetails.status,
+        amount: invoice.pricing.grandTotal
+    }));
+
+    res.success({
+        invoices: formattedInvoices,
+        pagination: {
+            currentPage: parseInt(page),
+            totalPages: Math.ceil(total / parseInt(limit)),
+            total,
+            hasNext: skip + parseInt(limit) < total,
+            hasPrev: parseInt(page) > 1
+        }
+    }, 'User invoices retrieved successfully');
+});
+
+// Get user's invoice by order ID
+exports.getUserInvoiceByOrder = asyncHandler(async (req, res) => {
+    const { orderId } = req.params;
+    const userId = req.user._id;
+
+    // First verify the order belongs to the user
+    const order = await Order.findOne({ _id: orderId, user: userId });
+    if (!order) {
+        return res.error('Order not found or access denied', [], 404);
+    }
+
+    const invoice = await Invoice.findOne({ order: orderId, user: userId })
+        .populate('order', 'orderNumber status')
+        .populate('items.product', 'name description');
+
+    if (!invoice) {
+        return res.error('Invoice not found for this order', [], 404);
+    }
+
+    res.success({
+        invoice: {
+            _id: invoice._id,
+            invoiceNumber: invoice.formattedInvoiceNumber,
+            invoiceDate: invoice.invoiceDate,
+            dueDate: invoice.dueDate,
+            status: invoice.status,
+            paymentDetails: invoice.paymentDetails,
+            customerDetails: invoice.customerDetails,
+            companyDetails: invoice.companyDetails,
+            items: invoice.items,
+            pricing: invoice.pricing,
+            taxDetails: invoice.taxDetails,
+            notes: invoice.notes,
+            termsAndConditions: invoice.termsAndConditions,
+            qrCode: invoice.qrCode,
+            order: invoice.order
+        }
+    }, 'Invoice retrieved successfully');
+});
+
+// Download user's invoice PDF by order ID
+exports.downloadUserInvoiceByOrder = asyncHandler(async (req, res) => {
+    const { orderId } = req.params;
+    const { format = 'A4' } = req.query;
+    const userId = req.user._id;
+
+    // First verify the order belongs to the user
+    const order = await Order.findOne({ _id: orderId, user: userId });
+    if (!order) {
+        return res.error('Order not found or access denied', [], 404);
+    }
+
+    // Check if invoice download is enabled in system settings
+    const settings = await SystemSettings.getCurrentSettings();
+    if (!settings.features?.enableInvoiceDownload) {
+        return res.error('Invoice download is currently disabled', [], 403);
+    }
+
+    const invoice = await Invoice.findOne({ order: orderId, user: userId })
+        .populate('items.product', 'name description');
+
+    if (!invoice) {
+        return res.error('Invoice not found for this order', [], 404);
+    }
+
+    try {
+        let pdfBuffer;
+
+        if (format === 'thermal') {
+            pdfBuffer = await generateThermalPDF(invoice);
+        } else {
+            pdfBuffer = await generateStandardPDF(invoice);
+        }
+
+        // Update download timestamp
+        invoice.downloadedAt = new Date();
+        await invoice.save();
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="Invoice-${invoice.formattedInvoiceNumber}.pdf"`);
+        res.send(pdfBuffer);
+    } catch (error) {
+        return res.error('Failed to generate PDF', [error.message], 500);
+    }
+});
+
+// ADMIN INVOICE METHODS
 
 // Generate invoice from order
 exports.generateInvoice = asyncHandler(async (req, res) => {

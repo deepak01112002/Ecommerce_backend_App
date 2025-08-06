@@ -6,7 +6,24 @@ const authMiddleware = require('../middlewares/authMiddleware');
 const adminMiddleware = require('../middlewares/adminMiddleware');
 const { validateRequest } = require('../middlewares/errorHandler');
 
-// All system settings routes require authentication and admin privileges
+// PUBLIC ROUTES (No authentication required)
+// Get public system settings (for app status, maintenance mode, etc.)
+router.get('/public',
+    systemSettingsController.getPublicSettings
+);
+
+// Get app status for users (to show maintenance popup)
+router.get('/public/app-status',
+    systemSettingsController.getPublicAppStatus
+);
+
+// Get public invoice settings (for download options)
+router.get('/public/invoice-settings',
+    systemSettingsController.getPublicInvoiceSettings
+);
+
+// ADMIN ROUTES (Authentication required)
+// All system settings routes below require authentication and admin privileges
 router.use(authMiddleware);
 router.use(adminMiddleware);
 
@@ -106,6 +123,44 @@ router.get('/validate',
 // Get system status
 router.get('/status',
     systemSettingsController.getSystemStatus
+);
+
+// Invoice settings management
+router.get('/invoice',
+    systemSettingsController.getInvoiceSettings
+);
+
+router.put('/invoice',
+    [
+        body('enableInvoiceDownload').optional().isBoolean().withMessage('enableInvoiceDownload must be boolean'),
+        body('invoiceFormat').optional().isIn(['pdf']).withMessage('Invalid invoice format'),
+        body('includeCompanyLogo').optional().isBoolean().withMessage('includeCompanyLogo must be boolean'),
+        body('invoiceTemplate').optional().isString().withMessage('invoiceTemplate must be string'),
+        body('invoiceNumberPrefix').optional().isString().withMessage('invoiceNumberPrefix must be string'),
+        body('companyDetails').optional().isObject().withMessage('companyDetails must be object')
+    ],
+    validateRequest,
+    systemSettingsController.updateInvoiceSettings
+);
+
+// Get invoice template
+router.get('/invoice/template/:templateId',
+    [
+        param('templateId').notEmpty().withMessage('Template ID is required')
+    ],
+    validateRequest,
+    systemSettingsController.getInvoiceTemplate
+);
+
+// Update invoice template
+router.put('/invoice/template/:templateId',
+    [
+        param('templateId').notEmpty().withMessage('Template ID is required'),
+        body('templateContent').notEmpty().withMessage('Template content is required'),
+        body('templateName').optional().isString().withMessage('Template name must be string')
+    ],
+    validateRequest,
+    systemSettingsController.updateInvoiceTemplate
 );
 
 module.exports = router;
