@@ -71,6 +71,9 @@ router.get('/:orderId', optionalAuth, orderController.getOrderById);
 // Track order
 router.get('/:orderId/track', optionalAuth, orderController.trackOrder);
 
+// Download order invoice (authenticated users only)
+router.get('/:orderId/invoice/download', authMiddleware, orderController.downloadOrderInvoice);
+
 // Cancel order (authenticated users only)
 router.patch('/:orderId/cancel', authMiddleware, orderController.cancelOrder);
 
