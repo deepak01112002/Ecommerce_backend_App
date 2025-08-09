@@ -27,6 +27,21 @@ router.get('/public/invoice-settings',
 router.use(authMiddleware);
 router.use(adminMiddleware);
 
+// App status (activate/deactivate) - Admin only
+router.get('/app-status', systemSettingsController.getAppStatus);
+router.put('/app-status', [
+    body('isActive').optional().isBoolean().withMessage('isActive must be boolean'),
+    body('reason').optional().isString().withMessage('reason must be string'),
+    body('maintenanceMessage').optional().custom((value) => {
+        if (value === null || typeof value === 'string') return true;
+        throw new Error('maintenanceMessage must be string or null');
+    }),
+    body('estimatedDowntime').optional().custom((value) => {
+        if (value === null || typeof value === 'string') return true;
+        throw new Error('estimatedDowntime must be string or null');
+    })
+], validateRequest, systemSettingsController.updateAppStatus);
+
 // Get all system settings
 router.get('/',
     systemSettingsController.getSystemSettings

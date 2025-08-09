@@ -13,7 +13,19 @@ const systemSettingsSchema = new mongoose.Schema({
         currency: { type: String, default: 'INR' },
         language: { type: String, default: 'en' },
         maintenanceMode: { type: Boolean, default: false },
-        maintenanceMessage: { type: String, default: 'Site is under maintenance. Please check back later.' }
+        maintenanceMessage: { type: String, default: 'Site is under maintenance. Please check back later.' },
+
+        // App Status (for activation/deactivation)
+        appStatus: {
+            isActive: { type: Boolean },
+            maintenanceMode: { type: Boolean },
+            maintenanceMessage: { type: String },
+            estimatedDowntime: { type: String },
+            allowedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+            lastUpdated: { type: String },
+            reason: { type: String },
+            updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+        }
     },
     
     // Business Settings

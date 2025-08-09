@@ -7,31 +7,32 @@ const { asyncHandler } = require('../middlewares/errorHandler');
 exports.getPublicSettings = asyncHandler(async (req, res) => {
     const settings = await SystemSettings.getCurrentSettings();
 
-    // Only return public settings that users need to know
+    // Only return public settings that users need to know (no hard-coded defaults)
+    const appStatus = settings.general?.appStatus || {};
     const publicSettings = {
         appStatus: {
-            isActive: settings.general?.appStatus?.isActive ?? true,
-            maintenanceMode: settings.general?.appStatus?.maintenanceMode ?? false,
-            maintenanceMessage: settings.general?.appStatus?.maintenanceMessage || 'Application is under maintenance. Please try again later.',
-            estimatedDowntime: settings.general?.appStatus?.estimatedDowntime || null
+            isActive: appStatus.isActive ?? null,
+            maintenanceMode: appStatus.maintenanceMode ?? null,
+            maintenanceMessage: appStatus.maintenanceMessage ?? null,
+            estimatedDowntime: appStatus.estimatedDowntime ?? null
         },
         business: {
-            companyName: settings.business?.companyName || 'Ghanshyam Murti Bhandar',
-            supportEmail: settings.business?.supportEmail || 'support@ghanshyammurtibhandar.com',
-            supportPhone: settings.business?.supportPhone || '+919876543210',
-            businessHours: settings.business?.businessHours || '9:00 AM - 6:00 PM'
+            companyName: settings.business?.companyName ?? null,
+            supportEmail: settings.business?.supportEmail ?? null,
+            supportPhone: settings.business?.supportPhone ?? null,
+            businessHours: settings.business?.businessHours ?? null
         },
         features: {
-            enableInvoiceDownload: settings.features?.enableInvoiceDownload ?? true,
-            enableOrderTracking: settings.features?.enableOrderTracking ?? true,
-            enableWishlist: settings.features?.enableWishlist ?? true,
-            enableReviews: settings.features?.enableReviews ?? true,
-            enableWallet: settings.features?.enableWallet ?? true
+            enableInvoiceDownload: settings.features?.enableInvoiceDownload ?? null,
+            enableOrderTracking: settings.features?.enableOrderTracking ?? null,
+            enableWishlist: settings.features?.enableWishlist ?? null,
+            enableReviews: settings.features?.enableReviews ?? null,
+            enableWallet: settings.features?.enableWallet ?? null
         },
         invoice: {
-            downloadEnabled: settings.invoice?.downloadEnabled ?? true,
-            format: settings.invoice?.format || 'pdf',
-            includeGST: settings.invoice?.includeGST ?? true
+            downloadEnabled: settings.invoice?.downloadEnabled ?? null,
+            format: settings.invoice?.format ?? null,
+            includeGST: settings.invoice?.includeGST ?? null
         }
     };
 
@@ -45,14 +46,15 @@ exports.getPublicSettings = asyncHandler(async (req, res) => {
 exports.getPublicAppStatus = asyncHandler(async (req, res) => {
     const settings = await SystemSettings.getCurrentSettings();
 
+    const gs = settings.general?.appStatus || {};
     const appStatus = {
-        isActive: settings.general?.appStatus?.isActive ?? true,
-        maintenanceMode: settings.general?.appStatus?.maintenanceMode ?? false,
-        maintenanceMessage: settings.general?.appStatus?.maintenanceMessage || 'Application is under maintenance. Please try again later.',
-        estimatedDowntime: settings.general?.appStatus?.estimatedDowntime || null,
-        allowedUsers: settings.general?.appStatus?.allowedUsers || [], // Admin users who can still access
-        lastUpdated: settings.general?.appStatus?.lastUpdated || new Date().toISOString(),
-        reason: settings.general?.appStatus?.reason || 'Scheduled maintenance'
+        isActive: gs.isActive ?? null,
+        maintenanceMode: gs.maintenanceMode ?? null,
+        maintenanceMessage: gs.maintenanceMessage ?? null,
+        estimatedDowntime: gs.estimatedDowntime ?? null,
+        allowedUsers: gs.allowedUsers ?? null, // Admin users who can still access
+        lastUpdated: gs.lastUpdated ?? null,
+        reason: gs.reason ?? null
     };
 
     res.success({
@@ -393,15 +395,16 @@ exports.getSystemStatus = asyncHandler(async (req, res) => {
 exports.getAppStatus = asyncHandler(async (req, res) => {
     const settings = await SystemSettings.getCurrentSettings();
 
+    const gsAdmin = settings.general?.appStatus || {};
     const appStatus = {
-        isActive: settings.general?.appStatus?.isActive ?? true,
-        maintenanceMode: settings.general?.appStatus?.maintenanceMode ?? false,
-        maintenanceMessage: settings.general?.appStatus?.maintenanceMessage || 'Application is under maintenance. Please try again later.',
-        estimatedDowntime: settings.general?.appStatus?.estimatedDowntime || null,
-        allowedUsers: settings.general?.appStatus?.allowedUsers || [],
-        lastUpdated: settings.general?.appStatus?.lastUpdated || new Date().toISOString(),
-        reason: settings.general?.appStatus?.reason || 'Scheduled maintenance',
-        updatedBy: settings.general?.appStatus?.updatedBy || null
+        isActive: gsAdmin.isActive ?? null,
+        maintenanceMode: gsAdmin.maintenanceMode ?? null,
+        maintenanceMessage: gsAdmin.maintenanceMessage ?? null,
+        estimatedDowntime: gsAdmin.estimatedDowntime ?? null,
+        allowedUsers: gsAdmin.allowedUsers ?? null,
+        lastUpdated: gsAdmin.lastUpdated ?? null,
+        reason: gsAdmin.reason ?? null,
+        updatedBy: gsAdmin.updatedBy ?? null
     };
 
     res.success({
@@ -419,16 +422,28 @@ exports.updateAppStatus = asyncHandler(async (req, res) => {
     if (!settings.general) settings.general = {};
     if (!settings.general.appStatus) settings.general.appStatus = {};
 
-    settings.general.appStatus = {
-        ...settings.general.appStatus,
-        isActive: isActive,
-        maintenanceMode: !isActive,
-        reason: reason || (isActive ? 'Application activated' : 'Scheduled maintenance'),
-        maintenanceMessage: maintenanceMessage || 'Application is under maintenance. Please try again later.',
-        estimatedDowntime: estimatedDowntime || null,
-        lastUpdated: new Date().toISOString(),
-        updatedBy: req.user._id
-    };
+    // Only update fields provided by admin; do not inject default values
+    const current = settings.general.appStatus || {};
+    const nextStatus = { ...current };
+
+    if (typeof isActive === 'boolean') {
+        nextStatus.isActive = isActive;
+        nextStatus.maintenanceMode = !isActive;
+
+        // If activating app, clear maintenance-related fields unless explicitly provided
+        if (isActive === true) {
+            if (maintenanceMessage === undefined) nextStatus.maintenanceMessage = null;
+            if (estimatedDowntime === undefined) nextStatus.estimatedDowntime = null;
+        }
+    }
+
+    if (reason !== undefined) nextStatus.reason = reason;
+    if (maintenanceMessage !== undefined) nextStatus.maintenanceMessage = maintenanceMessage;
+    if (estimatedDowntime !== undefined) nextStatus.estimatedDowntime = estimatedDowntime;
+    nextStatus.lastUpdated = new Date().toISOString();
+    nextStatus.updatedBy = req.user._id;
+
+    settings.general.appStatus = nextStatus;
 
     // Save settings
     await settings.save();
