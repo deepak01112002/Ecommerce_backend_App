@@ -117,11 +117,30 @@ exports.downloadUserInvoiceByOrder = asyncHandler(async (req, res) => {
         return res.error('Invoice download is currently disabled', [], 403);
     }
 
-    const invoice = await Invoice.findOne({ order: orderId, user: userId })
+    // Find the invoice for this order, or create one if it doesn't exist
+    let invoice = await Invoice.findOne({ order: orderId, user: userId })
         .populate('items.product', 'name description');
 
     if (!invoice) {
-        return res.error('Invoice not found for this order', [], 404);
+        // Auto-generate invoice from order (like admin panel does)
+        try {
+            invoice = await Invoice.generateFromOrder(orderId, {
+                createdBy: userId // User generating their own invoice
+            });
+
+            // Generate QR code for the invoice
+            if (invoice.generateQRCode) {
+                await invoice.generateQRCode();
+            }
+
+            // Populate the product details for PDF generation
+            invoice = await Invoice.findById(invoice._id)
+                .populate('items.product', 'name description');
+
+        } catch (generateError) {
+            console.error('Auto-invoice generation error:', generateError);
+            return res.error('Unable to generate invoice for this order', [generateError.message], 500);
+        }
     }
 
     try {
