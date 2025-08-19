@@ -514,6 +514,8 @@ exports.downloadOrderInvoice = asyncHandler(async (req, res) => {
 
         if (format === 'thermal') {
             pdfBuffer = await generateThermalPDF(invoice);
+        } else if (format === '4x6') {
+            pdfBuffer = await generate4x6InvoicePDF(invoice);
         } else {
             pdfBuffer = await generateStandardPDF(invoice);
         }
@@ -522,8 +524,9 @@ exports.downloadOrderInvoice = asyncHandler(async (req, res) => {
         invoice.downloadedAt = new Date();
         await invoice.save();
 
+        const filename = format === '4x6' ? `Invoice-4x6-${invoice.formattedInvoiceNumber}.pdf` : `Invoice-${invoice.formattedInvoiceNumber}.pdf`;
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="Invoice-${invoice.formattedInvoiceNumber}.pdf"`);
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
         res.send(pdfBuffer);
     } catch (error) {
         console.error('PDF generation error:', error);

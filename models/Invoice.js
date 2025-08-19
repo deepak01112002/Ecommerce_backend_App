@@ -118,7 +118,8 @@ const invoiceSchema = new mongoose.Schema({
         placeOfSupply: String,
         isInterState: { type: Boolean, default: false },
         reverseCharge: { type: Boolean, default: false },
-        taxType: { type: String, enum: ['GST', 'IGST'], default: 'GST' }
+        taxType: { type: String, enum: ['GST', 'IGST', 'NON_GST'], default: 'GST' },
+        isGSTApplicable: { type: Boolean, default: true }
     },
     // QR Code & Barcode
     qrCode: String,
@@ -234,15 +235,19 @@ invoiceSchema.statics.generateFromOrder = async function(orderId, additionalData
         throw new Error('Invoice already exists for this order');
     }
     
-    // Prepare invoice items with GST calculation
+    // Check if GST is applicable
+    const isGSTApplicable = additionalData.isGSTApplicable !== false;
+    const taxType = additionalData.taxType || (isGSTApplicable ? 'GST' : 'NON_GST');
+
+    // Prepare invoice items with conditional GST calculation
     const invoiceItems = order.items.map(item => {
-        const gstRate = item.product.gstRate || 18; // Default 18% GST
+        const gstRate = isGSTApplicable ? (item.product.gstRate || 18) : 0; // Default 18% GST or 0 for non-GST
         const taxableAmount = item.unitPrice * item.quantity - (item.discount || 0);
-        const gstAmount = (taxableAmount * gstRate) / 100;
-        
-        // Determine if inter-state or intra-state
-        const isInterState = order.billingAddress.state !== order.shippingAddress.state;
-        
+        const gstAmount = isGSTApplicable ? (taxableAmount * gstRate) / 100 : 0;
+
+        // Determine if inter-state or intra-state (only relevant for GST)
+        const isInterState = isGSTApplicable && order.billingAddress.state !== order.shippingAddress.state;
+
         return {
             product: item.product._id,
             name: item.product.name,
@@ -254,9 +259,9 @@ invoiceSchema.statics.generateFromOrder = async function(orderId, additionalData
             discount: item.discount || 0,
             taxableAmount: taxableAmount,
             gstRate: gstRate,
-            cgst: isInterState ? 0 : gstAmount / 2,
-            sgst: isInterState ? 0 : gstAmount / 2,
-            igst: isInterState ? gstAmount : 0,
+            cgst: (isGSTApplicable && !isInterState) ? gstAmount / 2 : 0,
+            sgst: (isGSTApplicable && !isInterState) ? gstAmount / 2 : 0,
+            igst: (isGSTApplicable && isInterState) ? gstAmount : 0,
             totalAmount: taxableAmount + gstAmount
         };
     });
@@ -313,7 +318,9 @@ invoiceSchema.statics.generateFromOrder = async function(orderId, additionalData
         },
         taxDetails: {
             placeOfSupply: order.shippingAddress.state,
-            isInterState: order.billingAddress.state !== order.shippingAddress.state
+            isInterState: isGSTApplicable && (order.billingAddress.state !== order.shippingAddress.state),
+            taxType: taxType,
+            isGSTApplicable: isGSTApplicable
         },
         ...additionalData
     });

@@ -148,6 +148,8 @@ exports.downloadUserInvoiceByOrder = asyncHandler(async (req, res) => {
 
         if (format === 'thermal') {
             pdfBuffer = await generateThermalPDF(invoice);
+        } else if (format === '4x6') {
+            pdfBuffer = await generate4x6InvoicePDF(invoice);
         } else {
             pdfBuffer = await generateStandardPDF(invoice);
         }
@@ -156,8 +158,9 @@ exports.downloadUserInvoiceByOrder = asyncHandler(async (req, res) => {
         invoice.downloadedAt = new Date();
         await invoice.save();
 
+        const filename = format === '4x6' ? `Invoice-4x6-${invoice.formattedInvoiceNumber}.pdf` : `Invoice-${invoice.formattedInvoiceNumber}.pdf`;
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="Invoice-${invoice.formattedInvoiceNumber}.pdf"`);
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
         res.send(pdfBuffer);
     } catch (error) {
         return res.error('Failed to generate PDF', [error.message], 500);
@@ -169,13 +172,21 @@ exports.downloadUserInvoiceByOrder = asyncHandler(async (req, res) => {
 // Generate invoice from order
 exports.generateInvoice = asyncHandler(async (req, res) => {
     const { orderId } = req.params;
-    const { companyDetails, notes, termsAndConditions } = req.body;
+    const {
+        companyDetails,
+        notes,
+        termsAndConditions,
+        isGSTApplicable = true,
+        taxType = 'GST'
+    } = req.body;
 
     try {
         const invoice = await Invoice.generateFromOrder(orderId, {
             companyDetails,
             notes,
             termsAndConditions,
+            isGSTApplicable,
+            taxType,
             createdBy: req.user._id
         });
 
@@ -190,7 +201,9 @@ exports.generateInvoice = asyncHandler(async (req, res) => {
                 customerName: invoice.customerDetails.name,
                 grandTotal: invoice.pricing.grandTotal,
                 status: invoice.status,
-                paymentStatus: invoice.paymentDetails.status
+                paymentStatus: invoice.paymentDetails.status,
+                isGSTApplicable: invoice.taxDetails.isGSTApplicable,
+                taxType: invoice.taxDetails.taxType
             }
         }, 'Invoice generated successfully', 201);
     } catch (error) {
@@ -451,7 +464,7 @@ exports.cancelInvoice = asyncHandler(async (req, res) => {
 // Generate PDF invoice
 exports.generatePDF = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { format = 'A4' } = req.query; // A4 or thermal
+    const { format = 'A4' } = req.query; // A4, thermal, or 4x6
 
     const invoice = await Invoice.findById(id)
         .populate('items.product', 'name description');
@@ -462,9 +475,11 @@ exports.generatePDF = asyncHandler(async (req, res) => {
 
     try {
         let pdfBuffer;
-        
+
         if (format === 'thermal') {
             pdfBuffer = await generateThermalPDF(invoice);
+        } else if (format === '4x6') {
+            pdfBuffer = await generate4x6InvoicePDF(invoice);
         } else {
             pdfBuffer = await generateStandardPDF(invoice);
         }
@@ -473,8 +488,9 @@ exports.generatePDF = asyncHandler(async (req, res) => {
         invoice.downloadedAt = new Date();
         await invoice.save();
 
+        const filename = format === '4x6' ? `Invoice-4x6-${invoice.formattedInvoiceNumber}.pdf` : `Invoice-${invoice.formattedInvoiceNumber}.pdf`;
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="Invoice-${invoice.formattedInvoiceNumber}.pdf"`);
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
         res.send(pdfBuffer);
     } catch (error) {
         return res.error('Failed to generate PDF', [error.message], 500);
@@ -547,13 +563,19 @@ async function generateStandardPDF(invoice) {
             // Header
             doc.fontSize(20).text(invoice.companyDetails.name, 50, 50);
             doc.fontSize(10).text(invoice.companyDetails.address, 50, 80);
-            doc.text(`GSTIN: ${invoice.companyDetails.gstin}`, 50, 95);
+            if (invoice.taxDetails.isGSTApplicable) {
+                doc.text(`GSTIN: ${invoice.companyDetails.gstin}`, 50, 95);
+            }
             doc.text(`Phone: ${invoice.companyDetails.phone}`, 50, 110);
 
             // Invoice details
-            doc.fontSize(16).text('TAX INVOICE', 400, 50);
+            const invoiceTitle = invoice.taxDetails.isGSTApplicable ? 'TAX INVOICE' : 'INVOICE';
+            doc.fontSize(16).text(invoiceTitle, 400, 50);
             doc.fontSize(10).text(`Invoice No: ${invoice.formattedInvoiceNumber}`, 400, 80);
             doc.text(`Date: ${invoice.invoiceDate.toLocaleDateString()}`, 400, 95);
+            if (!invoice.taxDetails.isGSTApplicable) {
+                doc.text('NON-GST INVOICE', 400, 110);
+            }
 
             // Customer details
             doc.text('Bill To:', 50, 150);
@@ -566,22 +588,30 @@ async function generateStandardPDF(invoice) {
             let yPosition = 250;
             doc.text('S.No', 50, yPosition);
             doc.text('Description', 100, yPosition);
-            doc.text('HSN', 250, yPosition);
+            if (invoice.taxDetails.isGSTApplicable) {
+                doc.text('HSN', 250, yPosition);
+            }
             doc.text('Qty', 300, yPosition);
             doc.text('Rate', 350, yPosition);
             doc.text('Amount', 450, yPosition);
-            doc.text('GST', 500, yPosition);
+            if (invoice.taxDetails.isGSTApplicable) {
+                doc.text('GST', 500, yPosition);
+            }
             doc.text('Total', 550, yPosition);
 
             yPosition += 20;
             invoice.items.forEach((item, index) => {
                 doc.text((index + 1).toString(), 50, yPosition);
                 doc.text(item.name, 100, yPosition);
-                doc.text(item.hsnCode, 250, yPosition);
+                if (invoice.taxDetails.isGSTApplicable) {
+                    doc.text(item.hsnCode, 250, yPosition);
+                }
                 doc.text(item.quantity.toString(), 300, yPosition);
                 doc.text(`₹${item.rate}`, 350, yPosition);
                 doc.text(`₹${item.taxableAmount}`, 450, yPosition);
-                doc.text(`₹${item.cgst + item.sgst + item.igst}`, 500, yPosition);
+                if (invoice.taxDetails.isGSTApplicable) {
+                    doc.text(`₹${item.cgst + item.sgst + item.igst}`, 500, yPosition);
+                }
                 doc.text(`₹${item.totalAmount}`, 550, yPosition);
                 yPosition += 20;
             });
@@ -590,8 +620,10 @@ async function generateStandardPDF(invoice) {
             yPosition += 20;
             doc.text(`Subtotal: ₹${invoice.pricing.subtotal}`, 400, yPosition);
             yPosition += 15;
-            doc.text(`Total GST: ₹${invoice.pricing.totalGST}`, 400, yPosition);
-            yPosition += 15;
+            if (invoice.taxDetails.isGSTApplicable) {
+                doc.text(`Total GST: ₹${invoice.pricing.totalGST}`, 400, yPosition);
+                yPosition += 15;
+            }
             doc.fontSize(12).text(`Grand Total: ₹${invoice.pricing.grandTotal}`, 400, yPosition);
 
             // Terms
@@ -648,6 +680,121 @@ async function generateThermalPDF(invoice) {
             doc.fontSize(10).text(`TOTAL: ₹${invoice.pricing.grandTotal}`, { align: 'center' });
             doc.text('--------------------------------');
             doc.fontSize(8).text('Thank you for your business!', { align: 'center' });
+
+            doc.end();
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+// Helper function to generate 4x6 format invoice PDF (Delhivery-style label)
+async function generate4x6InvoicePDF(invoice) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const QRCode = require('qrcode');
+            const JsBarcode = require('jsbarcode');
+
+            let Canvas;
+            try {
+                Canvas = require('canvas').Canvas;
+            } catch (error) {
+                console.warn('Canvas module not available, barcode generation will use fallback');
+                Canvas = null;
+            }
+
+            // 4x6 inches = 288x432 points. Use zero margins and manual boxes to ensure fit.
+            const doc = new PDFDocument({ size: [288, 432], margin: 0 });
+            const buffers = [];
+            doc.on('data', buffers.push.bind(buffers));
+            doc.on('end', () => resolve(Buffer.concat(buffers)));
+
+            // Full-width COD banner at top
+            doc.rect(0, 0, 288, 18).fillAndStroke('#000', '#000');
+            doc.fill('#fff').fontSize(8).text('COD: Check the payable amount on the app', 0, 5, { width: 288, align: 'center' });
+            doc.fill('#000');
+
+            // Coordinates for first row under banner
+            const rowTop = 20;
+            const leftX = 6, leftW = 182; // larger left area
+            const rightX = leftX + leftW + 6, rightW = 288 - rightX - 6;
+            const addr = invoice.customerDetails?.billingAddress || {};
+
+            // Left: Customer Address box
+            doc.rect(leftX, rowTop, leftW, 118).stroke();
+            doc.fontSize(8).text('Customer Address', leftX + 4, rowTop + 4, { width: leftW - 8 });
+            doc.fontSize(10).text((invoice.customerDetails?.name || 'customer').toLowerCase(), leftX + 4, rowTop + 18, { width: leftW - 8 });
+            const lines = [addr.street, addr.area, addr.city, addr.state, addr.postalCode].filter(Boolean).join('\n');
+            doc.fontSize(8).text(lines, leftX + 4, rowTop + 34, { width: leftW - 8 });
+
+            // Right: Delhivery block with QR
+            doc.rect(rightX, rowTop, rightW, 118).stroke();
+            doc.fontSize(12).text('Delhivery', rightX + 6, rowTop + 12);
+            doc.fontSize(8).text('Pickup', rightX + 6, rowTop + 28, { width: 40, align: 'left' });
+            doc.text('Destination Code', rightX + 6, rowTop + 44);
+            doc.text('Return Code', rightX + 6, rowTop + 60);
+            doc.font('Helvetica-Bold').text(`${addr.postalCode || '000000'}.2155544`, rightX + 6, rowTop + 74);
+            doc.font('Helvetica');
+
+            // QR Code in right box
+            try {
+                const qrData = invoice.qrCode || `INV:${invoice.formattedInvoiceNumber}|AMT:${invoice.pricing.grandTotal}`;
+                const qrUrl = await QRCode.toDataURL(qrData, { width: 86, margin: 0 });
+                const qrBuf = Buffer.from(qrUrl.split(',')[1], 'base64');
+                doc.image(qrBuf, rightX + rightW - 90, rowTop + 26, { width: 86, height: 86 });
+            } catch (qrErr) {
+                doc.rect(rightX + rightW - 90, rowTop + 26, 86, 86).stroke();
+                doc.fontSize(6).text('QR', rightX + rightW - 47, rowTop + 66);
+            }
+
+            // Second row: Return address (left) and barcode (right)
+            const retTop = rowTop + 118;
+            doc.rect(leftX, retTop, leftW, 64).stroke();
+            doc.fontSize(8).text('If undelivered, return to:', leftX + 4, retTop + 4, { width: leftW - 8 });
+            doc.fontSize(9).text((invoice.companyDetails?.name || '').toUpperCase(), leftX + 4, retTop + 18, { width: leftW - 8 });
+            doc.fontSize(8).text(invoice.companyDetails?.address || '', leftX + 4, retTop + 32, { width: leftW - 8 });
+
+            // Barcode on right side box
+            doc.rect(rightX, retTop, rightW, 64).stroke();
+            const barcodeTop = retTop + 6;
+            try {
+                const displayNumber = `${invoice.formattedInvoiceNumber}`;
+                const valueNumber = `${Date.now()}${invoice.invoiceNumber}`.slice(-12);
+                if (Canvas) {
+                    const canvas = new Canvas(rightW - 10, 40);
+                    JsBarcode(canvas, valueNumber, { format: 'CODE128', width: 1, height: 40, displayValue: false });
+                    doc.image(canvas.toBuffer('image/png'), rightX + 5, barcodeTop, { width: rightW - 10, height: 40 });
+                    doc.fontSize(12).text(displayNumber, rightX, barcodeTop + 42, { width: rightW, align: 'center' });
+                } else {
+                    doc.fontSize(12).text(displayNumber, rightX, barcodeTop + 20, { width: rightW, align: 'center' });
+                }
+            } catch (be) {
+                doc.fontSize(12).text(invoice.formattedInvoiceNumber, rightX, barcodeTop + 20, { width: rightW, align: 'center' });
+            }
+
+            // Product details full width row (ensure we stay on single page)
+            const detailsTop = retTop + 68;
+            doc.rect(6, detailsTop, 276, 60).stroke();
+            doc.fontSize(10).text('Product Details', 10, detailsTop + 6);
+            doc.fontSize(8);
+            const gridY = detailsTop + 22;
+            doc.text('SKU', 10, gridY);
+            doc.text('Size', 70, gridY);
+            doc.text('Qty', 118, gridY);
+            doc.text('Color', 148, gridY);
+            doc.text('Order No.', 200, gridY);
+            const item = invoice.items?.[0] || {};
+            doc.text(item.hsnCode || 'N/A', 10, gridY + 14);
+            doc.text('Free Size', 70, gridY + 14);
+            doc.text((item.quantity || 1).toString(), 118, gridY + 14);
+            doc.text('Gold', 148, gridY + 14);
+            doc.text(`${invoice.formattedInvoiceNumber}_1`, 200, gridY + 14);
+
+            // Footer row
+            const footerY = detailsTop + 64;
+            const title = invoice.taxDetails?.isGSTApplicable ? 'TAX INVOICE' : 'INVOICE';
+            doc.fontSize(10).text(title, 6, footerY, { width: 180, align: 'center' });
+            doc.fontSize(8).text('Original for Recipient', 186, footerY + 2, { width: 94, align: 'right' });
 
             doc.end();
         } catch (error) {
