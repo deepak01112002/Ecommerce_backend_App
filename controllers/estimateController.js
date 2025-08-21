@@ -671,12 +671,23 @@ async function generateStandardEstimatePDF(estimate) {
     });
 }
 
-// Helper function to generate thermal estimate PDF (58mm width)
+// Helper function to generate thermal estimate PDF (4x6 format like Delhivery label)
 async function generateThermalEstimatePDF(estimate) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
+            const QRCode = require('qrcode');
+            const JsBarcode = require('jsbarcode');
+
+            let Canvas;
+            try {
+                Canvas = require('canvas').Canvas;
+            } catch (error) {
+                console.log('Canvas not available, using fallback');
+            }
+
+            // 4x6 inch format (288x432 points)
             const doc = new PDFDocument({
-                size: [164, 'auto'], // 58mm width
+                size: [288, 432],
                 margin: 10
             });
             const buffers = [];
@@ -687,36 +698,83 @@ async function generateThermalEstimatePDF(estimate) {
                 resolve(pdfData);
             });
 
-            // Header
-            doc.fontSize(12).text(estimate.companyDetails.name, { align: 'center' });
-            doc.fontSize(8).text(estimate.companyDetails.address, { align: 'center' });
-            if (estimate.taxDetails.isGSTApplicable) {
-                doc.text(`GSTIN: ${estimate.companyDetails.gstin}`, { align: 'center' });
+            // Left side - Customer Address
+            doc.fontSize(8).text('Customer Address', 10, 20, { width: 130 });
+            doc.fontSize(7);
+            doc.text(estimate.customerDetails.name, 10, 35, { width: 130 });
+
+            // Customer address formatting
+            let customerAddress = '';
+            if (estimate.customerDetails.address) {
+                customerAddress = estimate.customerDetails.address;
             }
-            doc.text('--------------------------------');
-
-            // Estimate details
-            doc.text(`Estimate: ${estimate.formattedEstimateNumber}`);
-            doc.text(`Date: ${estimate.estimateDate.toLocaleDateString()}`);
-            doc.text(`Valid Until: ${estimate.validUntil.toLocaleDateString()}`);
-            doc.text(`Customer: ${estimate.customerDetails.name}`);
-            doc.text('--------------------------------');
-
-            // Items
-            estimate.items.forEach(item => {
-                doc.text(`${item.name}`);
-                doc.text(`${item.quantity} x ₹${item.rate} = ₹${item.totalAmount}`);
-            });
-
-            doc.text('--------------------------------');
-            doc.text(`Subtotal: ₹${estimate.pricing.subtotal}`);
-            if (estimate.taxDetails.isGSTApplicable) {
-                doc.text(`GST: ₹${estimate.pricing.totalGST}`);
+            if (estimate.customerDetails.city) {
+                customerAddress += customerAddress ? `, ${estimate.customerDetails.city}` : estimate.customerDetails.city;
             }
-            doc.fontSize(10).text(`TOTAL: ₹${estimate.pricing.grandTotal}`, { align: 'center' });
-            doc.text('--------------------------------');
-            doc.fontSize(8).text('This is an estimate only', { align: 'center' });
-            doc.text(`Valid until: ${estimate.validUntil.toLocaleDateString()}`, { align: 'center' });
+            if (estimate.customerDetails.state) {
+                customerAddress += customerAddress ? `, ${estimate.customerDetails.state}` : estimate.customerDetails.state;
+            }
+            if (estimate.customerDetails.pincode) {
+                customerAddress += customerAddress ? ` ${estimate.customerDetails.pincode}` : estimate.customerDetails.pincode;
+            }
+
+            doc.text(customerAddress, 10, 50, { width: 130 });
+
+            // Right side - Estimate Info
+            doc.fontSize(8).text('ESTIMATE: Check the amount on the app', 150, 20, { width: 128 });
+
+            // Company logo area
+            doc.fontSize(12).text('Ghanshyam Murti Bhandar', 150, 50, { width: 128 });
+            doc.fontSize(6).text('Estimate', 150, 65, { width: 128 });
+
+            // QR Code placeholder (right side)
+            doc.rect(200, 80, 60, 60).stroke();
+            doc.fontSize(6).text('QR Code', 215, 105, { align: 'center' });
+
+            // Return address section
+            doc.fontSize(8).text('If undelivered, return to:', 10, 120, { width: 130 });
+            doc.fontSize(7);
+            doc.text(estimate.companyDetails.name, 10, 135, { width: 130 });
+            doc.text(estimate.companyDetails.address, 10, 150, { width: 130 });
+
+            // Estimate codes
+            doc.fontSize(8).text('Estimate Code', 150, 150, { width: 128 });
+            doc.fontSize(8).text('Valid Until', 150, 170, { width: 128 });
+            doc.fontSize(7).text(estimate.validUntil.toLocaleDateString(), 150, 185, { width: 128 });
+
+            // Barcode area
+            doc.rect(150, 200, 128, 30).stroke();
+            doc.fontSize(8).text(estimate.formattedEstimateNumber, 150, 240, { align: 'center', width: 128 });
+
+            // Bottom section - Product Details
+            doc.fontSize(8).text('Product Details', 10, 280, { width: 268 });
+
+            // Table headers
+            doc.fontSize(7);
+            doc.text('SKU', 10, 300, { width: 60 });
+            doc.text('Size', 80, 300, { width: 40 });
+            doc.text('Qty', 130, 300, { width: 30 });
+            doc.text('Color', 170, 300, { width: 40 });
+            doc.text('Estimate No.', 220, 300, { width: 58 });
+
+            // Product row
+            if (estimate.items && estimate.items.length > 0) {
+                const firstItem = estimate.items[0];
+                doc.text(firstItem.name.substring(0, 15), 10, 315, { width: 60 });
+                doc.text('Free Size', 80, 315, { width: 40 });
+                doc.text(firstItem.quantity.toString(), 130, 315, { width: 30 });
+                doc.text('Gold', 170, 315, { width: 40 });
+                doc.text(estimate.formattedEstimateNumber, 220, 315, { width: 58 });
+            }
+
+            // Bottom - Estimate
+            doc.fontSize(10).text('ESTIMATE', 10, 380, { align: 'center', width: 268 });
+            doc.fontSize(6).text('Valid Until: ' + estimate.validUntil.toLocaleDateString(), 220, 400, { width: 58 });
+
+            // Estimate Amount Box
+            doc.rect(10, 350, 100, 25).stroke();
+            doc.fontSize(8).text('Estimate Amount:', 15, 355);
+            doc.fontSize(10).text(`₹${estimate.pricing.grandTotal}`, 15, 365);
 
             doc.end();
         } catch (error) {
