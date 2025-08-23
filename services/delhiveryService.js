@@ -2,6 +2,7 @@ const axios = require('axios');
 
 class DelhiveryService {
     constructor() {
+
         // Use the provided Delhivery API key directly
         this.apiKey = '54e7ec8ee21a4ca7868fad95deb369875b1a7e44';
         // Production Delhivery API endpoints (corrected)
@@ -10,6 +11,7 @@ class DelhiveryService {
         this.trackingUrl = 'https://track.delhivery.com/api/v1/packages/json';
         this.serviceabilityUrl = 'https://track.delhivery.com/api/pin-codes/json/';
         this.ratesUrl = 'https://track.delhivery.com/api/kinko/v1/invoice/charges/.json';
+
     }
 
     // Get delivery rates
@@ -26,13 +28,17 @@ class DelhiveryService {
                 pt: codAmount > 0 ? 'COD' : 'Pre-paid'
             };
 
+
             const response = await axios.get(this.ratesUrl, {
+
                 params: requestData,
                 headers: {
                     'Authorization': `Token ${this.apiKey}`,
                     'Content-Type': 'application/json'
+
                 },
                 timeout: 15000
+
             });
 
             if (response.data && response.data[0]) {
@@ -51,18 +57,22 @@ class DelhiveryService {
                 };
             }
 
+
             // No rate data available from Delhivery
             return {
                 success: false,
                 error: 'No rate data available from Delhivery for this route'
+
             };
 
         } catch (error) {
             console.error('Delhivery rate calculation error:', error.response?.data || error.message);
+
             
             return {
                 success: false,
                 error: error.response?.data?.message || error.message || 'Failed to calculate delivery rates'
+
             };
         }
     }
@@ -206,6 +216,7 @@ class DelhiveryService {
     // Check serviceability
     async checkServiceability(pincode) {
         try {
+
             console.log(`🔍 Checking Delhivery serviceability for pincode: ${pincode}`);
             
             // Real Delhivery API call with correct endpoint
@@ -253,6 +264,7 @@ class DelhiveryService {
             return {
                 success: false,
                 error: error.response?.data?.message || error.message || 'Failed to check serviceability'
+
             };
         }
     }
@@ -285,4 +297,6 @@ class DelhiveryService {
     }
 }
 
+
 module.exports = new DelhiveryService();
+

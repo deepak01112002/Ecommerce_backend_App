@@ -236,10 +236,12 @@ exports.getProducts = asyncHandler(async (req, res) => {
             sales_count: product.salesCount || 0,
             tags: product.tags || [],
             specifications: product.specifications || {},
+
             // GST & Tax fields
             gstRate: product.gstRate,
             hsnCode: product.hsnCode,
             taxCategory: product.taxCategory,
+
             created_at: product.createdAt,
             updated_at: product.updatedAt
         };
@@ -400,10 +402,12 @@ exports.createProduct = asyncHandler(async (req, res) => {
         shippingInfo,
         returnPolicy,
         warranty,
+
         // GST & Tax fields
         gstRate,
         hsnCode,
         taxCategory,
+
         // Individual specification fields
         material,
         height,
@@ -558,10 +562,12 @@ exports.updateProduct = asyncHandler(async (req, res) => {
         shippingInfo,
         returnPolicy,
         warranty,
+
         // GST & Tax fields
         gstRate,
         hsnCode,
         taxCategory,
+
         // Individual specification fields
         material,
         height,

@@ -37,7 +37,9 @@ router.get('/order/:orderId/download',
     authMiddleware,
     [
         param('orderId').isMongoId().withMessage('Invalid order ID'),
+
         query('format').optional().isIn(['A4', 'thermal', '4x6']).withMessage('Invalid format. Use A4, thermal or 4x6')
+
     ],
     validateRequest,
     invoiceController.downloadUserInvoiceByOrder

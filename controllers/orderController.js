@@ -545,8 +545,10 @@ exports.downloadOrderInvoice = asyncHandler(async (req, res) => {
 
         if (format === 'thermal') {
             pdfBuffer = await generateThermalPDF(invoice);
+
         } else if (format === '4x6') {
             pdfBuffer = await generate4x6InvoicePDF(invoice);
+
         } else {
             pdfBuffer = await generateStandardPDF(invoice);
         }
@@ -558,6 +560,7 @@ exports.downloadOrderInvoice = asyncHandler(async (req, res) => {
         const filename = format === '4x6' ? `Invoice-4x6-${invoice.formattedInvoiceNumber}.pdf` : `Invoice-${invoice.formattedInvoiceNumber}.pdf`;
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
         res.send(pdfBuffer);
     } catch (error) {
         console.error('PDF generation error:', error);
@@ -706,8 +709,10 @@ async function generateThermalPDF(invoice) {
 
 // List all orders (admin)
 exports.getOrders = asyncHandler(async (req, res) => {
+
     console.log('🚨🚨 ADMIN ORDERS ENDPOINT HIT 🚨🚨🚨');
     console.log('🔍 getOrders called with params:', req.query);
+
     const { page = 1, limit = 10, status, search } = req.query;
 
     const filter = {};
@@ -791,6 +796,7 @@ exports.getOrders = asyncHandler(async (req, res) => {
                 },
                 quantity: quantity,
                 price: unitPrice,
+
                 subtotal: totalPrice,
                 // Add GST fields for bill generation
                 totalPrice: item.totalPrice || totalPrice,
@@ -805,6 +811,7 @@ exports.getOrders = asyncHandler(async (req, res) => {
                     gstRate: item.productSnapshot?.gstRate || item.taxRate || item.product?.gstRate || 18,
                     hsnCode: item.productSnapshot?.hsnCode || item.product?.hsnCode || '9999'
                 }
+
             };
         }) : [],
         total: (() => {
