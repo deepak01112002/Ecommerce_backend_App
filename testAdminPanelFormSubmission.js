@@ -61,6 +61,11 @@ async function testExactFormSubmission() {
         formData.append('occasion', 'slfjslf');
         formData.append('careInstructions', 'dfgdfsd');
         
+        // GST & Tax fields
+        formData.append('gstRate', '12');
+        formData.append('hsnCode', '9999');
+        formData.append('taxCategory', 'taxable');
+        
         console.log('\n📤 Sending FormData to /products endpoint...');
         console.log('FormData contents:');
         console.log('  name: sdfsfss');
@@ -80,6 +85,9 @@ async function testExactFormSubmission() {
         console.log('  style: modern');
         console.log('  occasion: slfjslf');
         console.log('  careInstructions: dfgdfsd');
+        console.log('  gstRate: 12');
+        console.log('  hsnCode: 9999');
+        console.log('  taxCategory: taxable');
         
         const response = await axios.post(`${BASE_URL}/products`, formData, {
             headers: {
@@ -106,6 +114,12 @@ async function testExactFormSubmission() {
             console.log('  ❌ No specifications object found in response');
         }
         
+        // Check GST fields in response
+        console.log('\n💰 GST & Tax fields in response:');
+        console.log(`  GST Rate: ${createdProduct.gstRate || 'Not set'}%`);
+        console.log(`  HSN Code: ${createdProduct.hsnCode || 'Not set'}`);
+        console.log(`  Tax Category: ${createdProduct.taxCategory || 'Not set'}`);
+        
         // Verify by getting the product back
         console.log('\n🔍 Verifying by retrieving the product...');
         const getResponse = await axios.get(`${BASE_URL}/products/${createdProduct._id}`, {
@@ -126,6 +140,35 @@ async function testExactFormSubmission() {
             });
         } else {
             console.log('  ❌ No specifications object found in retrieved product');
+        }
+        
+        // Check GST fields in retrieved product
+        console.log('\n💰 GST & Tax fields in retrieved product:');
+        console.log(`  GST Rate: ${retrievedProduct.gstRate || 'Not set'}%`);
+        console.log(`  HSN Code: ${retrievedProduct.hsnCode || 'Not set'}`);
+        console.log(`  Tax Category: ${retrievedProduct.taxCategory || 'Not set'}`);
+        
+        // Test updating GST fields
+        console.log('\n🔄 Testing GST field update...');
+        const updateFormData = new FormData();
+        updateFormData.append('gstRate', '28');
+        updateFormData.append('hsnCode', '9503');
+        updateFormData.append('taxCategory', 'taxable');
+        
+        const updateResponse = await axios.put(`${BASE_URL}/products/${createdProduct._id}`, updateFormData, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                ...updateFormData.getHeaders()
+            }
+        });
+        
+        if (updateResponse.data.success) {
+            console.log('✅ Product GST fields updated successfully');
+            console.log(`  New GST Rate: ${updateResponse.data.data.gstRate}%`);
+            console.log(`  New HSN Code: ${updateResponse.data.data.hsnCode}`);
+            console.log(`  New Tax Category: ${updateResponse.data.data.taxCategory}`);
+        } else {
+            console.log('❌ Failed to update product GST fields');
         }
         
         // Cleanup

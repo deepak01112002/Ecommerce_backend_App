@@ -4,7 +4,7 @@ const estimateSchema = new mongoose.Schema({
     estimateNumber: {
         type: String,
         unique: true,
-        required: true,
+        required: false,
         index: true
     },
     order: {
@@ -85,21 +85,21 @@ const estimateSchema = new mongoose.Schema({
         cgst: { type: Number, default: 0 },
         sgst: { type: Number, default: 0 },
         igst: { type: Number, default: 0 },
-        totalAmount: { type: Number, required: true }
+        totalAmount: { type: Number, default: 0 }
     }],
 
     // Pricing Summary
     pricing: {
-        subtotal: { type: Number, required: true, min: 0 },
+        subtotal: { type: Number, default: 0, min: 0 },
         totalDiscount: { type: Number, default: 0, min: 0 },
-        taxableAmount: { type: Number, required: true, min: 0 },
+        taxableAmount: { type: Number, default: 0, min: 0 },
         totalCGST: { type: Number, default: 0, min: 0 },
         totalSGST: { type: Number, default: 0, min: 0 },
         totalIGST: { type: Number, default: 0, min: 0 },
         totalGST: { type: Number, default: 0, min: 0 },
         shippingCharges: { type: Number, default: 0, min: 0 },
         otherCharges: { type: Number, default: 0, min: 0 },
-        grandTotal: { type: Number, required: true, min: 0 }
+        grandTotal: { type: Number, default: 0, min: 0 }
     },
 
     // Estimate Status
@@ -270,7 +270,7 @@ estimateSchema.methods.calculatePricing = function() {
 
     const taxableAmount = subtotal - totalDiscount;
     const totalGST = totalCGST + totalSGST + totalIGST;
-    const grandTotal = taxableAmount + totalGST + (this.pricing.shippingCharges || 0) + (this.pricing.otherCharges || 0);
+    const grandTotal = taxableAmount + totalGST + (this.pricing?.shippingCharges || 0) + (this.pricing?.otherCharges || 0);
 
     this.pricing = {
         subtotal: Math.round(subtotal * 100) / 100,
@@ -280,8 +280,8 @@ estimateSchema.methods.calculatePricing = function() {
         totalSGST: Math.round(totalSGST * 100) / 100,
         totalIGST: Math.round(totalIGST * 100) / 100,
         totalGST: Math.round(totalGST * 100) / 100,
-        shippingCharges: this.pricing.shippingCharges || 0,
-        otherCharges: this.pricing.otherCharges || 0,
+        shippingCharges: this.pricing?.shippingCharges || 0,
+        otherCharges: this.pricing?.otherCharges || 0,
         grandTotal: Math.round(grandTotal * 100) / 100
     };
 
@@ -311,13 +311,13 @@ estimateSchema.statics.generateFromOrder = async function(orderId, options = {})
         },
         items: order.items.map(item => ({
             product: item.product._id,
-            name: item.product.name,
-            description: item.product.description,
-            hsnCode: item.product.hsnCode || '9999',
+            name: item.productSnapshot?.name || item.product.name,
+            description: item.productSnapshot?.description || item.product.description,
+            hsnCode: item.productSnapshot?.hsnCode || item.product.hsnCode || '9999',
             quantity: item.quantity,
-            rate: item.price,
-            gstRate: item.gstRate || 18,
-            taxableAmount: item.quantity * item.price
+            rate: item.unitPrice || item.price || 0,
+            gstRate: item.taxRate || item.productSnapshot?.gstRate || item.product.gstRate || 18,
+            taxableAmount: item.totalPrice || (item.quantity * (item.unitPrice || item.price || 0))
         })),
         taxDetails: {
             isGSTApplicable: options.isGSTApplicable !== false,

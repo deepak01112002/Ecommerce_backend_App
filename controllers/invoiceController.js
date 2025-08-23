@@ -679,7 +679,7 @@ async function generateThermalPDF(invoice) {
             doc.text(`GST: ₹${invoice.pricing.totalGST}`);
             doc.fontSize(10).text(`TOTAL: ₹${invoice.pricing.grandTotal}`, { align: 'center' });
             doc.text('--------------------------------');
-            doc.fontSize(8).text('Thank you for your business!', { align: 'center' });
+            doc.fontSize(5).text('Thank you for your business!', { align: 'center' });
 
             doc.end();
         } catch (error) {

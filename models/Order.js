@@ -11,7 +11,9 @@ const orderItemSchema = new mongoose.Schema({
         name: String,
         description: String,
         images: [String],
-        category: String
+        category: String,
+        gstRate: Number,
+        hsnCode: String
     },
     variant: { type: String },
     quantity: {
@@ -33,6 +35,17 @@ const orderItemSchema = new mongoose.Schema({
         type: Number,
         default: 0,
         min: 0
+    },
+    tax: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    taxRate: {
+        type: Number,
+        default: 18,
+        min: 0,
+        max: 100
     }
 });
 
@@ -259,6 +272,18 @@ orderSchema.pre('save', async function(next) {
         });
     }
 
+    next();
+});
+
+// Pre-save middleware to ensure totalPrice is calculated for each item
+orderSchema.pre('save', function(next) {
+    if (this.isModified('items') || this.isNew) {
+        this.items.forEach(item => {
+            if (item.unitPrice && item.quantity) {
+                item.totalPrice = item.unitPrice * item.quantity;
+            }
+        });
+    }
     next();
 });
 
