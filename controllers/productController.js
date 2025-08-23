@@ -170,7 +170,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
     // Execute query with pagination
     const skip = (page - 1) * limit;
     let query = Product.find(filter)
-        .populate('category', 'name slug path')
+        .populate('category', 'name slug')
         .populate('subcategory', 'name slug');
 
     // Add text search projection if searching
@@ -236,6 +236,12 @@ exports.getProducts = asyncHandler(async (req, res) => {
             sales_count: product.salesCount || 0,
             tags: product.tags || [],
             specifications: product.specifications || {},
+
+            // GST & Tax fields
+            gstRate: product.gstRate,
+            hsnCode: product.hsnCode,
+            taxCategory: product.taxCategory,
+
             created_at: product.createdAt,
             updated_at: product.updatedAt
         };
@@ -356,6 +362,10 @@ exports.getProductById = asyncHandler(async (req, res) => {
         shipping_info: product.shippingInfo || {},
         return_policy: product.returnPolicy || '',
         warranty: product.warranty || '',
+        // GST & Tax fields
+        gstRate: product.gstRate,
+        hsnCode: product.hsnCode,
+        taxCategory: product.taxCategory,
         created_at: product.createdAt,
         updated_at: product.updatedAt,
         related_products: relatedProducts.map(p => ({
@@ -392,6 +402,12 @@ exports.createProduct = asyncHandler(async (req, res) => {
         shippingInfo,
         returnPolicy,
         warranty,
+
+        // GST & Tax fields
+        gstRate,
+        hsnCode,
+        taxCategory,
+
         // Individual specification fields
         material,
         height,
@@ -476,7 +492,10 @@ exports.createProduct = asyncHandler(async (req, res) => {
         specifications: parsedSpecifications,
         shippingInfo: parsedShippingInfo,
         returnPolicy,
-        warranty
+        warranty,
+        gstRate,
+        hsnCode,
+        taxCategory
     });
 
     await product.save();
@@ -514,6 +533,10 @@ exports.createProduct = asyncHandler(async (req, res) => {
         shipping_info: product.shippingInfo,
         return_policy: product.returnPolicy,
         warranty: product.warranty,
+        // GST & Tax fields
+        gstRate: product.gstRate,
+        hsnCode: product.hsnCode,
+        taxCategory: product.taxCategory,
         created_at: product.createdAt,
         updated_at: product.updatedAt
     };
@@ -539,6 +562,12 @@ exports.updateProduct = asyncHandler(async (req, res) => {
         shippingInfo,
         returnPolicy,
         warranty,
+
+        // GST & Tax fields
+        gstRate,
+        hsnCode,
+        taxCategory,
+
         // Individual specification fields
         material,
         height,
@@ -654,6 +683,9 @@ exports.updateProduct = asyncHandler(async (req, res) => {
             updateData.shippingInfo = typeof shippingInfo === 'string' ?
                 JSON.parse(shippingInfo) : shippingInfo;
         }
+        if (gstRate !== undefined) updateData.gstRate = parseFloat(gstRate);
+        if (hsnCode !== undefined) updateData.hsnCode = hsnCode;
+        if (taxCategory !== undefined) updateData.taxCategory = taxCategory;
     } catch (error) {
         return res.error('Invalid JSON format in request', [], 400);
     }
@@ -700,6 +732,10 @@ exports.updateProduct = asyncHandler(async (req, res) => {
         shipping_info: product.shippingInfo,
         return_policy: product.returnPolicy,
         warranty: product.warranty,
+        // GST & Tax fields
+        gstRate: product.gstRate,
+        hsnCode: product.hsnCode,
+        taxCategory: product.taxCategory,
         created_at: product.createdAt,
         updated_at: product.updatedAt
     };

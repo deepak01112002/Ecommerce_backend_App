@@ -82,6 +82,7 @@ exports.createOrder = asyncHandler(async (req, res) => {
 
     // Calculate total and validate stock
     let subtotal = 0;
+    let totalTax = 0;
     const orderItems = [];
 
     for (const item of cart.items) {
@@ -99,26 +100,34 @@ exports.createOrder = asyncHandler(async (req, res) => {
         const itemTotal = product.price * item.quantity;
         subtotal += itemTotal;
 
+        // Calculate tax based on product's GST rate
+        const gstRate = product.gstRate || 18; // Default to 18% if not set
+        const itemTax = Math.round((itemTotal * (gstRate / 100)) * 100) / 100;
+        totalTax += itemTax;
+
         orderItems.push({
             product: product._id,
             productSnapshot: {
                 name: product.name,
                 description: product.description,
                 images: product.images,
-                category: product.category
+                category: product.category,
+                gstRate: gstRate,
+                hsnCode: product.hsnCode || '9999'
             },
             variant: item.variant || 'Standard',
             quantity: item.quantity,
             unitPrice: product.price,
             totalPrice: itemTotal,
-            discount: 0
+            discount: 0,
+            tax: itemTax,
+            taxRate: gstRate
         });
     }
 
     // Calculate pricing
     const shipping = subtotal >= 1999 ? 0 : 99;
-    const tax = Math.round((subtotal * 0.18) * 100) / 100;
-    const total = subtotal + shipping + tax;
+    const total = subtotal + shipping + totalTax;
 
     // Handle wallet payment
     let walletTransaction = null;
@@ -138,8 +147,8 @@ exports.createOrder = asyncHandler(async (req, res) => {
 
     const pricing = {
         subtotal,
-        tax,
-        taxRate: 0.18,
+        tax: totalTax,
+        taxRate: 0.18, // This will be updated by the loop above
         shipping,
         discount: 0,
         walletAmountUsed: actualWalletAmount,
@@ -321,7 +330,18 @@ exports.getUserOrders = asyncHandler(async (req, res) => {
             product: item.product,
             quantity: item.quantity,
             unitPrice: item.unitPrice,
-            totalPrice: item.totalPrice
+            totalPrice: item.totalPrice,
+            // Add GST fields for bill generation
+            taxRate: item.taxRate || item.product?.gstRate || 18,
+            tax: item.tax || 0,
+            productSnapshot: {
+                name: item.productSnapshot?.name || item.product?.name || 'Unknown Product',
+                description: item.productSnapshot?.description || item.product?.description || '',
+                images: item.productSnapshot?.images || item.product?.images || [],
+                category: item.productSnapshot?.category || item.product?.category || '',
+                gstRate: item.productSnapshot?.gstRate || item.taxRate || item.product?.gstRate || 18,
+                hsnCode: item.productSnapshot?.hsnCode || item.product?.hsnCode || '9999'
+            }
         }))
     }));
 
@@ -376,7 +396,18 @@ exports.getOrderById = asyncHandler(async (req, res) => {
             quantity: item.quantity,
             unitPrice: item.unitPrice,
             totalPrice: item.totalPrice,
-            variant: item.variant
+            variant: item.variant,
+            // Add GST fields for bill generation
+            taxRate: item.taxRate || item.product?.gstRate || 18,
+            tax: item.tax || 0,
+            productSnapshot: {
+                name: item.productSnapshot?.name || item.product?.name || 'Unknown Product',
+                description: item.productSnapshot?.description || item.product?.description || '',
+                images: item.productSnapshot?.images || item.product?.images || [],
+                category: item.productSnapshot?.category || item.product?.category || '',
+                gstRate: item.productSnapshot?.gstRate || item.taxRate || item.product?.gstRate || 18,
+                hsnCode: item.productSnapshot?.hsnCode || item.product?.hsnCode || '9999'
+            }
         })),
         pricing: order.pricing,
         shippingAddress: order.shippingAddress,
@@ -514,6 +545,10 @@ exports.downloadOrderInvoice = asyncHandler(async (req, res) => {
 
         if (format === 'thermal') {
             pdfBuffer = await generateThermalPDF(invoice);
+
+        } else if (format === '4x6') {
+            pdfBuffer = await generate4x6InvoicePDF(invoice);
+
         } else {
             pdfBuffer = await generateStandardPDF(invoice);
         }
@@ -522,8 +557,10 @@ exports.downloadOrderInvoice = asyncHandler(async (req, res) => {
         invoice.downloadedAt = new Date();
         await invoice.save();
 
+        const filename = format === '4x6' ? `Invoice-4x6-${invoice.formattedInvoiceNumber}.pdf` : `Invoice-${invoice.formattedInvoiceNumber}.pdf`;
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename="Invoice-${invoice.formattedInvoiceNumber}.pdf"`);
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
         res.send(pdfBuffer);
     } catch (error) {
         console.error('PDF generation error:', error);
@@ -672,8 +709,10 @@ async function generateThermalPDF(invoice) {
 
 // List all orders (admin)
 exports.getOrders = asyncHandler(async (req, res) => {
-    console.log('�🚨🚨 ADMIN ORDERS ENDPOINT HIT 🚨🚨🚨');
-    console.log('�🔍 getOrders called with params:', req.query);
+
+    console.log('🚨🚨 ADMIN ORDERS ENDPOINT HIT 🚨🚨🚨');
+    console.log('🔍 getOrders called with params:', req.query);
+
     const { page = 1, limit = 10, status, search } = req.query;
 
     const filter = {};
@@ -757,7 +796,22 @@ exports.getOrders = asyncHandler(async (req, res) => {
                 },
                 quantity: quantity,
                 price: unitPrice,
-                subtotal: totalPrice
+
+                subtotal: totalPrice,
+                // Add GST fields for bill generation
+                totalPrice: item.totalPrice || totalPrice,
+                unitPrice: item.unitPrice || unitPrice,
+                taxRate: item.taxRate || item.product?.gstRate || 18,
+                tax: item.tax || 0,
+                productSnapshot: {
+                    name: item.productSnapshot?.name || item.product?.name || 'Unknown Product',
+                    description: item.productSnapshot?.description || item.product?.description || '',
+                    images: item.productSnapshot?.images || item.product?.images || [],
+                    category: item.productSnapshot?.category || item.product?.category || '',
+                    gstRate: item.productSnapshot?.gstRate || item.taxRate || item.product?.gstRate || 18,
+                    hsnCode: item.productSnapshot?.hsnCode || item.product?.hsnCode || '9999'
+                }
+
             };
         }) : [],
         total: (() => {

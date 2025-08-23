@@ -33,11 +33,17 @@ exports.getCart = asyncHandler(async (req, res) => {
     // Calculate totals
     let subtotal = 0;
     let totalItems = 0;
+    let totalTax = 0;
 
     const formattedItems = cart.items.map(item => {
         const itemTotal = item.product.price * item.quantity;
         subtotal += itemTotal;
         totalItems += item.quantity;
+
+        // Calculate tax based on product's GST rate
+        const gstRate = item.product.gstRate || 18; // Default to 18% if not set
+        const itemTax = Math.round((itemTotal * (gstRate / 100)) * 100) / 100;
+        totalTax += itemTax;
 
         return {
             _id: item._id,
@@ -45,17 +51,18 @@ exports.getCart = asyncHandler(async (req, res) => {
                 _id: item.product._id,
                 name: item.product.name,
                 price: item.product.price,
-                image: item.product.images?.[0] || null
+                image: item.product.images?.[0] || null,
+                gstRate: gstRate
             },
             quantity: item.quantity,
             variant: item.variant,
-            totalPrice: itemTotal
+            totalPrice: itemTotal,
+            tax: itemTax
         };
     });
 
     const shipping = subtotal >= 1999 ? 0 : 99;
-    const tax = Math.round((subtotal * 0.18) * 100) / 100;
-    const total = subtotal + shipping + tax;
+    const total = subtotal + shipping + totalTax;
 
     res.success({
         cart: {
@@ -64,7 +71,7 @@ exports.getCart = asyncHandler(async (req, res) => {
             summary: {
                 totalItems,
                 subtotal,
-                tax,
+                tax: totalTax,
                 shipping,
                 total
             }
@@ -315,11 +322,17 @@ exports.updateCartByProductId = asyncHandler(async (req, res) => {
     // Calculate totals
     let subtotal = 0;
     let totalItems = 0;
+    let totalTax = 0;
 
     const formattedItems = cart.items.map(item => {
         const itemTotal = item.product.price * item.quantity;
         subtotal += itemTotal;
         totalItems += item.quantity;
+
+        // Calculate tax based on product's GST rate
+        const gstRate = item.product.gstRate || 18; // Default to 18% if not set
+        const itemTax = Math.round((itemTotal * (gstRate / 100)) * 100) / 100;
+        totalTax += itemTax;
 
         return {
             _id: item._id,
@@ -327,17 +340,18 @@ exports.updateCartByProductId = asyncHandler(async (req, res) => {
                 _id: item.product._id,
                 name: item.product.name,
                 price: item.product.price,
-                image: item.product.images?.[0] || null
+                image: item.product.images?.[0] || null,
+                gstRate: gstRate
             },
             quantity: item.quantity,
             variant: item.variant,
-            totalPrice: itemTotal
+            totalPrice: itemTotal,
+            tax: itemTax
         };
     });
 
     const shipping = subtotal >= 1999 ? 0 : 99;
-    const tax = Math.round((subtotal * 0.18) * 100) / 100;
-    const total = subtotal + shipping + tax;
+    const total = subtotal + shipping + totalTax;
 
     res.success({
         cart: {
@@ -346,7 +360,7 @@ exports.updateCartByProductId = asyncHandler(async (req, res) => {
             summary: {
                 totalItems,
                 subtotal,
-                tax,
+                tax: totalTax,
                 shipping,
                 total
             }
