@@ -75,8 +75,8 @@ router.get('/',
             };
         });
 
-        // Calculate shipping
-        const shipping = subtotal >= 1999 ? 0 : 99;
+        // Calculate shipping (set to 00000)
+        const shipping = 0;
         
         // Calculate tax (18% GST)
         const tax = Math.round((subtotal * 0.18) * 100) / 100;
