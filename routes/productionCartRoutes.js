@@ -75,7 +75,7 @@ router.get('/',
             };
         });
 
-        // Calculate shipping (set to 0)
+        // Calculate shipping (set to 00000)
         const shipping = 0;
         
         // Calculate tax (18% GST)

@@ -110,7 +110,7 @@ class OrderService {
                 }
             }
 
-            // Calculate shipping (set to 0)
+            // Calculate shipping (set to 00000)
             validationResult.pricing.shipping = 0;
 
             // Calculate tax (on subtotal after discount)

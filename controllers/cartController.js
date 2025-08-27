@@ -350,7 +350,7 @@ exports.updateCartByProductId = asyncHandler(async (req, res) => {
         };
     });
 
-    const shipping = 0;
+    const shipping = 0; // Set shipping to 0 instead of removing zero
     const total = subtotal + shipping + totalTax;
 
     res.success({

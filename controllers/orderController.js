@@ -126,7 +126,7 @@ exports.createOrder = asyncHandler(async (req, res) => {
     }
 
     // Calculate pricing
-    const shipping = 0; // Set shipping to 0 instead of removing
+    const shipping = 0; // Set shipping to 0 instead of removing zero
     const total = subtotal + shipping + totalTax;
 
     // Handle wallet payment
