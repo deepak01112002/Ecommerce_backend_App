@@ -99,7 +99,7 @@ async function testGSTBillGeneration() {
             console.log(`     - Total with GST: ₹${(itemTotal + itemGST).toFixed(2)}`);
         });
 
-        const shipping = orderSubtotal >= 1999 ? 0 : 99;
+        const shipping = 0; // Set shipping to 0 instead of removing
         const orderTotal = orderSubtotal + orderTotalGST + shipping;
 
         console.log(`\n   📊 Order Summary:`);

@@ -110,11 +110,8 @@ class OrderService {
                 }
             }
 
-            // Calculate shipping
-            const subtotalAfterDiscount = validationResult.pricing.subtotal - validationResult.pricing.discount;
-            if (subtotalAfterDiscount < 1999) { // Free shipping above ₹1999
-                validationResult.pricing.shipping = 99;
-            }
+            // Calculate shipping (set to 0)
+            validationResult.pricing.shipping = 0;
 
             // Calculate tax (on subtotal after discount)
             validationResult.pricing.tax = Math.round((subtotalAfterDiscount * validationResult.pricing.taxRate) * 100) / 100;
