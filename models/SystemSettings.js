@@ -75,8 +75,8 @@ const systemSettingsSchema = new mongoose.Schema({
     shipping: {
         enableFreeShipping: { type: Boolean, default: true },
         freeShippingMinAmount: { type: Number, default: 500 },
-        defaultShippingCharge: { type: Number, default: 50 },
-        expressShippingCharge: { type: Number, default: 100 },
+        defaultShippingCharge: { type: Number, default: 0 },
+        expressShippingCharge: { type: Number, default: 0 },
         maxShippingWeight: { type: Number, default: 50 }, // kg
         shippingCalculationMethod: { type: String, default: 'weight', enum: ['weight', 'price', 'fixed'] },
         enableShiprocket: { type: Boolean, default: true },

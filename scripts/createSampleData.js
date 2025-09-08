@@ -224,8 +224,8 @@ async function createSampleData() {
           pricing: {
             subtotal: sampleProducts[0].price * 2,
             tax: (sampleProducts[0].price * 2) * 0.18,
-            shipping: 100,
-            total: (sampleProducts[0].price * 2) + ((sampleProducts[0].price * 2) * 0.18) + 100
+            shipping: 0,
+            total: (sampleProducts[0].price * 2) + ((sampleProducts[0].price * 2) * 0.18) + 0
           },
           status: 'pending',
           paymentInfo: {
@@ -247,8 +247,8 @@ async function createSampleData() {
           pricing: {
             subtotal: sampleProducts[1].price,
             tax: sampleProducts[1].price * 0.18,
-            shipping: 100,
-            total: sampleProducts[1].price + (sampleProducts[1].price * 0.18) + 100
+            shipping: 0,
+            total: sampleProducts[1].price + (sampleProducts[1].price * 0.18) + 0
           },
           status: 'confirmed',
           paymentInfo: {
