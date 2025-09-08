@@ -46,7 +46,7 @@ class DeliveryService {
     async getManualDeliveryOptions(location, orderDetails) {
         const { orderValue = 0 } = orderDetails;
         const freeShippingThreshold = 500; // From system settings
-        const standardShipping = 50;
+        const standardShipping = 0;
 
         return {
             success: true,

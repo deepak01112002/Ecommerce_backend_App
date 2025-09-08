@@ -311,7 +311,7 @@ const generateProducts = (categories, categoryMap) => {
                             width: Math.floor(Math.random() * 15) + 8,
                             height: Math.floor(Math.random() * 25) + 12
                         },
-                        shippingCost: price > 2000 ? 0 : Math.floor(Math.random() * 200) + 99,
+                        shippingCost: 0,
                         freeShippingThreshold: 1999,
                         estimatedDelivery: '3-7 business days'
                     },

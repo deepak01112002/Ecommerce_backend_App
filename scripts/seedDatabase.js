@@ -371,7 +371,7 @@ const seedProducts = async (categories) => {
                 shippingInfo: {
                     weight: 0.5,
                     dimensions: { length: 10, width: 8, height: 12 },
-                    shippingCost: 99,
+                    shippingCost: 0,
                     freeShippingThreshold: 999,
                     estimatedDelivery: '3-5 business days'
                 },
@@ -408,7 +408,7 @@ const seedProducts = async (categories) => {
                 shippingInfo: {
                     weight: 2,
                     dimensions: { length: 15, width: 12, height: 18 },
-                    shippingCost: 199,
+                    shippingCost: 0,
                     freeShippingThreshold: 2999,
                     estimatedDelivery: '5-7 business days'
                 }
@@ -441,7 +441,7 @@ const seedProducts = async (categories) => {
                 shippingInfo: {
                     weight: 0.8,
                     dimensions: { length: 12, width: 8, height: 15 },
-                    shippingCost: 149,
+                    shippingCost: 0,
                     freeShippingThreshold: 1999,
                     estimatedDelivery: '3-5 business days'
                 }
@@ -1005,7 +1005,7 @@ const seedOrders = async (users, products) => {
                 items: [
                     { product: products[1]._id, variant: 'Medium', quantity: 1, unitPrice: 4999, totalPrice: 4999 }
                 ],
-                pricing: { subtotal: 4999, tax: 0, shipping: 199, discount: 0, total: 5198 },
+                pricing: { subtotal: 4999, tax: 0, shipping: 0, discount: 0, total: 4999 },
                 status: 'shipped',
                 paymentMethod: 'credit_card'
             }
