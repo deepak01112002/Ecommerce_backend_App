@@ -80,7 +80,7 @@ async function testSocialMediaFix() {
                 showOnMobile: true,
                 showOnWeb: true,
                 whatsappConfig: {
-                    phoneNumber: '+919876543210',
+                    phoneNumber: '8000950408',
                     defaultMessage: 'Hello! I am interested in your products.'
                 }
             }

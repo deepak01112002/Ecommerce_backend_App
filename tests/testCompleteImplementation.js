@@ -150,7 +150,7 @@ async function testCompleteImplementation() {
             platform: 'whatsapp',
             description: 'Chat with us on WhatsApp',
             whatsappConfig: {
-                phoneNumber: '+919876543210',
+                phoneNumber: '8000950408',
                 defaultMessage: 'Hello! I am interested in your products.'
             }
         },

@@ -6,7 +6,7 @@ async function testDelhiveryService() {
     // Test 1: Serviceability
     console.log('📍 Test 1: Serviceability Check');
     try {
-        const serviceability = await delhiveryService.checkServiceability('360002');
+        const serviceability = await delhiveryService.checkServiceability('360001');
         console.log('✅ Serviceability Result:', JSON.stringify(serviceability, null, 2));
     } catch (error) {
         console.log('❌ Serviceability Error:', error.message);
@@ -18,7 +18,7 @@ async function testDelhiveryService() {
     try {
         const rates = await delhiveryService.getDeliveryRates({
             fromPincode: '110001',
-            toPincode: '360002',
+            toPincode: '360001',
             weight: 1,
             codAmount: 1500
         });
@@ -40,7 +40,7 @@ async function testDelhiveryService() {
             shippingAddress: {
                 addressLine1: 'Test Address',
                 addressLine2: 'Test Line 2',
-                postalCode: '360002',
+                postalCode: '360001',
                 city: 'Rajkot',
                 state: 'Gujarat',
                 country: 'India'

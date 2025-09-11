@@ -12,7 +12,7 @@ async function testDelhiveryAPI() {
     const response = await axios.get('https://track.delhivery.com/api/c/api/pin-codes/json/', {
       params: {
         token: apiKey,
-        filter_codes: '360002'
+        filter_codes: '360001'
       },
       timeout: 20000
     });
@@ -35,7 +35,7 @@ async function testDelhiveryAPI() {
       params: {
         md: 'S',
         ss: 'Delivered',
-        d_pin: '360002',
+        d_pin: '360001',
         o_pin: '110001',
         cgm: 1000,
         pt: 'COD'
@@ -64,7 +64,7 @@ async function testDelhiveryAPI() {
     const response = await axios.get('https://track.delhivery.com/api/pin-codes/json/', {
       params: {
         token: apiKey,
-        filter_codes: '360002'
+        filter_codes: '360001'
       },
       timeout: 20000
     });

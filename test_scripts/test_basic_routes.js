@@ -32,7 +32,7 @@ async function testBasicRoutes() {
         params: {
           state: 'Gujarat',
           city: 'Rajkot',
-          postalCode: '360002'
+          postalCode: '360001'
         }
       });
       console.log('✅ Options route working:', response.data.message);
@@ -45,7 +45,7 @@ async function testBasicRoutes() {
     // Test 3: Test serviceability route directly
     console.log('📋 Test 3: Serviceability Route Direct Test');
     try {
-      const response = await axios.get(`${BASE_URL}/delivery-management/serviceability/360002`, { headers });
+      const response = await axios.get(`${BASE_URL}/delivery-management/serviceability/360001`, { headers });
       console.log('✅ Serviceability route working:', response.data.message);
       console.log('Data:', response.data.data);
     } catch (error) {
