@@ -15,7 +15,7 @@ async function debugServiceability() {
 
   try {
     // Test with different pincodes
-    const testPincodes = ['360002', '400001', '110001'];
+    const testPincodes = ['360001', '400001', '110001'];
     
     for (const pincode of testPincodes) {
       console.log(`\n📍 Testing pincode: ${pincode}`);
@@ -53,7 +53,7 @@ async function debugServiceability() {
         params: {
           state: 'Gujarat',
           city: 'Rajkot',
-          postalCode: '360002',
+          postalCode: '360001',
           weight: 1,
           codAmount: 1500
         }

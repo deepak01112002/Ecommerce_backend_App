@@ -74,7 +74,7 @@ exports.getPublicInvoiceSettings = asyncHandler(async (req, res) => {
         companyDetails: {
             name: settings.business?.companyName || 'Ghanshyam Murti Bhandar',
             address: settings.business?.address || 'Religious Items Store',
-            phone: settings.business?.supportPhone || '+919876543210',
+            phone: settings.business?.supportPhone || '8000950408',
             email: settings.business?.supportEmail || 'support@ghanshyammurtibhandar.com',
             gstNumber: settings.business?.gstNumber || 'GST123456789'
         }
@@ -469,7 +469,7 @@ exports.getInvoiceSettings = asyncHandler(async (req, res) => {
         companyDetails: {
             name: settings.business?.companyName || 'Ghanshyam Murti Bhandar',
             address: settings.business?.address || 'Religious Items Store',
-            phone: settings.business?.supportPhone || '+919876543210',
+            phone: settings.business?.supportPhone || '8000950408',
             email: settings.business?.supportEmail || 'support@ghanshyammurtibhandar.com',
             gstNumber: settings.business?.gstNumber || 'GST123456789',
             pan: settings.business?.pan || 'PAN123456789'

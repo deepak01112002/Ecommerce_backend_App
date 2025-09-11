@@ -24,7 +24,7 @@ async function testDeliveryAPI() {
       params: {
         state: 'Gujarat',
         city: 'Rajkot',
-        postalCode: '360002',
+        postalCode: '360001',
         weight: 1,
         codAmount: 1500
       }
@@ -94,9 +94,9 @@ async function testDeliveryAPI() {
   try {
     // Test 4: Check Delhivery serviceability
     console.log('📍 Test 4: Check Delhivery Serviceability');
-    console.log('Testing: GET /api/delivery-management/serviceability/360002');
+    console.log('Testing: GET /api/delivery-management/serviceability/360001');
     
-    const serviceabilityResponse = await axios.get(`${BASE_URL}/delivery-management/serviceability/360002`, {
+    const serviceabilityResponse = await axios.get(`${BASE_URL}/delivery-management/serviceability/360001`, {
       headers
     });
     
@@ -114,7 +114,7 @@ async function testDeliveryAPI() {
     console.log('🌍 Test 5: Test Multiple Locations');
     
     const locations = [
-      { state: 'Gujarat', city: 'Rajkot', postalCode: '360002' },
+      { state: 'Gujarat', city: 'Rajkot', postalCode: '360001' },
       { state: 'Maharashtra', city: 'Mumbai', postalCode: '400001' },
       { state: 'Delhi', city: 'New Delhi', postalCode: '110001' }
     ];
@@ -184,7 +184,7 @@ async function testDeliveryAPI() {
       params: {
         state: 'Gujarat',
         city: 'Rajkot',
-        postalCode: '360002'
+        postalCode: '360001'
       }
     });
     

@@ -39,18 +39,8 @@ const socialMediaSchema = new mongoose.Schema({
         type: String,
         trim: true,
         default: function() {
-            const icons = {
-                youtube: '🎥',
-                facebook: '📘',
-                whatsapp: '💬',
-                instagram: '📷',
-                twitter: '🐦',
-                linkedin: '💼',
-                telegram: '✈️',
-                website: '🌐',
-                custom: '🔗'
-            };
-            return icons[this.platform] || '🔗';
+            // Return empty string to let frontend handle platform-specific icons
+            return '';
         }
     },
     description: {

@@ -19,10 +19,10 @@ async function forceUpdateAppSettings() {
             {
                 $set: {
                     contactInfo: {
-                        phone: '+91 9876543210',
+                        phone: '8000950408',
                         email: 'contact@ghanshyambhandar.com',
-                        whatsapp: '+91 9876543210',
-                        address: 'Ghanshyam Bhandar, Main Market, City, State - 123456'
+                        whatsapp: '8000950408',
+                        address: 'Pujara Plot Main Rd, near chirag medical, Lakshmiwadi, Bhakti Nagar, Rajkot, Gujarat, 360001'
                     }
                 }
             },

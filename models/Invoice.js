@@ -30,9 +30,9 @@ const invoiceSchema = new mongoose.Schema({
     // Company Details
     companyDetails: {
         name: { type: String, default: 'Ghanshyam Murti Bhandar' },
-        address: { type: String, default: 'Shop Address, City, State' },
+        address: { type: String, default: 'Pujara Plot Main Rd, near chirag medical, Lakshmiwadi, Bhakti Nagar, Rajkot, Gujarat, 360001' },
         gstin: { type: String, default: 'GST_NUMBER_HERE' },
-        phone: { type: String, default: '+91-XXXXXXXXXX' },
+        phone: { type: String, default: '8000950408' },
         email: { type: String, default: 'info@ghanshyammurti.com' },
         website: { type: String, default: 'www.ghanshyammurti.com' }
     },

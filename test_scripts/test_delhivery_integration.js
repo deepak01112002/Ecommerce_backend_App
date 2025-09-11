@@ -18,7 +18,7 @@ async function testDelhiveryIntegration() {
     console.log('📍 Test 1: Check Delhivery Serviceability');
     
     const testPincodes = [
-      { pincode: '360002', city: 'Rajkot, Gujarat' },
+      { pincode: '360001', city: 'Rajkot, Gujarat' },
       { pincode: '400001', city: 'Mumbai, Maharashtra' },
       { pincode: '110001', city: 'New Delhi, Delhi' },
       { pincode: '700001', city: 'Kolkata, West Bengal' },
@@ -57,9 +57,9 @@ async function testDelhiveryIntegration() {
     console.log('💰 Test 2: Get Delhivery Delivery Rates');
     
     const rateTestCases = [
-      { from: '110001', to: '360002', weight: 1, codAmount: 1500, description: 'Delhi to Rajkot (COD)' },
+      { from: '110001', to: '360001', weight: 1, codAmount: 1500, description: 'Delhi to Rajkot (COD)' },
       { from: '110001', to: '400001', weight: 2, codAmount: 0, description: 'Delhi to Mumbai (Prepaid)' },
-      { from: '360002', to: '700001', weight: 0.5, codAmount: 800, description: 'Rajkot to Kolkata (COD)' }
+      { from: '360001', to: '700001', weight: 0.5, codAmount: 800, description: 'Rajkot to Kolkata (COD)' }
     ];
 
     for (const testCase of rateTestCases) {

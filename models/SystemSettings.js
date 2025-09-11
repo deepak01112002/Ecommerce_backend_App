@@ -8,7 +8,7 @@ const systemSettingsSchema = new mongoose.Schema({
         siteUrl: { type: String, default: 'https://ghanshyammurti.com' },
         adminEmail: { type: String, default: 'admin@ghanshyammurti.com' },
         supportEmail: { type: String, default: 'support@ghanshyammurti.com' },
-        contactPhone: { type: String, default: '+91-9999999999' },
+        contactPhone: { type: String, default: '8000950408' },
         timezone: { type: String, default: 'Asia/Kolkata' },
         currency: { type: String, default: 'INR' },
         language: { type: String, default: 'en' },
@@ -32,10 +32,10 @@ const systemSettingsSchema = new mongoose.Schema({
     business: {
         companyName: { type: String, default: 'Ghanshyam Murti Bhandar' },
         companyAddress: {
-            street: { type: String, default: 'Shop Address' },
-            city: { type: String, default: 'City' },
-            state: { type: String, default: 'State' },
-            postalCode: { type: String, default: '000000' },
+            street: { type: String, default: 'Pujara Plot Main Rd, near chirag medical, Lakshmiwadi, Bhakti Nagar' },
+            city: { type: String, default: 'Rajkot' },
+            state: { type: String, default: 'Gujarat' },
+            postalCode: { type: String, default: '360001' },
             country: { type: String, default: 'India' }
         },
         gstin: { type: String, default: 'GSTIN_TO_BE_UPDATED' },

@@ -37,8 +37,8 @@ const estimateSchema = new mongoose.Schema({
     // Company Details
     companyDetails: {
         name: { type: String, required: true, default: 'Ghanshyam Murti Bhandar' },
-        address: { type: String, required: true, default: 'Shree Vashunadhara Soc. Block No 153, Cancal Road, Jilla Garden, Rajkot, Gujarat, 360002' },
-        phone: { type: String, required: true, default: '+91 9999999999' },
+        address: { type: String, required: true, default: 'Pujara Plot Main Rd, near chirag medical, Lakshmiwadi, Bhakti Nagar, Rajkot, Gujarat, 360001' },
+        phone: { type: String, required: true, default: '8000950408' },
         email: { type: String, required: true, default: 'info@ghanshyammurtibhandar.com' },
         gstin: { type: String, default: '24XXXXX1234X1ZX' },
         website: { type: String, default: 'www.ghanshyammurtibhandar.com' }

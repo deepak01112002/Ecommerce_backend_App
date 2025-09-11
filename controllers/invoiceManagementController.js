@@ -103,8 +103,8 @@ async function createInvoiceFromOrder(order) {
         },
         companyDetails: {
             name: 'GHANSHYAM MURTI BHANDAR',
-            address: 'CANAL ROAD vasudhra soc, block no 193, near jilla garden cancal road, Rajkot, GUJARAT, 360002',
-            phone: '+91-9876543210',
+            address: 'Pujara Plot Main Rd, near chirag medical, Lakshmiwadi, Bhakti Nagar, Rajkot, Gujarat, 360001',
+            phone: '8000950408',
             email: 'info@ghanshyammurtibhandar.com',
             gstin: '24BYAPD0171N1ZP',
             pan: 'BYAPD0171N',
@@ -186,9 +186,9 @@ async function generateStandardInvoicePDF(invoice, order) {
             doc.fontSize(10);
             doc.text('Sold By:', 50, 120);
             doc.text('GHANSHYAM MURTI BHANDAR', 50, 135);
-            doc.text('CANAL ROAD vasudhra soc, block no 193, near', 50, 150);
-            doc.text('jilla garden cancal road', 50, 165);
-            doc.text('Rajkot, GUJARAT, 360002', 50, 180);
+            doc.text('Pujara Plot Main Rd, near chirag medical, Lakshmiwadi, Bhakti Nagar', 50, 150);
+            doc.text('Rajkot, Gujarat, 360001', 50, 165);
+            doc.text('Phone: 8000950408', 50, 180);
             doc.text('IN', 50, 195);
             doc.text('PAN No: BYAPD0171N', 50, 215);
             doc.text('GST Registration No: 24BYAPD0171N1ZP', 50, 230);
@@ -313,6 +313,7 @@ async function generateThermalInvoicePDF(invoice, order) {
             // Header
             doc.fontSize(12).text('GHANSHYAM MURTI BHANDAR', 10, 10, { align: 'center' });
             doc.fontSize(8).text('Tax Invoice/Bill of Supply', 10, 25, { align: 'center' });
+            doc.fontSize(7).text('Phone: 8000950408', 10, 35, { align: 'center' });
 
             // Order details
             doc.fontSize(7);
