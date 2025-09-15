@@ -579,11 +579,37 @@ exports.getEstimateAnalytics = asyncHandler(async (req, res) => {
 
 // PDF Generation Helper Functions
 
+// Helper function to get social media icons (using text representations for better PDF compatibility)
+function getSocialMediaIcon(platform) {
+    const icons = {
+        'whatsapp': '[WA]', // WhatsApp
+        'facebook': '[FB]', // Facebook
+        'instagram': '[IG]', // Instagram
+        'twitter': '[TW]', // Twitter/X
+        'youtube': '[YT]', // YouTube
+        'linkedin': '[LI]', // LinkedIn
+        'telegram': '[TG]', // Telegram
+        'website': '[WEB]', // Website
+        'custom': '[LINK]' // Custom link
+    };
+    return icons[platform] || '[LINK]';
+}
+
 // Helper function to generate standard estimate PDF
 async function generateStandardEstimatePDF(estimate) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
-            const doc = new PDFDocument({ margin: 50 });
+            // Convert cm to points (1 cm = 28.35 points)
+            const widthCm = 9.5;
+            const heightCm = 14.5;
+            const widthPoints = widthCm * 28.35;
+            const heightPoints = heightCm * 28.35;
+            
+            const doc = new PDFDocument({ 
+                size: [widthPoints, heightPoints],
+                margin: 20,
+                border: { width: 2, color: '#000000' }
+            });
             const buffers = [];
 
             doc.on('data', buffers.push.bind(buffers));
@@ -591,6 +617,9 @@ async function generateStandardEstimatePDF(estimate) {
                 const pdfData = Buffer.concat(buffers);
                 resolve(pdfData);
             });
+
+            // Draw border around the entire document
+            doc.rect(10, 10, widthPoints - 20, heightPoints - 20).stroke();
 
             // Header
             doc.fontSize(20).text(estimate.companyDetails.name, 50, 50);
@@ -613,10 +642,21 @@ async function generateStandardEstimatePDF(estimate) {
                 doc.text(estimate.customerDetails.billingAddress.street, 50, 180);
                 doc.text(`${estimate.customerDetails.billingAddress.city}, ${estimate.customerDetails.billingAddress.state}`, 50, 195);
                 doc.text(estimate.customerDetails.billingAddress.postalCode, 50, 210);
+                
+                // Add GST and PAN numbers if available
+                let yPos = 225;
+                if (estimate.customerDetails.billingAddress.gstNumber) {
+                    doc.text(`GST No: ${estimate.customerDetails.billingAddress.gstNumber}`, 50, yPos);
+                    yPos += 15;
+                }
+                if (estimate.customerDetails.billingAddress.panNumber) {
+                    doc.text(`PAN No: ${estimate.customerDetails.billingAddress.panNumber}`, 50, yPos);
+                    yPos += 15;
+                }
             }
 
             // Items table
-            let yPosition = 250;
+            let yPosition = 280; // Increased to accommodate GST/PAN numbers
             doc.text('S.No', 50, yPosition);
             doc.text('Description', 100, yPosition);
             doc.text('HSN', 250, yPosition);
@@ -660,8 +700,46 @@ async function generateStandardEstimatePDF(estimate) {
                 doc.text(estimate.termsAndConditions, 50, yPosition + 15);
             }
 
+            // Social Media Icons
+            yPosition += 40;
+            try {
+                const SocialMedia = require('../models/SocialMedia');
+                const socialMediaLinks = await SocialMedia.find({ isActive: true })
+                    .sort({ displayOrder: 1 })
+                    .limit(5); // Limit to 5 icons to fit in the space
+                
+                if (socialMediaLinks.length > 0) {
+                    doc.fontSize(8).text('Follow us:', 50, yPosition);
+                    yPosition += 15;
+                    
+                    let iconX = 50;
+                    const iconSpacing = 30;
+                    
+                    socialMediaLinks.forEach((link) => {
+                        const iconText = getSocialMediaIcon(link.platform);
+                        doc.fontSize(10).text(iconText, iconX, yPosition);
+                        
+                        // Add clickable area (for PDF viewers that support it)
+                        doc.text(link.name, iconX, yPosition + 12, { 
+                            width: iconSpacing - 5,
+                            align: 'center',
+                            fontSize: 6
+                        });
+                        
+                        iconX += iconSpacing;
+                        if (iconX > widthPoints - 100) {
+                            iconX = 50;
+                            yPosition += 25;
+                        }
+                    });
+                    yPosition += 20;
+                }
+            } catch (socialError) {
+                console.error('Error adding social media icons:', socialError);
+            }
+
             // Footer
-            yPosition += 60;
+            yPosition += 20;
             doc.fontSize(8).text('This is an estimate and not a tax invoice.', 50, yPosition);
 
             doc.end();
@@ -685,11 +763,14 @@ async function generateThermalEstimatePDF(estimate) {
                 console.log('Canvas not available, using fallback');
             }
 
-            // 4x6 inch format (288x432 points)
+            // 4x6 inch format (288x432 points) with border
             const doc = new PDFDocument({
                 size: [288, 432],
                 margin: 10
             });
+            
+            // Draw border around the thermal label
+            doc.rect(5, 5, 278, 422).stroke();
             const buffers = [];
 
             doc.on('data', buffers.push.bind(buffers));
@@ -791,6 +872,9 @@ async function generate4x6EstimatePDF(estimate) {
                 size: [288, 432], // 4x6 inches in points (72 points per inch)
                 margin: 10
             });
+            
+            // Draw border around the 4x6 label
+            doc.rect(5, 5, 278, 422).stroke();
             const buffers = [];
 
             doc.on('data', buffers.push.bind(buffers));
