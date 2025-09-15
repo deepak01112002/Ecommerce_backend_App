@@ -69,7 +69,9 @@ router.post('/',
         body('deliveryInstructions').optional().isLength({ max: 200 }).withMessage('Delivery instructions must be max 200 characters'),
         body('addressType').optional().isIn(['apartment', 'house', 'office', 'other']).withMessage('Invalid address type'),
         body('coordinates.latitude').optional().isFloat({ min: -90, max: 90 }).withMessage('Invalid latitude'),
-        body('coordinates.longitude').optional().isFloat({ min: -180, max: 180 }).withMessage('Invalid longitude')
+        body('coordinates.longitude').optional().isFloat({ min: -180, max: 180 }).withMessage('Invalid longitude'),
+        body('gstNumber').optional().matches(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/).withMessage('Invalid GST number format'),
+        body('panNumber').optional().matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/).withMessage('Invalid PAN number format')
     ],
     validatePostalCode,
     validateRequest,
@@ -98,7 +100,9 @@ router.put('/:id',
         body('deliveryInstructions').optional().isLength({ max: 200 }).withMessage('Delivery instructions must be max 200 characters'),
         body('addressType').optional().isIn(['apartment', 'house', 'office', 'other']).withMessage('Invalid address type'),
         body('coordinates.latitude').optional().isFloat({ min: -90, max: 90 }).withMessage('Invalid latitude'),
-        body('coordinates.longitude').optional().isFloat({ min: -180, max: 180 }).withMessage('Invalid longitude')
+        body('coordinates.longitude').optional().isFloat({ min: -180, max: 180 }).withMessage('Invalid longitude'),
+        body('gstNumber').optional().matches(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/).withMessage('Invalid GST number format'),
+        body('panNumber').optional().matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/).withMessage('Invalid PAN number format')
     ],
     validateRequest,
     addressController.updateAddress
