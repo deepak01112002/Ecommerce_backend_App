@@ -642,21 +642,10 @@ async function generateStandardEstimatePDF(estimate) {
                 doc.text(estimate.customerDetails.billingAddress.street, 50, 180);
                 doc.text(`${estimate.customerDetails.billingAddress.city}, ${estimate.customerDetails.billingAddress.state}`, 50, 195);
                 doc.text(estimate.customerDetails.billingAddress.postalCode, 50, 210);
-                
-                // Add GST and PAN numbers if available
-                let yPos = 225;
-                if (estimate.customerDetails.billingAddress.gstNumber) {
-                    doc.text(`GST No: ${estimate.customerDetails.billingAddress.gstNumber}`, 50, yPos);
-                    yPos += 15;
-                }
-                if (estimate.customerDetails.billingAddress.panNumber) {
-                    doc.text(`PAN No: ${estimate.customerDetails.billingAddress.panNumber}`, 50, yPos);
-                    yPos += 15;
-                }
             }
 
             // Items table
-            let yPosition = 280; // Increased to accommodate GST/PAN numbers
+            let yPosition = 250;
             doc.text('S.No', 50, yPosition);
             doc.text('Description', 100, yPosition);
             doc.text('HSN', 250, yPosition);
