@@ -72,9 +72,7 @@ const orderAddressSchema = new mongoose.Schema({
     coordinates: {
         latitude: Number,
         longitude: Number
-    },
-    gstNumber: String,
-    panNumber: String
+    }
 });
 
 const orderSchema = new mongoose.Schema({
