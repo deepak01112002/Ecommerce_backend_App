@@ -588,8 +588,19 @@ async function generateStandardPDF(invoice) {
             doc.text(`${invoice.customerDetails.billingAddress.city}, ${invoice.customerDetails.billingAddress.state}`, 50, 195);
             doc.text(invoice.customerDetails.billingAddress.postalCode, 50, 210);
 
-            // Items table
-            let yPosition = 250;
+            // Add GST and PAN numbers if available
+            let yPos = 225;
+            if (invoice.customerDetails.billingAddress.gstNumber) {
+                doc.text(`GST No: ${invoice.customerDetails.billingAddress.gstNumber}`, 50, yPos);
+                yPos += 15;
+            }
+            if (invoice.customerDetails.billingAddress.panNumber) {
+                doc.text(`PAN No: ${invoice.customerDetails.billingAddress.panNumber}`, 50, yPos);
+                yPos += 15;
+            }
+
+            // Items table - adjust position based on GST/PAN info
+            let yPosition = yPos + 25; // Start items table after GST/PAN info
             doc.text('S.No', 50, yPosition);
             doc.text('Description', 100, yPosition);
             if (invoice.taxDetails.isGSTApplicable) {
@@ -670,6 +681,15 @@ async function generateThermalPDF(invoice) {
             doc.text(`Invoice: ${invoice.formattedInvoiceNumber}`);
             doc.text(`Date: ${invoice.invoiceDate.toLocaleDateString()}`);
             doc.text(`Customer: ${invoice.customerDetails.name}`);
+            
+            // Add GST and PAN numbers if available
+            if (invoice.customerDetails.billingAddress.gstNumber) {
+                doc.text(`GST: ${invoice.customerDetails.billingAddress.gstNumber}`);
+            }
+            if (invoice.customerDetails.billingAddress.panNumber) {
+                doc.text(`PAN: ${invoice.customerDetails.billingAddress.panNumber}`);
+            }
+            
             doc.text('--------------------------------');
 
             // Items
@@ -728,8 +748,17 @@ async function generate4x6InvoicePDF(invoice) {
             doc.rect(leftX, rowTop, leftW, 118).stroke();
             doc.fontSize(8).text('Customer Address', leftX + 4, rowTop + 4, { width: leftW - 8 });
             doc.fontSize(10).text((invoice.customerDetails?.name || 'customer').toLowerCase(), leftX + 4, rowTop + 18, { width: leftW - 8 });
-            const lines = [addr.street, addr.area, addr.city, addr.state, addr.postalCode].filter(Boolean).join('\n');
-            doc.fontSize(8).text(lines, leftX + 4, rowTop + 34, { width: leftW - 8 });
+            const lines = [addr.street, addr.area, addr.city, addr.state, addr.postalCode].filter(Boolean);
+            
+            // Add GST and PAN numbers if available
+            if (addr.gstNumber) {
+                lines.push(`GST: ${addr.gstNumber}`);
+            }
+            if (addr.panNumber) {
+                lines.push(`PAN: ${addr.panNumber}`);
+            }
+            
+            doc.fontSize(8).text(lines.join('\n'), leftX + 4, rowTop + 34, { width: leftW - 8 });
 
             // Right: Delhivery block with QR
             doc.rect(rightX, rowTop, rightW, 118).stroke();
