@@ -79,6 +79,10 @@ exports.getAddress = asyncHandler(async (req, res) => {
 
 // Add new address
 exports.addAddress = asyncHandler(async (req, res) => {
+    console.log('🔍 [DEBUG] addAddress called');
+    console.log('📋 [DEBUG] Request body:', JSON.stringify(req.body, null, 2));
+    console.log('👤 [DEBUG] User ID:', req.user._id);
+    
     const userId = req.user._id;
     const {
         type = 'home',
@@ -102,8 +106,17 @@ exports.addAddress = asyncHandler(async (req, res) => {
         panNumber
     } = req.body;
 
+    // Debug GST and PAN numbers
+    console.log('🏢 [DEBUG] GST Number received:', gstNumber);
+    console.log('🏢 [DEBUG] GST Number type:', typeof gstNumber);
+    console.log('🏢 [DEBUG] GST Number length:', gstNumber ? gstNumber.length : 'null/undefined');
+    console.log('📄 [DEBUG] PAN Number received:', panNumber);
+    console.log('📄 [DEBUG] PAN Number type:', typeof panNumber);
+    console.log('📄 [DEBUG] PAN Number length:', panNumber ? panNumber.length : 'null/undefined');
+
     // Create new address
-    const address = new Address({
+    console.log('🏗️ [DEBUG] Creating address object...');
+    const addressData = {
         user: userId,
         type,
         label: label || `${type.charAt(0).toUpperCase() + type.slice(1)} Address`,
@@ -124,9 +137,29 @@ exports.addAddress = asyncHandler(async (req, res) => {
         coordinates,
         gstNumber,
         panNumber
-    });
+    };
+    
+    console.log('📝 [DEBUG] Address data to create:', JSON.stringify(addressData, null, 2));
+    
+    const address = new Address(addressData);
+    console.log('✅ [DEBUG] Address object created successfully');
 
-    await address.save();
+    console.log('💾 [DEBUG] Attempting to save address...');
+    try {
+        await address.save();
+        console.log('✅ [DEBUG] Address saved successfully');
+        console.log('🆔 [DEBUG] Saved address ID:', address._id);
+        console.log('🏢 [DEBUG] Saved GST Number:', address.gstNumber);
+        console.log('📄 [DEBUG] Saved PAN Number:', address.panNumber);
+    } catch (saveError) {
+        console.error('❌ [DEBUG] Error saving address:', saveError);
+        console.error('❌ [DEBUG] Save error message:', saveError.message);
+        console.error('❌ [DEBUG] Save error name:', saveError.name);
+        if (saveError.errors) {
+            console.error('❌ [DEBUG] Validation errors:', saveError.errors);
+        }
+        throw saveError;
+    }
 
     res.success({
         address: {
@@ -144,14 +177,32 @@ exports.addAddress = asyncHandler(async (req, res) => {
 
 // Update address
 exports.updateAddress = asyncHandler(async (req, res) => {
+    console.log('🔍 [DEBUG] updateAddress called');
+    console.log('📋 [DEBUG] Address ID:', req.params.id);
+    console.log('📋 [DEBUG] Request body:', JSON.stringify(req.body, null, 2));
+    console.log('👤 [DEBUG] User ID:', req.user._id);
+    
     const { id } = req.params;
     const userId = req.user._id;
 
     const address = await Address.findOne({ _id: id, user: userId, isActive: true });
 
     if (!address) {
+        console.log('❌ [DEBUG] Address not found');
         return res.error('Address not found', [], 404);
     }
+
+    console.log('✅ [DEBUG] Address found:', address._id);
+    console.log('🏢 [DEBUG] Current GST Number:', address.gstNumber);
+    console.log('📄 [DEBUG] Current PAN Number:', address.panNumber);
+
+    // Debug GST and PAN updates
+    console.log('🏢 [DEBUG] New GST Number:', req.body.gstNumber);
+    console.log('🏢 [DEBUG] New GST Number type:', typeof req.body.gstNumber);
+    console.log('🏢 [DEBUG] New GST Number length:', req.body.gstNumber ? req.body.gstNumber.length : 'null/undefined');
+    console.log('📄 [DEBUG] New PAN Number:', req.body.panNumber);
+    console.log('📄 [DEBUG] New PAN Number type:', typeof req.body.panNumber);
+    console.log('📄 [DEBUG] New PAN Number length:', req.body.panNumber ? req.body.panNumber.length : 'null/undefined');
 
     // Update fields
     const updateFields = [
@@ -161,18 +212,36 @@ exports.updateAddress = asyncHandler(async (req, res) => {
         'gstNumber', 'panNumber'
     ];
 
+    console.log('🔄 [DEBUG] Updating fields...');
     updateFields.forEach(field => {
         if (req.body[field] !== undefined) {
+            console.log(`📝 [DEBUG] Updating ${field}: ${address[field]} → ${req.body[field]}`);
             address[field] = req.body[field];
         }
     });
 
     // Handle default address change
     if (req.body.isDefault === true) {
+        console.log('⭐ [DEBUG] Setting as default address');
         await address.setAsDefault();
     }
 
-    await address.save();
+    console.log('💾 [DEBUG] Attempting to save updated address...');
+    try {
+        await address.save();
+        console.log('✅ [DEBUG] Address updated successfully');
+        console.log('🆔 [DEBUG] Updated address ID:', address._id);
+        console.log('🏢 [DEBUG] Updated GST Number:', address.gstNumber);
+        console.log('📄 [DEBUG] Updated PAN Number:', address.panNumber);
+    } catch (saveError) {
+        console.error('❌ [DEBUG] Error updating address:', saveError);
+        console.error('❌ [DEBUG] Update error message:', saveError.message);
+        console.error('❌ [DEBUG] Update error name:', saveError.name);
+        if (saveError.errors) {
+            console.error('❌ [DEBUG] Validation errors:', saveError.errors);
+        }
+        throw saveError;
+    }
 
     res.success({
         address: {

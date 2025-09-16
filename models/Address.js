@@ -254,4 +254,41 @@ addressSchema.methods.toOrderFormat = function() {
     };
 };
 
+// Pre-save hook for debugging GST/PAN validation
+addressSchema.pre('save', function(next) {
+    console.log('🔍 [DEBUG] Address pre-save hook called');
+    console.log('🏢 [DEBUG] GST Number in pre-save:', this.gstNumber);
+    console.log('🏢 [DEBUG] GST Number type:', typeof this.gstNumber);
+    console.log('🏢 [DEBUG] GST Number length:', this.gstNumber ? this.gstNumber.length : 'null/undefined');
+    console.log('📄 [DEBUG] PAN Number in pre-save:', this.panNumber);
+    console.log('📄 [DEBUG] PAN Number type:', typeof this.panNumber);
+    console.log('📄 [DEBUG] PAN Number length:', this.panNumber ? this.panNumber.length : 'null/undefined');
+    
+    // Test GST regex manually
+    if (this.gstNumber) {
+        const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}[A-Z]{1}[0-9A-Z]{1}$/;
+        const gstMatches = gstRegex.test(this.gstNumber);
+        console.log('🏢 [DEBUG] GST regex test result:', gstMatches);
+        console.log('🏢 [DEBUG] GST regex pattern:', gstRegex.toString());
+    }
+    
+    // Test PAN regex manually
+    if (this.panNumber) {
+        const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+        const panMatches = panRegex.test(this.panNumber);
+        console.log('📄 [DEBUG] PAN regex test result:', panMatches);
+        console.log('📄 [DEBUG] PAN regex pattern:', panRegex.toString());
+    }
+    
+    next();
+});
+
+// Pre-validate hook for additional debugging
+addressSchema.pre('validate', function(next) {
+    console.log('🔍 [DEBUG] Address pre-validate hook called');
+    console.log('🏢 [DEBUG] GST Number in pre-validate:', this.gstNumber);
+    console.log('📄 [DEBUG] PAN Number in pre-validate:', this.panNumber);
+    next();
+});
+
 module.exports = mongoose.model('Address', addressSchema);
