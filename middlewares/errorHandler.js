@@ -90,10 +90,24 @@ const errorHandler = (err, req, res, next) => {
 
 // Validation middleware
 const validateRequest = (req, res, next) => {
+    console.log('🔍 [DEBUG] validateRequest called');
+    console.log('📋 [DEBUG] Request body:', JSON.stringify(req.body, null, 2));
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log('❌ [DEBUG] Validation errors found:');
+        errors.array().forEach((error, index) => {
+            console.log(`❌ [DEBUG] Error ${index + 1}:`, {
+                field: error.path || error.param,
+                message: error.msg,
+                value: error.value,
+                location: error.location
+            });
+        });
         return res.validationError(errors.array());
     }
+    
+    console.log('✅ [DEBUG] Validation passed');
     next();
 };
 
