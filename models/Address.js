@@ -112,6 +112,18 @@ const addressSchema = new mongoose.Schema({
         type: String,
         enum: ['apartment', 'house', 'office', 'other'],
         default: 'house'
+    },
+    gstNumber: {
+        type: String,
+        trim: true,
+        uppercase: true,
+        match: [/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}[A-Z]{1}[0-9A-Z]{1}$/, 'Please enter a valid GST number']
+    },
+    panNumber: {
+        type: String,
+        trim: true,
+        uppercase: true,
+        match: [/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Please enter a valid PAN number']
     }
 }, {
     timestamps: true,
@@ -236,7 +248,9 @@ addressSchema.methods.toOrderFormat = function() {
         postalCode: this.postalCode,
         completeAddress: this.completeAddress,
         deliveryInstructions: this.deliveryInstructions,
-        coordinates: this.coordinates
+        coordinates: this.coordinates,
+        gstNumber: this.gstNumber,
+        panNumber: this.panNumber
     };
 };
 

@@ -28,6 +28,8 @@ exports.getUserAddresses = asyncHandler(async (req, res) => {
             isActive: address.isActive,
             deliveryInstructions: address.deliveryInstructions,
             addressType: address.addressType,
+            gstNumber: address.gstNumber,
+            panNumber: address.panNumber,
             createdAt: address.createdAt
         })),
         total: addresses.length
@@ -67,6 +69,8 @@ exports.getAddress = asyncHandler(async (req, res) => {
             deliveryInstructions: address.deliveryInstructions,
             addressType: address.addressType,
             coordinates: address.coordinates,
+            gstNumber: address.gstNumber,
+            panNumber: address.panNumber,
             createdAt: address.createdAt,
             updatedAt: address.updatedAt
         }
@@ -93,7 +97,9 @@ exports.addAddress = asyncHandler(async (req, res) => {
         isDefault = false,
         deliveryInstructions,
         addressType = 'house',
-        coordinates
+        coordinates,
+        gstNumber,
+        panNumber
     } = req.body;
 
     // Create new address
@@ -115,7 +121,9 @@ exports.addAddress = asyncHandler(async (req, res) => {
         isDefault,
         deliveryInstructions,
         addressType,
-        coordinates
+        coordinates,
+        gstNumber,
+        panNumber
     });
 
     await address.save();
@@ -149,7 +157,8 @@ exports.updateAddress = asyncHandler(async (req, res) => {
     const updateFields = [
         'type', 'label', 'firstName', 'lastName', 'phone', 'alternatePhone',
         'addressLine1', 'addressLine2', 'landmark', 'city', 'state', 'country',
-        'postalCode', 'deliveryInstructions', 'addressType', 'coordinates'
+        'postalCode', 'deliveryInstructions', 'addressType', 'coordinates',
+        'gstNumber', 'panNumber'
     ];
 
     updateFields.forEach(field => {
