@@ -81,6 +81,34 @@ exports.createOrder = asyncHandler(async (req, res) => {
             gstNumber: address.gstNumber,
             panNumber: address.panNumber
         };
+        
+        // 🚀 BACKEND SOLUTION: If GST/PAN not provided, try to find from user's addresses
+        if (!orderAddress.gstNumber || !orderAddress.panNumber) {
+            console.log('🔍 [DEBUG] GST/PAN missing from address, searching user addresses...');
+            
+            // Find matching address from user's saved addresses
+            const userAddresses = await Address.find({ 
+                user: userId, 
+                isActive: true 
+            });
+            
+            // Try to match by phone number and address line
+            const matchingAddress = userAddresses.find(addr => 
+                addr.phone === address.phone && 
+                addr.addressLine1 === address.addressLine1 &&
+                addr.city === address.city
+            );
+            
+            if (matchingAddress) {
+                console.log('✅ [DEBUG] Found matching address with GST/PAN:', matchingAddress._id);
+                orderAddress.gstNumber = matchingAddress.gstNumber || orderAddress.gstNumber;
+                orderAddress.panNumber = matchingAddress.panNumber || orderAddress.panNumber;
+                console.log('🏢 [DEBUG] Updated GST:', orderAddress.gstNumber);
+                console.log('📄 [DEBUG] Updated PAN:', orderAddress.panNumber);
+            } else {
+                console.log('❌ [DEBUG] No matching address found for GST/PAN');
+            }
+        }
     } else {
         // Use default address
         const defaultAddress = await Address.getDefaultAddress(userId);
