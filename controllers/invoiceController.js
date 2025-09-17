@@ -659,13 +659,13 @@ async function generateStandardPDF(invoice) {
     });
 }
 
-// Helper function to generate thermal PDF (58mm width)
+// Helper function to generate thermal PDF (9cm x 14cm)
 async function generateThermalPDF(invoice) {
     return new Promise((resolve, reject) => {
         try {
             const doc = new PDFDocument({ 
-                size: [164, 'auto'], // 58mm width
-                margin: 10 
+                size: [255, 397], // 9cm x 14cm (255pt x 397pt)
+                margin: 15 
             });
             const buffers = [];
             
@@ -755,10 +755,6 @@ async function generate4x6InvoicePDF(invoice) {
             const lines = [addr.street, addr.area, addr.city, addr.state, addr.postalCode].filter(Boolean);
             
             // Add GST and PAN numbers if available
-            console.log('🏢 [DEBUG] 4x6 PDF Generation - GST/PAN data:');
-            console.log('🏢 [DEBUG] GST Number:', addr.gstNumber);
-            console.log('🏢 [DEBUG] PAN Number:', addr.panNumber);
-            
             if (addr.gstNumber) {
                 lines.push(`GST: ${addr.gstNumber}`);
             }
