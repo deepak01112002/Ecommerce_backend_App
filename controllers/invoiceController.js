@@ -590,6 +590,10 @@ async function generateStandardPDF(invoice) {
 
             // Add GST and PAN numbers if available
             let yPos = 225;
+            console.log('🏢 [DEBUG] PDF Generation - GST/PAN data:');
+            console.log('🏢 [DEBUG] GST Number:', invoice.customerDetails.billingAddress.gstNumber);
+            console.log('🏢 [DEBUG] PAN Number:', invoice.customerDetails.billingAddress.panNumber);
+            
             if (invoice.customerDetails.billingAddress.gstNumber) {
                 doc.text(`GST No: ${invoice.customerDetails.billingAddress.gstNumber}`, 50, yPos);
                 yPos += 15;
@@ -751,6 +755,10 @@ async function generate4x6InvoicePDF(invoice) {
             const lines = [addr.street, addr.area, addr.city, addr.state, addr.postalCode].filter(Boolean);
             
             // Add GST and PAN numbers if available
+            console.log('🏢 [DEBUG] 4x6 PDF Generation - GST/PAN data:');
+            console.log('🏢 [DEBUG] GST Number:', addr.gstNumber);
+            console.log('🏢 [DEBUG] PAN Number:', addr.panNumber);
+            
             if (addr.gstNumber) {
                 lines.push(`GST: ${addr.gstNumber}`);
             }

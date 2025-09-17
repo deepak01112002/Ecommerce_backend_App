@@ -52,6 +52,14 @@ exports.createOrder = asyncHandler(async (req, res) => {
         }
 
         orderAddress = existingAddress.toOrderFormat();
+        // Ensure GST/PAN are included from the address
+        orderAddress.gstNumber = existingAddress.gstNumber;
+        orderAddress.panNumber = existingAddress.panNumber;
+        console.log('🏢 [DEBUG] Order creation - Using existing address with GST/PAN:');
+        console.log('🏢 [DEBUG] Address ID:', existingAddress._id);
+        console.log('🏢 [DEBUG] GST Number:', orderAddress.gstNumber);
+        console.log('📄 [DEBUG] PAN Number:', orderAddress.panNumber);
+        console.log('📄 [DEBUG] Full Address Object:', JSON.stringify(orderAddress, null, 2));
     } else if (address) {
         // Use provided address (create snapshot)
         orderAddress = {
@@ -69,7 +77,9 @@ exports.createOrder = asyncHandler(async (req, res) => {
             postalCode: address.postalCode,
             completeAddress: `${address.addressLine1}${address.addressLine2 ? ', ' + address.addressLine2 : ''}${address.landmark ? ', ' + address.landmark : ''}, ${address.city}, ${address.state} - ${address.postalCode}, ${address.country || 'India'}`,
             deliveryInstructions: address.deliveryInstructions,
-            coordinates: address.coordinates
+            coordinates: address.coordinates,
+            gstNumber: address.gstNumber,
+            panNumber: address.panNumber
         };
     } else {
         // Use default address
@@ -78,6 +88,9 @@ exports.createOrder = asyncHandler(async (req, res) => {
             return res.error('No address provided and no default address found', [], 400);
         }
         orderAddress = defaultAddress.toOrderFormat();
+        // Ensure GST/PAN are included from the default address
+        orderAddress.gstNumber = defaultAddress.gstNumber;
+        orderAddress.panNumber = defaultAddress.panNumber;
     }
 
     // Calculate total and validate stock
@@ -172,7 +185,17 @@ exports.createOrder = asyncHandler(async (req, res) => {
         source: 'web'
     });
 
+    console.log('🏢 [DEBUG] Order object before save:');
+    console.log('🏢 [DEBUG] Shipping Address GST:', order.shippingAddress.gstNumber);
+    console.log('🏢 [DEBUG] Shipping Address PAN:', order.shippingAddress.panNumber);
+    console.log('🏢 [DEBUG] Billing Address GST:', order.billingAddress.gstNumber);
+    console.log('🏢 [DEBUG] Billing Address PAN:', order.billingAddress.panNumber);
+
     await order.save();
+
+    console.log('🏢 [DEBUG] Order saved successfully:');
+    console.log('🏢 [DEBUG] Order ID:', order._id);
+    console.log('🏢 [DEBUG] Order Number:', order.orderNumber);
 
     // Process wallet payment if applicable
     if (actualWalletAmount > 0) {
@@ -745,6 +768,18 @@ exports.getOrders = asyncHandler(async (req, res) => {
 
     const totalOrders = await Order.countDocuments(filter);
     const totalPages = Math.ceil(totalOrders / limit);
+
+    // Debug: Check if orders have GST/PAN data
+    console.log('🔍 [DEBUG] getOrders - Checking address data in orders:');
+    orders.forEach((order, index) => {
+        if (index < 3) { // Only log first 3 orders to avoid spam
+            console.log(`📋 [DEBUG] Order ${index + 1} (${order._id}):`);
+            console.log('🏢 [DEBUG] Shipping Address GST:', order.shippingAddress?.gstNumber || 'N/A');
+            console.log('📄 [DEBUG] Shipping Address PAN:', order.shippingAddress?.panNumber || 'N/A');
+            console.log('🏢 [DEBUG] Billing Address GST:', order.billingAddress?.gstNumber || 'N/A');
+            console.log('📄 [DEBUG] Billing Address PAN:', order.billingAddress?.panNumber || 'N/A');
+        }
+    });
 
     // Format orders for response with null safety
     const formattedOrders = orders.map(order => ({
