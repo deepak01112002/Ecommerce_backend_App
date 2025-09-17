@@ -52,9 +52,14 @@ exports.createOrder = asyncHandler(async (req, res) => {
         }
 
         orderAddress = existingAddress.toOrderFormat();
+        // Ensure GST/PAN are included from the address
+        orderAddress.gstNumber = existingAddress.gstNumber;
+        orderAddress.panNumber = existingAddress.panNumber;
         console.log('🏢 [DEBUG] Order creation - Using existing address with GST/PAN:');
+        console.log('🏢 [DEBUG] Address ID:', existingAddress._id);
         console.log('🏢 [DEBUG] GST Number:', orderAddress.gstNumber);
         console.log('📄 [DEBUG] PAN Number:', orderAddress.panNumber);
+        console.log('📄 [DEBUG] Full Address Object:', JSON.stringify(orderAddress, null, 2));
     } else if (address) {
         // Use provided address (create snapshot)
         orderAddress = {
@@ -76,9 +81,6 @@ exports.createOrder = asyncHandler(async (req, res) => {
             gstNumber: address.gstNumber,
             panNumber: address.panNumber
         };
-        console.log('🏢 [DEBUG] Order creation - Using provided address with GST/PAN:');
-        console.log('🏢 [DEBUG] GST Number:', orderAddress.gstNumber);
-        console.log('📄 [DEBUG] PAN Number:', orderAddress.panNumber);
     } else {
         // Use default address
         const defaultAddress = await Address.getDefaultAddress(userId);
@@ -86,6 +88,9 @@ exports.createOrder = asyncHandler(async (req, res) => {
             return res.error('No address provided and no default address found', [], 400);
         }
         orderAddress = defaultAddress.toOrderFormat();
+        // Ensure GST/PAN are included from the default address
+        orderAddress.gstNumber = defaultAddress.gstNumber;
+        orderAddress.panNumber = defaultAddress.panNumber;
     }
 
     // Calculate total and validate stock
@@ -180,7 +185,17 @@ exports.createOrder = asyncHandler(async (req, res) => {
         source: 'web'
     });
 
+    console.log('🏢 [DEBUG] Order object before save:');
+    console.log('🏢 [DEBUG] Shipping Address GST:', order.shippingAddress.gstNumber);
+    console.log('🏢 [DEBUG] Shipping Address PAN:', order.shippingAddress.panNumber);
+    console.log('🏢 [DEBUG] Billing Address GST:', order.billingAddress.gstNumber);
+    console.log('🏢 [DEBUG] Billing Address PAN:', order.billingAddress.panNumber);
+
     await order.save();
+
+    console.log('🏢 [DEBUG] Order saved successfully:');
+    console.log('🏢 [DEBUG] Order ID:', order._id);
+    console.log('🏢 [DEBUG] Order Number:', order.orderNumber);
 
     // Process wallet payment if applicable
     if (actualWalletAmount > 0) {

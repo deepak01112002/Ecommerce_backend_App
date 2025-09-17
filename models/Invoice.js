@@ -276,6 +276,12 @@ invoiceSchema.statics.generateFromOrder = async function(orderId, additionalData
     const totalGST = totalCGST + totalSGST + totalIGST;
     const grandTotal = taxableAmount + totalGST + (order.pricing.shipping || 0);
     
+    console.log('🏢 [DEBUG] Invoice generation - Order address data:');
+    console.log('🏢 [DEBUG] Billing Address GST:', order.billingAddress.gstNumber);
+    console.log('🏢 [DEBUG] Billing Address PAN:', order.billingAddress.panNumber);
+    console.log('🏢 [DEBUG] Shipping Address GST:', order.shippingAddress.gstNumber);
+    console.log('🏢 [DEBUG] Shipping Address PAN:', order.shippingAddress.panNumber);
+
     // Create invoice
     const invoice = new this({
         order: orderId,
@@ -289,14 +295,18 @@ invoiceSchema.statics.generateFromOrder = async function(orderId, additionalData
                 city: order.billingAddress.city,
                 state: order.billingAddress.state,
                 postalCode: order.billingAddress.postalCode,
-                country: order.billingAddress.country
+                country: order.billingAddress.country,
+                gstNumber: order.billingAddress.gstNumber,
+                panNumber: order.billingAddress.panNumber
             },
             shippingAddress: {
                 street: order.shippingAddress.addressLine1,
                 city: order.shippingAddress.city,
                 state: order.shippingAddress.state,
                 postalCode: order.shippingAddress.postalCode,
-                country: order.shippingAddress.country
+                country: order.shippingAddress.country,
+                gstNumber: order.shippingAddress.gstNumber,
+                panNumber: order.shippingAddress.panNumber
             }
         },
         items: invoiceItems,
