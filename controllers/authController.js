@@ -196,7 +196,7 @@ exports.profile = asyncHandler(async (req, res) => {
 
 // Update current user profile
 exports.updateProfile = asyncHandler(async (req, res) => {
-    const { name, email, phone } = req.body;
+    const { firstName, lastName, email, phone } = req.body;
 
     // Check if new email is already taken
     if (email && email !== req.user.email) {
@@ -208,20 +208,20 @@ exports.updateProfile = asyncHandler(async (req, res) => {
 
     // Update user fields
     const updateFields = {};
-    if (name) updateFields.name = name;
+    if (firstName) updateFields.firstName = firstName;
+    if (lastName) updateFields.lastName = lastName;
     if (email) updateFields.email = email;
     if (phone) updateFields.phone = phone;
-
     const updatedUser = await User.findByIdAndUpdate(
         req.user._id,
         updateFields,
         { new: true, runValidators: true }
-    );
-
+    );  
     res.success({
         user: {
             id: updatedUser._id,
-            name: updatedUser.name,
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
             email: updatedUser.email,
             phone: updatedUser.phone,
             role: updatedUser.role,
