@@ -250,7 +250,15 @@ exports.changePassword = async (req, res) => {
         const userId = req.user._id;
         const { currentPassword, newPassword } = req.body;
 
-        const user = await User.findById(userId);
+        // Validate required fields
+        if (!currentPassword) {
+            return res.status(400).json({ message: 'Current password is required' });
+        }
+        if (!newPassword) {
+            return res.status(400).json({ message: 'New password is required' });
+        }
+
+        const user = await User.findById(userId).select('+password'); // Include password field
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
