@@ -3,13 +3,17 @@ const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const crypto = require('crypto');
 const imageOptimizer = require('./imageOptimizer');
 const path = require('path');
+const { Readable } = require('stream');
 
 class ContaboStorageService {
     constructor() {
         // Contabo Object Storage Configuration (S3-compatible)
+        this.region = process.env.CONTABO_REGION || 'sin1'; // SIN region (Singapore)
+        this.endpoint = process.env.CONTABO_ENDPOINT || 'https://sin1.contabostorage.com';
+
         this.s3Client = new S3Client({
-            region: process.env.CONTABO_REGION || 'usc1', // USC1 region
-            endpoint: process.env.CONTABO_ENDPOINT || 'https://usc1.contabostorage.com',
+            region: this.region,
+            endpoint: this.endpoint,
             credentials: {
                 accessKeyId: process.env.CONTABO_ACCESS_KEY,
                 secretAccessKey: process.env.CONTABO_SECRET_KEY
@@ -17,8 +21,9 @@ class ContaboStorageService {
             forcePathStyle: true, // Required for S3-compatible services
         });
 
-        this.bucketName = process.env.CONTABO_BUCKET_NAME || 'ecommerce';
-        this.baseUrl = process.env.CONTABO_BASE_URL || `https://usc1.contabostorage.com/${this.bucketName}`;
+        this.bucketName = process.env.CONTABO_BUCKET_NAME || 'ghayanshyam';
+        this.baseUrl = `${this.endpoint}/${this.bucketName}`;
+        this.publicBaseUrl = process.env.CONTABO_BASE_URL || this.baseUrl;
 
         // Validate credentials
         if (!process.env.CONTABO_ACCESS_KEY || !process.env.CONTABO_SECRET_KEY) {
@@ -26,7 +31,10 @@ class ContaboStorageService {
         } else {
             console.log('✅ Contabo Storage Service initialized successfully');
             console.log(`📦 Bucket: ${this.bucketName}`);
-            console.log(`🌐 Endpoint: ${process.env.CONTABO_ENDPOINT}`);
+            console.log(`🌐 Endpoint: ${this.endpoint}`);
+            if (this.publicBaseUrl !== this.baseUrl) {
+                console.log(`🔗 Public base URL: ${this.publicBaseUrl}`);
+            }
         }
     }
 
@@ -100,7 +108,7 @@ class ContaboStorageService {
             return {
                 success: true,
                 fileName: fileName,
-                url: presignedResult.success ? presignedResult.url : `${this.baseUrl}/${fileName}`,
+                url: presignedResult.success ? presignedResult.url : `${this.publicBaseUrl}/${fileName}`,
                 s3Url: `${this.baseUrl}/${fileName}`, // Keep original S3 URL for reference
                 size: processedBuffer.length,
                 originalSize: fileBuffer.length,
@@ -112,7 +120,8 @@ class ContaboStorageService {
             };
         } catch (error) {
             console.error('Contabo upload error:', error);
-            throw new Error(`Failed to upload file: ${error.message}`);
+            const errorDetails = await this.formatS3Error(error);
+            throw new Error(`Failed to upload file: ${errorDetails}`);
         }
     }
 
@@ -132,7 +141,8 @@ class ContaboStorageService {
             };
         } catch (error) {
             console.error('Multiple upload error:', error);
-            throw new Error(`Failed to upload multiple files: ${error.message}`);
+            const errorDetails = await this.formatS3Error(error);
+            throw new Error(`Failed to upload multiple files: ${errorDetails}`);
         }
     }
 
@@ -155,7 +165,8 @@ class ContaboStorageService {
             };
         } catch (error) {
             console.error('Contabo delete error:', error);
-            throw new Error(`Failed to delete file: ${error.message}`);
+            const errorDetails = await this.formatS3Error(error);
+            throw new Error(`Failed to delete file: ${errorDetails}`);
         }
     }
 
@@ -179,7 +190,8 @@ class ContaboStorageService {
             };
         } catch (error) {
             console.error('Signed URL error:', error);
-            throw new Error(`Failed to generate signed URL: ${error.message}`);
+            const errorDetails = await this.formatS3Error(error);
+            throw new Error(`Failed to generate signed URL: ${errorDetails}`);
         }
     }
 
@@ -203,14 +215,15 @@ class ContaboStorageService {
             return {
                 success: true,
                 uploadUrl: signedUrl,
-                publicUrl: `${this.baseUrl}/${key}`,
+                publicUrl: `${this.publicBaseUrl}/${key}`,
                 key: key,
                 expiresIn: expiresIn,
                 contentType: contentType
             };
         } catch (error) {
             console.error('Presigned upload URL error:', error);
-            throw new Error(`Failed to generate presigned upload URL: ${error.message}`);
+            const errorDetails = await this.formatS3Error(error);
+            throw new Error(`Failed to generate presigned upload URL: ${errorDetails}`);
         }
     }
 
@@ -239,7 +252,8 @@ class ContaboStorageService {
             };
         } catch (error) {
             console.error('Multiple presigned URLs error:', error);
-            throw new Error(`Failed to generate multiple presigned URLs: ${error.message}`);
+            const errorDetails = await this.formatS3Error(error);
+            throw new Error(`Failed to generate multiple presigned URLs: ${errorDetails}`);
         }
     }
 
@@ -286,7 +300,8 @@ class ContaboStorageService {
             };
         } catch (error) {
             console.error('List files error:', error);
-            throw new Error(`Failed to list files: ${error.message}`);
+            const errorDetails = await this.formatS3Error(error);
+            throw new Error(`Failed to list files: ${errorDetails}`);
         }
     }
 
@@ -296,9 +311,28 @@ class ContaboStorageService {
     extractFileNameFromUrl(url) {
         if (!url) return null;
         
-        // Remove base URL to get filename
-        const fileName = url.replace(this.baseUrl + '/', '');
-        return fileName;
+        if (url.startsWith(this.publicBaseUrl + '/')) {
+            return url.replace(this.publicBaseUrl + '/', '');
+        }
+
+        if (url.startsWith(this.baseUrl + '/')) {
+            return url.replace(this.baseUrl + '/', '');
+        }
+
+        if (url.includes('contabostorage.com')) {
+            try {
+                const { pathname } = new URL(url);
+                const parts = pathname.split('/').filter(Boolean);
+                const bucketIndex = parts.findIndex(part => part === this.bucketName || part.endsWith(`:${this.bucketName}`));
+                if (bucketIndex !== -1) {
+                    return parts.slice(bucketIndex + 1).join('/');
+                }
+            } catch (error) {
+                console.error('Error parsing URL in extractFileNameFromUrl:', error.message);
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -327,7 +361,7 @@ class ContaboStorageService {
         return {
             fileName: fileName,
             url: url,
-            fullUrl: url.startsWith('http') ? url : `${this.baseUrl}/${fileName}`
+            fullUrl: url.startsWith('http') ? url : `${this.publicBaseUrl}/${fileName}`
         };
     }
 
@@ -339,10 +373,15 @@ class ContaboStorageService {
 
         // If it's already a full S3 URL, extract the key
         if (s3Key.includes('contabostorage.com')) {
-            const urlParts = s3Key.split('/');
-            const bucketIndex = urlParts.findIndex(part => part === this.bucketName);
-            if (bucketIndex !== -1 && bucketIndex < urlParts.length - 1) {
-                s3Key = urlParts.slice(bucketIndex + 1).join('/');
+            try {
+                const parsed = new URL(s3Key);
+                const urlParts = parsed.pathname.split('/').filter(Boolean);
+                const bucketIndex = urlParts.findIndex(part => part === this.bucketName || part.endsWith(`:${this.bucketName}`));
+                if (bucketIndex !== -1 && bucketIndex < urlParts.length - 1) {
+                    s3Key = urlParts.slice(bucketIndex + 1).join('/');
+                }
+            } catch (error) {
+                console.error('Error parsing S3 URL in getProxyUrl:', error.message);
             }
         }
 
@@ -379,8 +418,9 @@ class ContaboStorageService {
 
                 // Remove leading slash and bucket name
                 const pathParts = pathname.split('/').filter(Boolean);
-                if (pathParts.length > 1 && pathParts[0] === this.bucketName) {
-                    return pathParts.slice(1).join('/');
+                const bucketIndex = pathParts.findIndex(part => part === this.bucketName || part.endsWith(`:${this.bucketName}`));
+                if (bucketIndex !== -1) {
+                    return pathParts.slice(bucketIndex + 1).join('/');
                 }
                 return pathParts.join('/');
             }
@@ -417,14 +457,14 @@ class ContaboStorageService {
 
             console.log('✅ Contabo S3 connection successful!');
             console.log(`📦 Bucket: ${this.bucketName}`);
-            console.log(`🌐 Endpoint: ${process.env.CONTABO_ENDPOINT}`);
+            console.log(`🌐 Endpoint: ${this.endpoint}`);
             console.log(`📁 Files in bucket: ${result.KeyCount || 0}`);
 
             return {
                 success: true,
                 message: 'Connection successful',
                 bucket: this.bucketName,
-                endpoint: process.env.CONTABO_ENDPOINT,
+                endpoint: this.endpoint,
                 fileCount: result.KeyCount || 0
             };
         } catch (error) {
@@ -435,7 +475,7 @@ class ContaboStorageService {
                 message: 'Connection failed',
                 error: error.message,
                 bucket: this.bucketName,
-                endpoint: process.env.CONTABO_ENDPOINT
+                endpoint: this.endpoint
             };
         }
     }
@@ -469,8 +509,74 @@ class ContaboStorageService {
             };
         } catch (error) {
             console.error('Bucket stats error:', error);
-            throw new Error(`Failed to get bucket stats: ${error.message}`);
+            const errorDetails = await this.formatS3Error(error);
+            throw new Error(`Failed to get bucket stats: ${errorDetails}`);
         }
+    }
+
+    async formatS3Error(error) {
+        try {
+            if (!error) return 'Unknown error';
+
+            const parts = [];
+
+            if (error.message) {
+                parts.push(error.message);
+            }
+
+            if (error.Code || error.code) {
+                parts.push(`code: ${error.Code || error.code}`);
+            }
+
+            const { $metadata, $response } = error;
+
+            if ($metadata) {
+                if ($metadata.httpStatusCode) {
+                    parts.push(`status: ${$metadata.httpStatusCode}`);
+                }
+                if ($metadata.requestId) {
+                    parts.push(`requestId: ${$metadata.requestId}`);
+                }
+            }
+
+            if ($response?.body) {
+                const body = await this.streamToString($response.body);
+                if (body) {
+                    parts.push(`body: ${body}`);
+                }
+            }
+
+            return parts.join(' | ') || 'Unknown error';
+        } catch (err) {
+            console.error('Error formatting S3 error:', err);
+            return error?.message || 'Unknown error';
+        }
+    }
+
+    async streamToString(stream) {
+        if (!stream) return null;
+
+        if (typeof stream.text === 'function') {
+            return await stream.text();
+        }
+
+        if (typeof stream === 'string') {
+            return stream;
+        }
+
+        if (Buffer.isBuffer(stream)) {
+            return stream.toString('utf8');
+        }
+
+        if (stream instanceof Readable) {
+            const chunks = [];
+            for await (const chunk of stream) {
+                chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+            }
+            return Buffer.concat(chunks).toString('utf8');
+        }
+
+        return null;
     }
 }
 

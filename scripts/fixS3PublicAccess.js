@@ -32,8 +32,8 @@ const logInfo = (message) => log(`ℹ️  ${message}`, 'blue');
 
 // Initialize S3 client
 const s3Client = new S3Client({
-    region: process.env.CONTABO_REGION || 'usc1',
-    endpoint: process.env.CONTABO_ENDPOINT || 'https://usc1.contabostorage.com',
+    region: process.env.CONTABO_REGION || 'sin1',
+    endpoint: process.env.CONTABO_ENDPOINT || 'https://sin1.contabostorage.com',
     credentials: {
         accessKeyId: process.env.CONTABO_ACCESS_KEY,
         secretAccessKey: process.env.CONTABO_SECRET_KEY
@@ -41,7 +41,7 @@ const s3Client = new S3Client({
     forcePathStyle: true,
 });
 
-const bucketName = process.env.CONTABO_BUCKET_NAME || 'ecommerce';
+const bucketName = process.env.CONTABO_BUCKET_NAME || 'ghayanshyam';
 
 async function checkCurrentBucketPolicy() {
     logSection('🔍 Checking Current Bucket Policy');
