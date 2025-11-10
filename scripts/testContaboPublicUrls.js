@@ -32,8 +32,8 @@ const logInfo = (message) => log(`ℹ️  ${message}`, 'blue');
 async function testUrlFormats() {
     logSection('🔍 TESTING DIFFERENT CONTABO URL FORMATS');
     
-    const bucketName = process.env.CONTABO_BUCKET_NAME || 'ecommerce';
-    const endpoint = process.env.CONTABO_ENDPOINT || 'https://usc1.contabostorage.com';
+    const bucketName = process.env.CONTABO_BUCKET_NAME || 'ghayanshyam';
+    const endpoint = process.env.CONTABO_ENDPOINT || 'https://sin1.contabostorage.com';
     const testFile = 'test-public-direct-1753383631253.png'; // File we uploaded earlier
     
     // Different URL formats to test
